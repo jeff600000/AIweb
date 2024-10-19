@@ -1,103 +1,130 @@
-<!-- I need to put this here, dont ask why -->```html
-<!DOCTYPE html>
-<html>
+<!-- I need to put this here, dont ask why --><!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bread Game</title>
     <style>
         body {
-            background-color: #f0e2b6;
             font-family: Arial, sans-serif;
-            text-align: center;
+            background-color: #f3eac2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
+        }
+
+        #gameContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #c49c48;
+            border-radius: 10px;
             padding: 20px;
+            background-color: #fff8e8;
         }
-        #oven, #decorations {
-            border: 5px solid #663300;
-            margin: auto;
-            padding: 20px;
-            background-color: #fff7e6;
-            display: inline-block;
-        }
-        #inventory {
-            padding-top: 20px;
-        }
-        .button {
-            background-color: #ffcc66;
-            border: 2px solid #cc6600;
+
+        #oven {
+            width: 200px;
+            height: 200px;
+            background-color: #d2691e;
             border-radius: 5px;
-            color: #663300;
-            padding: 10px;
-            cursor: pointer;
-            margin: 5px;
-            transition: background-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
         }
-        .button:hover {
-            background-color: #cc9966;
+
+        #ovenInner {
+            width: 150px;
+            height: 150px;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #dough {
+            width: 50px;
+            height: 50px;
+            background-color: #f0c695;
+            border-radius: 25px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            margin: 10px 0;
+            padding: 10px 20px;
+            background-color: #f3ac4d;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #d88d36;
+        }
+
+        #score {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #c65800;
         }
     </style>
 </head>
 <body>
-    <div id="oven">
-        <canvas id="breadCanvas" width="400" height="400" style="border:1px solid #000;"></canvas>
-        <div id="controls">
-            <div class="button" onclick="bakeBread()">Bake Bread</div>
-            <div class="button" onclick="viewRecipe()">View Recipe</div>
-            <div class="button" onclick="resetGame()">Reset</div>
+    <div id="gameContainer">
+        <div id="oven">
+            <div id="ovenInner">
+                <div id="dough"></div>
+            </div>
         </div>
-        <div id="bakeInfo"></div>
+        <div id="controls">
+            <button id="bakeButton">Bake</button>
+            <button id="expandOven">Expand Oven</button>
+        </div>
+        <div id="score">
+            <div>Baked Breads: <span id="breadCount">0</span></div>
+            <div>Oven Level: <span id="ovenLevel">1</span></div>
+        </div>
     </div>
-    <div id="decorations">
-        <div class="button" onclick="addDecoration('chocolate')">Add Chocolate Drizzle</div>
-        <div class="button" onclick="addDecoration('sprinkles')">Add Sprinkles</div>
-        <div class="button" onclick="addDecoration('nuts')">Add Nuts</div>
-    </div>
-    <div id="inventory"></div>
 
     <script>
-        let breadLevel = 0;
-        let decorations = [];
-        const breadCanvas = document.getElementById('breadCanvas');
-        const ctx = breadCanvas.getContext('2d');
-        
-        function bakeBread() {
-            breadLevel++;
-            updateBread();
-            document.getElementById('bakeInfo').textContent = `Bread is at level: ${breadLevel}`;
-        }
-        
-        function addDecoration(type) {
-            if (breadLevel > 0) {
-                decorations.push(type);
-                updateBread();
-                updateInventory();
+        let breadCount = 0;
+        let ovenLevel = 1;
+        let dough = document.getElementById('dough');
+        let breadCountDisplay = document.getElementById('breadCount');
+        let ovenLevelDisplay = document.getElementById('ovenLevel');
+
+        document.getElementById('bakeButton').addEventListener('click', function() {
+            breadCount += ovenLevel;
+            breadCountDisplay.textContent = breadCount;
+            dough.style.backgroundColor = ovenLevel > 2 ? '#996633' : '#f0c695';
+        });
+
+        document.getElementById('expandOven').addEventListener('click', function() {
+            if (breadCount >= 10 * ovenLevel) {
+                breadCount -= 10 * ovenLevel;
+                ovenLevel += 1;
+                ovenLevelDisplay.textContent = ovenLevel;
+                breadCountDisplay.textContent = breadCount;
+                
+                let oven = document.getElementById('ovenInner');
+                oven.style.width = `${150 + 20 * (ovenLevel - 1)}px`;
+                oven.style.height = `${150 + 20 * (ovenLevel - 1)}px`;
+                
+                dough.style.width = `${50 + 10 * (ovenLevel - 1)}px`;
+                dough.style.height = `${50 + 10 * (ovenLevel - 1)}px`;
             }
-        }
-
-        function viewRecipe() {
-            alert('Recipe: Mix flour, water, and yeast. Let rise, then bake.');
-        }
-
-        function updateBread() {
-            ctx.clearRect(0, 0, breadCanvas.width, breadCanvas.height);
-            ctx.fillStyle = "#d2b48c";
-            ctx.fillRect(100, 200 - breadLevel * 10, 200, breadLevel * 10);
-            decorations.forEach((decoration, index) => {
-                ctx.fillStyle = decoration === 'chocolate' ? '#4b2e83' : decoration === 'sprinkles' ? '#e75480' : '#d2691e';
-                ctx.fillRect(100, 200 - breadLevel * 10 + index * 5, 200, 5);
-            });
-        }
-
-        function updateInventory() {
-            document.getElementById('inventory').textContent = `Decorations: ${decorations.join(', ')}`;
-        }
-
-        function resetGame() {
-            breadLevel = 0;
-            decorations = [];
-            updateBread();
-            updateInventory();
-            document.getElementById('bakeInfo').textContent = '';
-        }
+        });
     </script>
 </body>
 </html>
-```
