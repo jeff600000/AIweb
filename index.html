@@ -6,85 +6,77 @@
     <title>Bread Game</title>
     <style>
         body {
+            background-color: #f3eac2;
             font-family: Arial, sans-serif;
-            background-color: #f8f4e6;
-            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #game {
+            background-color: #fff3da;
+            border: 5px solid #d9b382;
+            width: 300px;
             padding: 20px;
+            box-shadow: 0 0 10px #b69568;
         }
-        #gameContainer {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
+        #balance {
+            margin: 10px 0;
+            font-size: 1.2em;
         }
-        #bread {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 20px;
-            background-color: #c68642;
-            border-radius: 50%;
-            position: relative;
-            display: inline-block;
-        }
-        #flour, #water, #yeast {
-            width: 50px;
-            height: 50px;
+        .btn {
+            background-color: #d9b382;
+            border: none;
+            padding: 10px;
             margin: 5px;
-            display: inline-block;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        #flour {
-            background-color: #ffffff;
+        .btn:hover {
+            background-color: #c49a6c;
         }
-        #water {
-            background-color: #00bfff;
-        }
-        #yeast {
-            background-color: #a52a2a;
+        #actions {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="bread"></div>
-        <div>
-            <div id="flour"></div>
-            <div id="water"></div>
-            <div id="yeast"></div>
+    <div id="game">
+        <div id="balance">Bread: 0</div>
+        <button class="btn" onclick="bakeBread()">Bake Bread</button>
+        <button class="btn" onclick="sellBread()">Sell Bread</button>
+        <div id="actions">
         </div>
-        <button onclick="startGame()">Start Baking</button>
     </div>
     <script>
-        let flourStock = 5;
-        let waterStock = 5;
-        let yeastStock = 5;
-        let breadAmount = 0;
-        let flourIncrement = 1;
-        let waterIncrement = 1;
-        let yeastIncrement = 1;
-
-        function startGame() {
-            const interval = setInterval(() => {
-                updateResources();
-                checkBreadStatus();
-            }, 1000);
+        let breadCount = 0;
+        let breadPrice = 1;
+        
+        function updateBalance() {
+            document.getElementById('balance').textContent = 'Bread: ' + breadCount;
         }
-
-        function updateResources() {
-            document.getElementById('flour').textContent = `Flour: ${flourStock}`;
-            document.getElementById('water').textContent = `Water: ${waterStock}`;
-            document.getElementById('yeast').textContent = `Yeast: ${yeastStock}`;
-            document.getElementById('bread').textContent = `Bread: ${breadAmount}`;
+        
+        function bakeBread() {
+            breadCount++;
+            addAction('Baked a loaf of bread.');
+            updateBalance();
         }
-
-        function checkBreadStatus() {
-            if (flourStock >= 2 && waterStock >= 2 && yeastStock >= 1) {
-                breadAmount++;
-                flourStock -= 2;
-                waterStock -= 2;
-                yeastStock--;
+        
+        function sellBread() {
+            if (breadCount > 0) {
+                breadCount--;
+                addAction('Sold a loaf of bread for $' + breadPrice + '.');
+                updateBalance();
             } else {
-                clearInterval(interval);
-                alert('Not enough ingredients to bake more bread!');
+                addAction('No bread to sell.');
             }
+        }
+        
+        function addAction(action) {
+            let actionsDiv = document.getElementById('actions');
+            let actionElem = document.createElement('div');
+            actionElem.textContent = action;
+            actionsDiv.insertAdjacentElement('afterbegin', actionElem);
         }
     </script>
 </body>
