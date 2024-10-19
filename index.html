@@ -7,96 +7,82 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f3e5ab;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #f4f4f9;
             margin: 0;
-        }
-        #game {
-            border: 2px solid #c19a6b;
-            padding: 20px;
-            background-color: #fff8dc;
-            width: 400px;
-            text-align: center;
-        }
-        #bread {
-            font-size: 3rem;
-            cursor: pointer;
-            user-select: none;
-        }
-        #score {
-            font-size: 1.5rem;
-            margin: 20px 0;
-        }
-        #controls {
+            padding: 0;
             display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #c19a6b;
-            color: white;
-            border: none;
+        #game-area {
+            width: 400px;
+            height: 600px;
+            border: 2px solid #333;
+            background-color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .bread {
+            width: 50px;
+            height: 50px;
+            background-color: #d2691e;
+            position: absolute;
             border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #d2b48c;
         }
     </style>
 </head>
 <body>
-    <div id="game">
-        <div id="bread">🍞</div>
-        <div id="score">Score: 0</div>
-        <div id="controls">
-            <button onclick="bake()">Bake</button>
-            <button onclick="sell()">Sell</button>
-            <button onclick="upgrade()">Upgrade</button>
-        </div>
-    </div>
+    <div id="game-area"></div>
+    
     <script>
-        let score = 0;
-        let breadCount = 0;
-        let bakePower = 1;
-        let upgradeCost = 10;
+        const gameArea = document.getElementById('game-area');
         
-        document.getElementById('bread').addEventListener('click', function() {
-            breadCount += bakePower;
-            updateScore();
-        });
-
-        function bake() {
-            score += breadCount;
-            breadCount = 0;
-            updateScore();
-        }
-
-        function sell() {
-            score += breadCount * 2;
-            breadCount = 0;
-            updateScore();
-        }
-
-        function upgrade() {
-            if (score >= upgradeCost) {
-                score -= upgradeCost;
-                bakePower += 1;
-                upgradeCost = Math.floor(upgradeCost * 1.5);
-                alert('Upgrade Successful! Bake Power: ' + bakePower);
-            } else {
-                alert('Not enough score to upgrade!');
+        class Bread {
+            constructor() {
+                this.element = document.createElement('div');
+                this.element.classList.add('bread');
+                this.resetPosition();
+                gameArea.appendChild(this.element);
             }
-            updateScore();
+            
+            resetPosition() {
+                this.x = Math.random() * (gameArea.offsetWidth - 50);
+                this.y = Math.random() * (gameArea.offsetHeight - 50);
+                this.element.style.left = `${this.x}px`;
+                this.element.style.top = `${this.y}px`;
+            }
         }
-
-        function updateScore() {
-            document.getElementById('score').textContent = "Score: " + score + " | Bread: " + breadCount + " | Bake Power: " + bakePower + " | Upgrade Cost: " + upgradeCost;
-        }
+        
+        let breads = [];
+        
+        const createBread = () => {
+            const bread = new Bread();
+            breads.push(bread);
+            
+            if (breads.length < 20) {
+                setTimeout(createBread, 2000);
+            }
+        };
+        
+        createBread();
+        
+        const updateBreads = () => {
+            breads.forEach(bread => {
+                bread.x += Math.random() * 10 - 5;
+                bread.y += Math.random() * 10 - 5;
+                
+                if (bread.x < 0 || bread.x > gameArea.offsetWidth - 50) bread.x = Math.random() * (gameArea.offsetWidth - 50);
+                if (bread.y < 0 || bread.y > gameArea.offsetHeight - 50) bread.y = Math.random() * (gameArea.offsetHeight - 50);
+                
+                bread.element.style.left = `${bread.x}px`;
+                bread.element.style.top = `${bread.y}px`;
+            });
+        };
+        
+        setInterval(updateBreads, 50);
+        
     </script>
 </body>
 </html>
