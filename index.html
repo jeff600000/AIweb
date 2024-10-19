@@ -3,135 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whack-a-Mole Game</title>
+    <title>Top-Down Adventure Game</title>
     <style>
+        canvas {
+            background-color: #f0f0f0;
+            display: block;
+            margin: 0 auto;
+            border: 2px solid #000;
+        }
         body {
+            text-align: center;
+            margin-top: 20px;
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f5f5f5;
         }
-        .game-board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-gap: 10px;
+        #game-info {
             margin-bottom: 20px;
-        }
-        .hole {
-            width: 100px;
-            height: 100px;
-            background-color: #91a3b0;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-        }
-        .mole {
-            width: 80px;
-            height: 80px;
-            background-color: #774936;
-            border-radius: 50%;
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            transition: top 0.3s;
-        }
-        .mole.visible {
-            top: 20%;
-        }
-        .score-board, .timer {
-            margin: 5px;
-        }
-        .start-button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .start-button:hover {
-            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div class="score-board">Score: <span id="score">0</span></div>
-    <div class="timer">Time Left: <span id="timer">60</span>s</div>
-    <button class="start-button" onclick="startGame()">Start Game</button>
-    <div class="game-board">
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
-        <div class="hole" onclick="whackMole(this)">
-            <div class="mole"></div>
-        </div>
+    <div id="game-info">
+        <p>Score: <span id="score">0</span></p>
+        <button onclick="restartGame()">Restart</button>
     </div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+
     <script>
-        let score = 0;
-        let timeLeft = 60;
-        let gameInterval;
-        let moleInterval;
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const tileSize = 20;
 
-        function showMole() {
-            const holes = document.querySelectorAll('.hole');
-            holes.forEach(hole => {
-                hole.querySelector('.mole').classList.remove('visible');
-            });
-            const randomHole = holes[Math.floor(Math.random() * holes.length)];
-            randomHole.querySelector('.mole').classList.add('visible');
-        }
-
-        function startGame() {
-            score = 0;
-            timeLeft = 60;
-            document.getElementById('score').textContent = score;
-            document.getElementById('timer').textContent = timeLeft;
-
-            gameInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(gameInterval);
-                    clearInterval(moleInterval);
-                    alert('Game Over! Your score is ' + score);
-                }
-            }, 1000);
-
-            moleInterval = setInterval(showMole, 1000);
-        }
-
-        function whackMole(hole) {
-            if (hole.querySelector('.mole').classList.contains('visible')) {
-                score++;
-                document.getElementById('score').textContent = score;
-                hole.querySelector('.mole').classList.remove('visible');
+        const game = {
+            score: 0,
+            itemsToCollect: 5,
+            enemiesToDefeat: 3,
+            gameOver: false,
+            win: false,
+            restart: function(){
+                this.score = 0;
+                this.gameOver = false;
+                this.win = false;
+                player.x = tileSize;
+                player.y = tileSize;
+                items = generateItems(this.itemsToCollect);
+                enemies = generateEnemies(this.enemiesToDefeat);
+                updateScore();
+                drawGame();
             }
+        };
+
+        const player = {
+            x: tileSize,
+            y: tileSize,
+            size: tileSize,
+            color: "blue",
+            move: function(dx, dy) {
+                if (!game.gameOver) {
+                    this.x += dx * tileSize;
+                    this.y += dy * tileSize;
+                    this.x = Math.max(0, Math.min(canvas.width - this.size, this.x));
+                    this.y = Math.max(0, Math.min(canvas.height - this.size, this.y));
+                    this.checkCollision();
+                }
+            },
+            checkCollision: function() {
+                items.forEach((item, index) => {
+                    if (item.x === this.x && item.y === this.y) {
+                        items.splice(index, 1);
+                        game.score += 10;
+                        updateScore();
+                        if (items.length === 0) {
+                            game.win = true;
+                            game.gameOver = true;
+                            alert("You win!");
+                        }
+                    }
+                });
+
+                enemies.forEach((enemy, index) => {
+                    if (enemy.x === this.x && enemy.y === this.y) {
+                        enemies.splice(index, 1);
+                        game.score += 5;
+                        updateScore();
+                        if (enemies.length === 0) {
+                            game.win = true;
+                            game.gameOver = true;
+                            alert("You defeated all enemies!");
+                        }
+                    }
+                });
+            }
+        };
+
+        function createEntity(x, y, color) {
+            return { x, y, size: tileSize, color };
         }
+
+        function generateItems(num) {
+            const items = [];
+            for (let i = 0; i < num; i++) {
+                const x = Math.floor(Math.random() * (canvas.width / tileSize)) * tileSize;
+                const y = Math.floor(Math.random() * (canvas.height / tileSize)) * tileSize;
+                items.push(createEntity(x, y, 'green'));
+            }
+            return items;
+        }
+
+        function generateEnemies(num) {
+            const enemies = [];
+            for (let i = 0; i < num; i++) {
+                const x = Math.floor(Math.random() * (canvas.width / tileSize)) * tileSize;
+                const y = Math.floor(Math.random() * (canvas.height / tileSize)) * tileSize;
+                enemies.push(createEntity(x, y, 'red'));
+            }
+            return enemies;
+        }
+
+        let items = generateItems(game.itemsToCollect);
+        let enemies = generateEnemies(game.enemiesToDefeat);
+
+        function updateScore() {
+            document.getElementById("score").innerText = game.score;
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawEntity(player);
+            items.forEach(drawEntity);
+            enemies.forEach(drawEntity);
+        }
+
+        function drawEntity(entity) {
+            ctx.fillStyle = entity.color;
+            ctx.fillRect(entity.x, entity.y, entity.size, entity.size);
+        }
+
+        window.addEventListener("keydown", function(event) {
+            const {key} = event;
+            if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(key) && !game.gameOver) {
+                switch (key) {
+                    case "ArrowLeft":
+                        player.move(-1, 0);
+                        break;
+                    case "ArrowRight":
+                        player.move(1, 0);
+                        break;
+                    case "ArrowUp":
+                        player.move(0, -1);
+                        break;
+                    case "ArrowDown":
+                        player.move(0, 1);
+                        break;
+                }
+                drawGame();
+            }
+        });
+
+        function restartGame() {
+            game.restart();
+        }
+
+        drawGame();
     </script>
 </body>
 </html>
