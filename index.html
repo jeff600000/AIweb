@@ -2,182 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bread-Themed Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bread Quest</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f8f0e3;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
         canvas {
-            border: 2px solid #d1a054;
-            background-color: #fff5e1;
+            border: 2px solid #000;
+            background-color: #f5deb3;
+            display: block;
+            margin: 0 auto;
         }
-        #controls {
-            margin-top: 20px;
-        }
-        button {
-            margin: 5px;
-            padding: 10px;
-            background-color: #f4a261;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #e76f51;
-        }
-        #score {
-            font-size: 20px;
-            margin-top: 10px;
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="480" height="320"></canvas>
-    <div id="controls">
-        <button onclick="startGame()">Start</button>
-        <button onclick="pauseGame()">Pause</button>
-        <button onclick="resetGame()">Reset</button>
-    </div>
-    <div id="score">Score: 0</div>
-
+    <h1>Bread Quest</h1>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <p>Score: <span id="score">0</span></p>
     <script>
         const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const tileSize = 20;
-        const mapWidth = canvas.width / tileSize;
-        const mapHeight = canvas.height / tileSize;
+        const context = canvas.getContext('2d');
         let score = 0;
+        let speed = 2;
+        let hazardsHit = 0;
+        const maxHazards = 10;
 
-        const player = {
-            x: 5,
-            y: 5,
-            color: '#e1c699'
+        const toast = {
+            x: 300,
+            y: 350,
+            width: 20,
+            height: 20,
+            dx: 0,
+            dy: 0
         };
 
-        const ingredients = [
-            { x: randomPosition(), y: randomPosition(), color: 'green' },
-            { x: randomPosition(), y: randomPosition(), color: 'red' },
-            { x: randomPosition(), y: randomPosition(), color: 'yellow' }
-        ];
+        const toppings = [];
+        const hazards = [];
 
-        const hotZones = [
-            { x: randomPosition(), y: randomPosition(), color: 'red' },
-            { x: randomPosition(), y: randomPosition(), color: 'red' }
-        ];
+        window.addEventListener('keydown', moveToast);
+        window.addEventListener('keyup', stopToast);
 
-        let gameInterval;
-        
-        function startGame() {
-            if (!gameInterval) {
-                gameInterval = setInterval(updateGame, 100);
-            }
-        }
-        
-        function pauseGame() {
-            clearInterval(gameInterval);
-            gameInterval = null;
-        }
-        
-        function resetGame() {
-            player.x = 5;
-            player.y = 5;
-            score = 0;
-            document.getElementById('score').textContent = `Score: ${score}`;
-            ingredients.forEach(ing => {
-                ing.x = randomPosition();
-                ing.y = randomPosition();
-            });
-            startGame();
+        function moveToast(event) {
+            if (event.key === 'ArrowRight') toast.dx = speed;
+            if (event.key === 'ArrowLeft') toast.dx = -speed;
+            if (event.key === 'ArrowUp') toast.dy = -speed;
+            if (event.key === 'ArrowDown') toast.dy = speed;
         }
 
-        function updateGame() {
+        function stopToast(event) {
+            if (['ArrowRight', 'ArrowLeft'].includes(event.key)) toast.dx = 0;
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) toast.dy = 0;
+        }
+
+        function gameLoop() {
             clearCanvas();
-            drawPlayer();
-            drawIngredients();
-            drawHotZones();
-            checkCollisions();
-        }
-
-        function drawPlayer() {
-            drawSquare(player.x, player.y, player.color);
-        }
-
-        function drawIngredients() {
-            ingredients.forEach(ing => drawSquare(ing.x, ing.y, ing.color));
-        }
-
-        function drawHotZones() {
-            hotZones.forEach(zone => drawCircle(zone.x, zone.y, zone.color));
-        }
-
-        function drawSquare(x, y, color) {
-            ctx.fillStyle = color;
-            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-        }
-
-        function drawCircle(x, y, color) {
-            ctx.beginPath();
-            ctx.arc(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, tileSize / 2, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
+            moveToastSprite();
+            handleEdgeCollision();
+            drawToast();
+            handleItemCollision(toppings, collectTopping);
+            handleItemCollision(hazards, hitHazard);
+            drawItems(toppings, 'green');
+            drawItems(hazards, 'red');
+            generateItems(toppings, 5, 'topping');
+            generateItems(hazards, 2, 'hazard');
+            updateScore();
+            if(hazardsHit < maxHazards) {
+                requestAnimationFrame(gameLoop);
+            } else {
+                alert("Game Over! You hit too many hazards.");
+                document.location.reload();
+            }
         }
 
         function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            context.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        function randomPosition() {
-            return Math.floor(Math.random() * mapWidth);
+        function moveToastSprite() {
+            toast.x += toast.dx;
+            toast.y += toast.dy;
         }
 
-        function checkCollisions() {
-            ingredients.forEach((ing, index) => {
-                if (player.x === ing.x && player.y === ing.y) {
-                    score++;
-                    document.getElementById('score').textContent = `Score: ${score}`;
-                    ingredients.splice(index, 1);
-                }
-            });
+        function handleEdgeCollision() {
+            if (toast.x < 0) toast.x = 0;
+            if (toast.x + toast.width > canvas.width) toast.x = canvas.width - toast.width;
+            if (toast.y < 0) toast.y = 0;
+            if (toast.y + toast.height > canvas.height) toast.y = canvas.height - toast.height;
+        }
 
-            hotZones.forEach(zone => {
-                if (Math.abs(player.x - zone.x) < 1 && Math.abs(player.y - zone.y) < 1) {
-                    alert('Oops! You got too close to a hot zone!');
-                    resetGame();
-                }
-            });
+        function drawToast() {
+            context.fillStyle = 'tan';
+            context.fillRect(toast.x, toast.y, toast.width, toast.height);
+        }
 
-            if (ingredients.length === 0) {
-                alert('You collected all the ingredients! Sandwich complete!');
-                resetGame();
+        function generateItems(array, chance, type) {
+            if (Math.random() < chance * 0.01) {
+                array.push({
+                    x: Math.random() * (canvas.width - 10),
+                    y: Math.random() * (canvas.height - 10),
+                    width: 10,
+                    height: 10,
+                    type: type
+                });
             }
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (gameInterval) {
-                switch (e.key) {
-                    case 'ArrowUp':
-                        if (player.y > 0) player.y--;
-                        break;
-                    case 'ArrowDown':
-                        if (player.y < mapHeight - 1) player.y++;
-                        break;
-                    case 'ArrowLeft':
-                        if (player.x > 0) player.x--;
-                        break;
-                    case 'ArrowRight':
-                        if (player.x < mapWidth - 1) player.x++;
-                        break;
+        function drawItems(array, color) {
+            context.fillStyle = color;
+            array.forEach(item => {
+                context.fillRect(item.x, item.y, item.width, item.height);
+            });
+        }
+
+        function handleItemCollision(array, callback) {
+            array.forEach((item, index) => {
+                if (
+                    toast.x < item.x + item.width &&
+                    toast.x + toast.width > item.x &&
+                    toast.y < item.y + item.height &&
+                    toast.y + toast.height > item.y
+                ) {
+                    callback(index);
                 }
-            }
-        });
+            });
+        }
+
+        function collectTopping(index) {
+            toppings.splice(index, 1);
+            score += 10;
+        }
+
+        function hitHazard(index) {
+            hazards.splice(index, 1);
+            speed = Math.max(1, speed - 0.5);
+            hazardsHit++;
+            setTimeout(() => {
+                speed = 2;
+            }, 3000);
+        }
+
+        function updateScore() {
+            document.getElementById('score').innerText = score;
+        }
+
+        gameLoop();
     </script>
 </body>
 </html>
