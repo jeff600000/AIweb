@@ -3,96 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure Game</title>
+    <title>Bread Game</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f1e9;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            background-color: #f8e4c1;
             margin: 0;
         }
-        #game {
-            width: 400px;
-            height: 400px;
-            background-color: #fff3e1;
-            border: 5px solid #d1a561;
+        .game-container {
+            text-align: center;
+            background: #f3d9a6;
             border-radius: 10px;
-            position: relative;
-            overflow: hidden;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
-        #bread {
-            width: 50px;
-            height: 50px;
-            background-color: #d4a374;
-            position: absolute;
-            border-radius: 10px;
-            top: 175px;
-            left: 175px;
-            transition: top 0.1s, left 0.1s;
+        .bread {
+            background-color: #c69c6d;
+            border-radius: 5px;
+            border: 3px solid #8b5e34;
+            width: 60px;
+            height: 30px;
+            display: inline-block;
+            margin: 10px 0;
         }
-        #score {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 20px;
-            color: #5d4037;
+        button {
+            background-color: #ff7f50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff4500;
+        }
+        .store {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="game">
-        <div id="bread"></div>
-        <div id="score">Score: 0</div>
+    <div class="game-container">
+        <h1>Bread Game</h1>
+        <div id="breadCounter" class="bread"></div>
+        <button onclick="bakeBread()">Bake Bread</button>
+        <button onclick="sellBread()">Sell Bread</button>
+        <div class="store">
+            <button onclick="upgradeOven()">Upgrade Oven (Cost: 10 breads)</button>
+            <button onclick="hireBaker()">Hire Baker (Cost: 50 breads)</button>
+        </div>
     </div>
     <script>
-        const bread = document.getElementById('bread');
-        const scoreDisplay = document.getElementById('score');
-        const gameArea = document.getElementById('game');
-        let score = 0;
-        let vx = 1;
-        let vy = 0;
-        let moving = false;
+        let breadCount = 0;
+        let ovenPower = 1;
+        let bakers = 0;
 
-        function updatePosition() {
-            const rect = bread.getBoundingClientRect();
-            const newX = rect.x + vx * 10;
-            const newY = rect.y + vy * 10;
-            
-            if (newX >= 0 && newX <= gameArea.clientWidth - rect.width && newY >= 0 && newY <= gameArea.clientHeight - rect.height) {
-                bread.style.left = `${newX}px`;
-                bread.style.top = `${newY}px`;
-                score++;
-                scoreDisplay.textContent = `Score: ${score}`;
+        function bakeBread() {
+            breadCount += ovenPower;
+            updateBreadCounter();
+        }
+
+        function sellBread() {
+            if (breadCount > 0) {
+                breadCount--;
+                updateBreadCounter();
             }
         }
 
-        window.addEventListener('keydown', (event) => {
-            if (moving) return;
-            moving = true;
-
-            switch (event.key) {
-                case 'ArrowUp':
-                    vx = 0; vy = -1;
-                    break;
-                case 'ArrowDown':
-                    vx = 0; vy = 1;
-                    break;
-                case 'ArrowLeft':
-                    vx = -1; vy = 0;
-                    break;
-                case 'ArrowRight':
-                    vx = 1; vy = 0;
-                    break;
+        function upgradeOven() {
+            if (breadCount >= 10) {
+                breadCount -= 10;
+                ovenPower++;
+                updateBreadCounter();
             }
-        });
+        }
 
-        setInterval(() => {
-            if(moving) updatePosition();
-            moving = false;
-        }, 100);
+        function hireBaker() {
+            if (breadCount >= 50) {
+                breadCount -= 50;
+                bakers++;
+                setInterval(() => {
+                    breadCount++;
+                    updateBreadCounter();
+                }, 1000);
+            }
+        }
+
+        function updateBreadCounter() {
+            document.getElementById("breadCounter").textContent = `Breads: ${breadCount}`;
+        }
+
+        updateBreadCounter();
     </script>
 </body>
 </html>
