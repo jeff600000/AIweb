@@ -6,98 +6,122 @@
     <title>Bread Game</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f7f4e3;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            background-color: #f7f0e0;
+            font-family: Arial, sans-serif;
         }
-        .game-area {
-            border: 2px solid #c69c6d;
-            padding: 20px;
-            background-color: #fff8e1;
+        #gameArea {
+            margin-top: 20px;
+            background-color: #fff9e3;
+            border: 2px solid #b38a58;
             width: 300px;
-            text-align: center;
+            height: 300px;
+            position: relative;
+        }
+        .bread {
+            width: 50px;
+            height: 30px;
+            background-color: #d4aa70;
+            position: absolute;
+            border-radius: 0 0 10px 10px;
+        }
+        #scoreBoard {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #instructionArea {
+            margin-top: 20px;
+            font-size: 14px;
         }
         .button {
+            margin-top: 10px;
             padding: 10px 20px;
-            margin: 10px;
-            background-color: #c69c6d;
-            color: white;
+            background-color: #d4aa70;
             border: none;
-            cursor: pointer;
+            color: white;
             border-radius: 5px;
         }
-        .resources {
-            margin: 10px 0;
-        }
-        .upgrade {
-            display: none;
-            margin-top: 20px;
+        .button:hover {
+            background-color: #b38a58;
         }
     </style>
 </head>
 <body>
-    <div class="game-area">
-        <div class="resources">
-            <div>Bread: <span id="bread">0</span></div>
-            <div>Flour Sacks: <span id="flour">0</span></div>
-            <div>Ovens: <span id="ovens">0</span></div>
-        </div>
-        <button class="button" onclick="bakeBread()">Bake Bread</button>
-        <button class="button" onclick="buyFlour()">Buy Flour Sack</button>
-        <button class="button" onclick="buyOven()">Buy Oven</button>
-        <div class="upgrade" id="upgrade-oven">
-            <button class="button" onclick="upgradeOven()">Upgrade Oven</button>
-            <div>Upgrade Cost: <span id="upgrade-cost">10</span> Bread</div>
-        </div>
-        <div class="message" id="message"></div>
-    </div>
+    <div id="gameArea"></div>
+    <div id="scoreBoard">Score: 0</div>
+    <button class="button" onclick="startGame()">Start Game</button>
+    <div id="instructionArea">Use arrow keys to catch bread slices!</div>
+
     <script>
-        let bread = 0;
-        let flourSacks = 0;
-        let ovens = 0;
-        let upgradeCost = 10;
-        let ovenLevel = 1;
+        const gameArea = document.getElementById('gameArea');
+        const scoreBoard = document.getElementById('scoreBoard');
+        const instructionArea = document.getElementById('instructionArea');
 
-        function bakeBread() {
-            let breadToAdd = 1 + (flourSacks * 0.5) + (ovens * ovenLevel);
-            bread += breadToAdd;
-            updateDisplay();
-        }
+        let score = 0;
+        let gameInterval;
+        let breadInterval;
 
-        function buyFlour() {
-            if (bread >= 5) {
-                bread -= 5;
-                flourSacks++;
-                updateDisplay();
+        document.addEventListener('keydown', function(event) {
+            const character = document.querySelector('.character');
+            let left = parseInt(character.style.left.replace('px', ''));
+
+            switch(event.key) {
+                case 'ArrowLeft':
+                    if (left > 0) {
+                        character.style.left = (left - 10) + 'px';
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (left < 250) {
+                        character.style.left = (left + 10) + 'px';
+                    }
+                    break;
             }
+        });
+
+        function startGame() {
+            resetGame();
+
+            gameInterval = setInterval(moveBread, 50);
+            breadInterval = setInterval(spawnBread, 1000);
         }
 
-        function buyOven() {
-            if (bread >= 20) {
-                bread -= 20;
-                ovens++;
-                updateDisplay();
-                document.getElementById('upgrade-oven').style.display = 'block';
-            }
+        function resetGame() {
+            gameArea.innerHTML = '<div class="character" style="left: 125px; bottom: 0;">&nbsp;</div>';
+            score = 0;
+            scoreBoard.textContent = 'Score: ' + score;
+            clearInterval(gameInterval);
+            clearInterval(breadInterval);
         }
 
-        function upgradeOven() {
-            if (bread >= upgradeCost) {
-                bread -= upgradeCost;
-                ovenLevel++;
-                upgradeCost += 10;
-                document.getElementById('upgrade-cost').textContent = upgradeCost;
-                updateDisplay();
-            }
+        function spawnBread() {
+            const bread = document.createElement('div');
+            bread.className = 'bread';
+            bread.style.left = Math.floor(Math.random() * 250) + 'px';
+            bread.style.top = '0px';
+            gameArea.appendChild(bread);
         }
 
-        function updateDisplay() {
-            document.getElementById('bread').textContent = bread.toFixed(1);
-            document.getElementById('flour').textContent = flourSacks;
-            document.getElementById('ovens').textContent = ovens;
+        function moveBread() {
+            const breads = document.querySelectorAll('.bread');
+            const character = document.querySelector('.character');
+            const charLeft = parseInt(character.style.left.replace('px', ''));
+
+            breads.forEach(bread => {
+                let top = parseInt(bread.style.top.replace('px', ''));
+                if (top < 270) {
+                    bread.style.top = (top + 5) + 'px';
+                } else {
+                    if (parseInt(bread.style.left.replace('px', '')) >= charLeft && 
+                        parseInt(bread.style.left.replace('px', '')) <= charLeft + 50) {
+                        score += 10;
+                        scoreBoard.textContent = 'Score: ' + score;
+                    }
+                    bread.remove();
+                }
+            });
         }
     </script>
 </body>
