@@ -1,136 +1,80 @@
 <!-- I need to put this here, dont ask why --><!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Bread Quest</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bread Quest: A Text Adventure</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        #game {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 800px;
-            border: 2px solid #ddd;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f0e3;
+            color: #5f4b32;
             padding: 20px;
-            background-color: #fff;
         }
-        #breadCanvas {
-            border: 1px solid #333;
-            background-color: #fee;
-            width: 400px;
-            height: 300px;
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
         }
-        #controls {
-            margin-top: 20px;
+        button {
+            background-color: #d5a858;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
-        #controls > button {
-            margin: 5px;
-            padding: 10px;
-            font-size: 16px;
+        button:hover {
+            background-color: #c18a46;
         }
-        #shop {
-            margin-top: 30px;
-        }
-        #shop h2 {
-            margin: 0 0 10px;
-        }
-        .upgrade {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
+        .shop-item {
+            margin: 5px 0;
+            padding: 8px;
+            background-color: #e3c69b;
         }
     </style>
 </head>
 <body>
-    <div id="game">
-        <h1>Bread Quest: The Rise</h1>
-        <canvas id="breadCanvas"></canvas>
-        <div id="controls">
-            <button onclick="bakeBread()">Bake Bread</button>
-            <button onclick="sellBread()">Sell Bread</button>
+    <div class="game-container">
+        <h1>Bread Quest: The Crusty Chronicle</h1>
+        <p id="story">You awake in a small bakery filled with the warm scent of freshly baked bread. Your quest is to master the art of bread-making and uncover the secret recipe of the Golden Loaf.</p>
+        <div id="options">
+            <button onclick="explore()">Explore the Bakery</button>
+            <button onclick="startJourney()">Start Your Journey</button>
         </div>
-        <div id="breadStatus">
-            <p>Bread Crumbs: <span id="crumbsCount">0</span></p>
-            <p>Bread Loaves: <span id="loavesCount">0</span></p>
-        </div>
-        <div id="shop">
-            <h2>Shop</h2>
-            <div id="shopItems"></div>
+        <div id="shop" style="display: none;">
+            <h3>Bakery Shop</h3>
+            <div class="shop-item">Yeast - 5 coins</div>
+            <div class="shop-item">Flour - 10 coins</div>
+            <div class="shop-item">Water - 3 coins</div>
+            <div class="shop-item">Sugar - 7 coins</div>
+            <div class="shop-item">Salt - 2 coins</div>
+            <div class="shop-item">Baking Pan - 15 coins</div>
+            <div class="shop-item">Rolling Pin - 12 coins</div>
+            <div class="shop-item">Oven - 50 coins</div>
+            <div class="shop-item">Apron - 8 coins</div>
+            <div class="shop-item">Golden Loaf Recipe - ?? coins</div>
         </div>
     </div>
+
     <script>
-        let crumbs = 0;
-        let loaves = 0;
-        const upgrades = [
-            { name: "Faster Kneading", cost: 100, effect: function() { crumbsPerClick *= 2; }, purchased: false },
-            { name: "Better Oven", cost: 500, effect: function() { loavesPerCrumb *= 2; }, purchased: false },
-            { name: "Magic Yeast", cost: 1000, effect: function() { loavesPerSell *= 2; }, purchased: false },
-            { name: "Fairy Flour", cost: 2000, effect: function() { crumbs += 100; }, purchased: false },
-            { name: "Golden Pan", cost: 4000, effect: function() { loaves += 10; }, purchased: false },
-            { name: "Master Baker", cost: 8000, effect: function() { crumbsPerClick += 10; }, purchased: false },
-            { name: "Bread Multiplier", cost: 16000, effect: function() { loavesPerCrumb += 5; }, purchased: false },
-            { name: "Supreme Mixer", cost: 32000, effect: function() { crumbs += 500; }, purchased: false },
-            { name: "Alchemy Dough", cost: 64000, effect: function() { loaves += 50; }, purchased: false },
-            { name: "Enchanted Bakery", cost: 128000, effect: function() { crumbsPerClick *= 3; }, purchased: false },
-        ];
-        let crumbsPerClick = 1;
-        let loavesPerCrumb = 1;
-        let loavesPerSell = 1;
+        let coins = 20;
 
-        function bakeBread() {
-            crumbs += crumbsPerClick;
-            updateStatus();
+        function explore() {
+            document.getElementById("story").innerText = "You explore the bakery and find various ingredients and tools that might aid your bread-making journey. You have " + coins + " coins.";
+            document.getElementById("shop").style.display = 'block';
         }
 
-        function sellBread() {
-            if (crumbs >= loavesPerCrumb) {
-                crumbs -= loavesPerCrumb;
-                loaves += loavesPerSell;
-                updateStatus();
-            }
-        }
+        function startJourney() {
+            const journeyElement = document.createElement('p');
+            journeyElement.innerText = "Your journey begins! You travel through the Flour Forest, venture across the Yeasty Mountains, and delve into the Salt Mines. Along the way, you encounter puzzles and mini-games that test your skills and reward you with bread coins.";
+            document.querySelector('.game-container').appendChild(journeyElement);
+            document.getElementById('options').style.display = 'none';
 
-        function updateStatus() {
-            document.getElementById('crumbsCount').textContent = crumbs;
-            document.getElementById('loavesCount').textContent = loaves;
+            setTimeout(() => {
+                alert("Congratulations! You have reached the end of your journey and uncovered the legendary Golden Loaf!");
+            }, 5000);
         }
-
-        function createShop() {
-            const shopItemsDiv = document.getElementById('shopItems');
-            upgrades.forEach((upgrade, index) => {
-                const div = document.createElement('div');
-                div.className = 'upgrade';
-                const infoSpan = document.createElement('span');
-                infoSpan.textContent = `${upgrade.name} - ${upgrade.cost} Loaves`;
-                const buyButton = document.createElement('button');
-                buyButton.textContent = 'Buy';
-                buyButton.onclick = function() {
-                    if (loaves >= upgrade.cost && !upgrade.purchased) {
-                        loaves -= upgrade.cost;
-                        upgrade.effect();
-                        upgrade.purchased = true;
-                        buyButton.disabled = true;
-                        updateStatus();
-                    }
-                };
-                div.appendChild(infoSpan);
-                div.appendChild(buyButton);
-                shopItemsDiv.appendChild(div);
-            });
-        }
-
-        createShop();
-        updateStatus();
     </script>
 </body>
 </html>
