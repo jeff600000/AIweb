@@ -3,181 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Collector Game</title>
+    <title>Bread Quest</title>
     <style>
-        body, html {
-            padding: 0;
-            margin: 0;
+        body {
+            text-align: center;
+            background-color: #f5e5d9;
             font-family: Arial, sans-serif;
-            background-color: #fdf6e3;
-            overflow: hidden;
         }
         #gameCanvas {
-            background-color: #f4f1c9;
-            display: block;
-            margin: 0 auto;
-            border: 2px solid #e09e45;
-        }
-        .hidden {
+            background: url('bread-theme-background.jpg') no-repeat center center;
+            background-size: cover;
+            border: 2px solid #8b4513;
             display: none;
         }
-        .centered {
-            text-align: center;
-            margin-top: 100px;
+        .start-screen, .end-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0d9b5;
         }
-        button {
-            padding: 10px 20px;
-            background-color: #e09e45;
-            border: none;
+        #score, #health {
+            font-size: 20px;
+            margin: 10px;
+        }
+        .btn {
+            background-color: #8b4513;
             color: white;
-            font-size: 16px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
             cursor: pointer;
+            border-radius: 5px;
         }
-        button:hover {
-            background-color: #c07828;
+        .btn:hover {
+            background-color: #a0522d;
         }
     </style>
 </head>
 <body>
-    <div id="startScreen" class="centered">
-        <h1>Welcome to Bread Collector!</h1>
-        <button onclick="startGame()">Play</button>
+
+    <div class="start-screen" id="startScreen">
+        <h1>Bread Quest</h1>
+        <button class="btn" onclick="startGame()">Start Game</button>
     </div>
-    <canvas id="gameCanvas" width="800" height="600" class="hidden"></canvas>
-    <div id="endScreen" class="centered hidden">
-        <h1>Game Over!</h1>
-        <p id="finalScore"></p>
-        <button onclick="restartGame()">Play Again</button>
+
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div class="end-screen" id="endScreen" style="display: none;">
+        <h1 id="endMessage"></h1>
+        <button class="btn" onclick="restartGame()">Restart Game</button>
     </div>
+    
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const breadLoaf = { x: 400, y: 550, width: 50, height: 30, speed: 5 };
-        let slices = [];
-        let obstacles = [];
+        const breadSize = 50;
+        let breadX = canvas.width / 2;
+        let breadY = canvas.height - breadSize;
         let score = 0;
+        let health = 3;
+        let ingredients = [];
+        let obstacles = [];
         let gameInterval;
-        let difficulty = 1;
-        let gameOver = false;
+        let keysPressed = {};
+
+        document.addEventListener('keydown', (event) => keysPressed[event.key] = true);
+        document.addEventListener('keyup', (event) => keysPressed[event.key] = false);
 
         function startGame() {
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('endScreen').classList.add('hidden');
-            canvas.classList.remove('hidden');
+            document.getElementById('startScreen').style.display = 'none';
+            canvas.style.display = 'block';
             score = 0;
-            slices = [];
+            health = 3;
+            ingredients = [];
             obstacles = [];
-            gameOver = false;
-            difficulty = 1;
-            gameInterval = setInterval(gameLoop, 1000 / 60);
+            breadX = canvas.width / 2;
+            breadY = canvas.height - breadSize;
+            gameInterval = setInterval(updateGame, 1000 / 30);
         }
 
         function restartGame() {
-            clearInterval(gameInterval);
+            document.getElementById('endScreen').style.display = 'none';
             startGame();
         }
 
-        function gameLoop() {
+        function updateGame() {
+            // Update bread position
+            if (keysPressed['ArrowLeft'] && breadX > 0) breadX -= 5;
+            if (keysPressed['ArrowRight'] && breadX < canvas.width - breadSize) breadX += 5;
+            if (keysPressed['ArrowUp'] && breadY > 0) breadY -= 5;
+            if (keysPressed['ArrowDown'] && breadY < canvas.height - breadSize) breadY += 5;
+
+            // Clear the canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            if (Math.random() < 0.02 * difficulty) addSlice();
-            if (Math.random() < 0.01 * difficulty) addObstacle();
+            // Draw the bread (player)
+            ctx.fillStyle = '#ffebcd'; // bread color
+            ctx.fillRect(breadX, breadY, breadSize, breadSize);
 
-            moveSlices();
-            moveObstacles();
-            drawBreadLoaf();
-            handleCollisions();
-            increaseDifficulty();
-            drawScore();
-
-            if (gameOver) {
-                clearInterval(gameInterval);
-                showEndScreen();
+            // Generate and draw ingredients
+            if (Math.random() < 0.05) {
+                ingredients.push({ x: Math.random() * (canvas.width - breadSize), y: 0, size: 20 });
             }
-        }
+            ingredients.forEach((ingredient, index) => {
+                ctx.fillStyle = '#32cd32'; // lettuce color
+                ctx.fillRect(ingredient.x, ingredient.y, ingredient.size, ingredient.size);
+                ingredient.y += 2;
 
-        function drawBreadLoaf() {
-            ctx.fillStyle = '#d9a066';
-            ctx.fillRect(breadLoaf.x, breadLoaf.y, breadLoaf.width, breadLoaf.height);
-        }
-
-        function addSlice() {
-            const x = Math.random() * (canvas.width - 20);
-            slices.push({ x: x, y: 0, width: 20, height: 20 });
-        }
-
-        function addObstacle() {
-            const x = Math.random() * (canvas.width - 20);
-            obstacles.push({ x: x, y: 0, width: 20, height: 20, speed: 2 + difficulty });
-        }
-
-        function moveSlices() {
-            slices.forEach(slice => {
-                slice.y += 2;
-                ctx.fillStyle = '#e2c044';
-                ctx.fillRect(slice.x, slice.y, slice.width, slice.height);
-            });
-
-            slices = slices.filter(slice => slice.y < canvas.height);
-        }
-
-        function moveObstacles() {
-            obstacles.forEach(obstacle => {
-                obstacle.y += obstacle.speed;
-                ctx.fillStyle = '#8b4513';
-                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-            });
-
-            obstacles = obstacles.filter(obstacle => obstacle.y < canvas.height);
-        }
-
-        function handleCollisions() {
-            slices.forEach((slice, index) => {
-                if (collisionDetected(breadLoaf, slice)) {
-                    score++;
-                    slices.splice(index, 1);
+                // Check collision with bread
+                if (ingredient.x < breadX + breadSize && ingredient.x + ingredient.size > breadX &&
+                    ingredient.y < breadY + breadSize && ingredient.y + ingredient.size > breadY) {
+                    score += 10;
+                    ingredients.splice(index, 1);
                 }
             });
 
-            obstacles.forEach(obstacle => {
-                if (collisionDetected(breadLoaf, obstacle)) {
-                    gameOver = true;
+            // Generate and draw obstacles
+            if (Math.random() < 0.05) {
+                obstacles.push({ x: Math.random() * (canvas.width - breadSize), y: 0, size: 30 });
+            }
+            obstacles.forEach((obstacle, index) => {
+                ctx.fillStyle = '#d2691e'; // toaster color
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.size, obstacle.size);
+                obstacle.y += 4;
+
+                // Check collision with bread
+                if (obstacle.x < breadX + breadSize && obstacle.x + obstacle.size > breadX &&
+                    obstacle.y < breadY + breadSize && obstacle.y + obstacle.size > breadY) {
+                    health--;
+                    obstacles.splice(index, 1);
+                    if (health <= 0) {
+                        endGame("Game Over! You have been toasted. Score: " + score);
+                        clearInterval(gameInterval);
+                    }
                 }
             });
+
+            // Update score and health display
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "#000";
+            ctx.fillText("Score: " + score, 10, 20);
+            ctx.fillText("Health: " + health, 10, 50);
         }
 
-        function collisionDetected(a, b) {
-            return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+        function endGame(message) {
+            canvas.style.display = 'none';
+            document.getElementById('endMessage').textContent = message;
+            document.getElementById('endScreen').style.display = 'flex';
         }
-
-        function moveBreadLoaf(e) {
-            if (e.key === 'ArrowLeft' && breadLoaf.x > 0) {
-                breadLoaf.x -= breadLoaf.speed;
-            }
-            if (e.key === 'ArrowRight' && breadLoaf.x < canvas.width - breadLoaf.width) {
-                breadLoaf.x += breadLoaf.speed;
-            }
-        }
-
-        function increaseDifficulty() {
-            if (score % 10 === 0 && score !== 0) {
-                difficulty += 0.01;
-            }
-        }
-
-        function drawScore() {
-            ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Score: ${score}`, 10, 30);
-        }
-
-        function showEndScreen() {
-            document.getElementById('finalScore').innerText = `Final Score: ${score}`;
-            canvas.classList.add('hidden');
-            document.getElementById('endScreen').classList.remove('hidden');
-        }
-
-        window.addEventListener('keydown', moveBreadLoaf);
     </script>
+
 </body>
 </html>
