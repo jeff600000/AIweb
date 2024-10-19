@@ -3,174 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Breadventure</title>
+    <title>Bread Quest: The Rise of the Dough</title>
     <style>
         body, html {
             margin: 0;
-            padding: 0;
             overflow: hidden;
+            background-color: #f5deb3;
         }
         canvas {
             display: block;
-            background-color: #f3f2ef;
+            background: url('bakery-bg.jpg') repeat-x;
+            background-size: cover;
         }
-        #startBtn {
+        #score {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 10px 20px;
-            font-size: 20px;
-            cursor: pointer;
-            background-color: #ffc107;
-            border: none;
-            border-radius: 5px;
-            z-index: 10;
+            top: 10px;
+            left: 10px;
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            color: #fff;
         }
     </style>
 </head>
 <body>
-    <button id="startBtn">Start Your Breadventure!</button>
+    <div id="score">Score: 0</div>
     <canvas id="gameCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
-        const context = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const startBtn = document.getElementById('startBtn');
-        startBtn.addEventListener('click', startGame);
+        const breadWidth = 50;
+        const breadHeight = 50;
+        let breadX = 50;
+        let breadY = canvas.height - breadHeight - 10;
+        const breadSpeed = 5;
+        const jumpHeight = 150;
+        let onGround = true;
 
-        let bread, hazards, powerUps, score;
+        const ingredients = [
+            {name: 'lettuce', x: 300, y: canvas.height - 100},
+            {name: 'tomato', x: 600, y: canvas.height - 150},
+            {name: 'cheese', x: 900, y: canvas.height - 200},
+            {name: 'turkey', x: 1200, y: canvas.height - 250}
+        ];
+        let collectedIngredients = 0;
 
-        function startGame() {
-            bread = {
-                x: canvas.width / 2,
-                y: canvas.height - 60,
-                width: 50,
-                height: 30,
-                dx: 0,
-                dy: 0,
-                speed: 5
-            };
-            hazards = [];
-            powerUps = [];
-            score = 0;
-            startBtn.style.display = 'none';
-            requestAnimationFrame(update);
-        }
+        const obstacles = [
+            {type: 'rolling pin', x: 400, y: canvas.height - 50, width: 100, height: 20},
+            {type: 'toaster', x: 800, y: canvas.height - 60, width: 60, height: 20}
+        ];
 
-        function update() {
-            clearCanvas();
-            moveBread();
-            handleCollisions();
-            spawnHazards();
-            drawBread();
-            drawHazards();
-            drawScore();
-            requestAnimationFrame(update);
-        }
+        let keys = {};
+        window.addEventListener('keydown', function(e) {
+            keys[e.code] = true;
+        });
 
-        function clearCanvas() {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        function moveBread() {
-            bread.x += bread.dx;
-            bread.y += bread.dy;
-            
-            if (bread.x < 0) bread.x = 0;
-            if (bread.x + bread.width > canvas.width) bread.x = canvas.width - bread.width;
-            if (bread.y < 0) bread.y = 0;
-            if (bread.y + bread.height > canvas.height) bread.y = canvas.height - bread.height;
-        }
+        window.addEventListener('keyup', function(e) {
+            keys[e.code] = false;
+        });
 
         function drawBread() {
-            context.fillStyle = '#d2691e';
-            context.fillRect(bread.x, bread.y, bread.width, bread.height);
+            ctx.fillStyle = 'brown';
+            ctx.fillRect(breadX, breadY, breadWidth, breadHeight);
         }
 
-        function drawHazards() {
-            hazards.forEach(hazard => {
-                context.fillStyle = '#555';
-                context.fillRect(hazard.x, hazard.y, hazard.width, hazard.height);
-                hazard.y += hazard.speed;
+        function drawIngredients() {
+            ingredients.forEach(ingredient => {
+                ctx.fillStyle = 'green';
+                ctx.fillRect(ingredient.x, ingredient.y, 30, 30);
             });
-
-            hazards = hazards.filter(hazard => hazard.y < canvas.height);
         }
 
-        function handleCollisions() {
-            hazards.forEach((hazard, index) => {
-                if (collision(bread, hazard)) {
-                    endGame();
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                ctx.fillStyle = 'grey';
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Score: ${collectedIngredients * 100}`;
+        }
+
+        function checkCollision(a, b) {
+            return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBread();
+            drawIngredients();
+            drawObstacles();
+
+            if (keys['ArrowRight']) {
+                breadX += breadSpeed;
+            }
+            if (keys['ArrowLeft']) {
+                breadX -= breadSpeed;
+            }
+            if (keys['Space'] && onGround) {
+                onGround = false;
+                breadY -= jumpHeight;
+                setTimeout(() => onGround = true, 500);
+            }
+
+            if (!onGround) {
+                breadY += 5;
+            }
+
+            ingredients.forEach((ingredient, index) => {
+                if (checkCollision({x: breadX, y: breadY, width: breadWidth, height: breadHeight}, {x: ingredient.x, y: ingredient.y, width: 30, height: 30})) {
+                    ingredients.splice(index, 1);
+                    collectedIngredients += 1;
+                    updateScore();
                 }
             });
+
+            obstacles.forEach(obstacle => {
+                if (checkCollision({x: breadX, y: breadY, width: breadWidth, height: breadHeight}, {x: obstacle.x, y: obstacle.y, width: obstacle.width, height: obstacle.height}) && obstacle.type === 'toaster') {
+                    alert('You got toasted! Game Over.');
+                    window.location.reload();
+                }
+            });
+
+            if (collectedIngredients === ingredients.length) {
+                alert('You have collected all ingredients! You are now a complete sandwich. You win!');
+                window.location.reload();
+            }
+
+            requestAnimationFrame(gameLoop);
         }
 
-        function drawScore() {
-            context.fillStyle = '#000';
-            context.font = '20px Arial';
-            context.fillText(`Score: ${score}`, 10, 30);
-        }
-
-        function collision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width &&
-                   rect1.x + rect1.width > rect2.x &&
-                   rect1.y < rect2.y + rect2.height &&
-                   rect1.y + rect1.height > rect2.y;
-        }
-
-        function spawnHazards() {
-            if (Math.random() < 0.1) {
-                const width = 40;
-                const height = 40;
-                const x = Math.random() * (canvas.width - width);
-                const y = -height;
-                const speed = Math.random() * 2 + 2;
-                hazards.push({x, y, width, height, speed});
-            }
-        }
-
-        function endGame() {
-            context.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = '#000';
-            context.font = '40px Arial';
-            context.fillText('Game Over!', canvas.width / 2 - 100, canvas.height / 2);
-            startBtn.style.display = 'block';
-            startBtn.textContent = 'Restart Breadventure';
-        }
-
-        window.addEventListener('keydown', ({ key }) => {
-            if (key === 'ArrowLeft') {
-                bread.dx = -bread.speed;
-            }
-            if (key === 'ArrowRight') {
-                bread.dx = bread.speed;
-            }
-            if (key === 'ArrowUp') {
-                bread.dy = -bread.speed;
-            }
-            if (key === 'ArrowDown') {
-                bread.dy = bread.speed;
-            }
-        });
-
-        window.addEventListener('keyup', ({ key }) => {
-            if (key === 'ArrowLeft' || key === 'ArrowRight') {
-                bread.dx = 0;
-            }
-            if (key === 'ArrowUp' || key === 'ArrowDown') {
-                bread.dy = 0;
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+        gameLoop();
     </script>
 </body>
 </html>
