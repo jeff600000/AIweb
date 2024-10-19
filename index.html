@@ -1,116 +1,99 @@
 <!-- I need to put this here, dont ask why --><!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bread Game</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f3c893;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: Arial, sans-serif;
-            background-color: #f3f4ed;
+            justify-content: center;
+            height: 100vh;
         }
-        #game-area {
-            margin-top: 50px;
-            text-align: center;
-        }
-        #bread-oven {
-            width: 200px;
-            height: 200px;
-            border: 2px solid #8b4513;
-            background: #deb887;
-            border-radius: 50%;
-            cursor: pointer;
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         #bread-count {
-            font-size: 2em;
+            font-size: 2rem;
+            margin: 20px;
+        }
+        #bake-button, #shop-button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            margin: 10px;
+        }
+        #upgrade-shop {
+            display: none;
+            flex-direction: column;
+            align-items: center;
             margin-top: 20px;
         }
-        #shop {
-            margin-top: 50px;
-            text-align: left;
-            border: 2px solid #8b4513;
-            border-radius: 10px;
-            padding: 20px;
-            width: 300px;
-            background: #fff8dc;
-        }
         .upgrade {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .upgrade button {
-            padding: 5px 10px;
-            background-color: #f4a460;
-            border: none;
+            margin: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            cursor: pointer;
+            width: 200px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div id="game-area">
-        <div id="bread-oven"></div>
-        <div id="bread-count">0</div>
+    <div id="game-container">
+        <div id="bread-count">Bread: 0</div>
+        <button id="bake-button">Bake Bread</button>
+        <button id="shop-button">Open Shop</button>
     </div>
-    <div id="shop">
-        <h3>Shop</h3>
-        <div class="upgrade">
-            <span>Click Power: <span id="click-power">1</span></span>
-            <button onclick="buyUpgrade('clickPower')">Buy (10 breads)</button>
-        </div>
-        <div class="upgrade">
-            <span>Auto-bake: <span id="auto-bake">0</span>/s</span>
-            <button onclick="buyUpgrade('autoBake')">Buy (25 breads)</button>
-        </div>
-        <div class="upgrade">
-            <span>Double Breads</span>
-            <button onclick="buyUpgrade('doubleBreads')">Buy (100 breads)</button>
-        </div>
+    <div id="upgrade-shop">
+        <div class="upgrade" onclick="buyUpgrade(1, 10, 'Dough Kneader')">Dough Kneader: Cost 10</div>
+        <div class="upgrade" onclick="buyUpgrade(2, 20, 'Faster Oven')">Faster Oven: Cost 20</div>
+        <div class="upgrade" onclick="buyUpgrade(3, 30, 'Baker's Assistant')">Baker's Assistant: Cost 30</div>
+        <div class="upgrade" onclick="buyUpgrade(5, 50, 'Automatic Mixer')">Automatic Mixer: Cost 50</div>
+        <div class="upgrade" onclick="buyUpgrade(10, 100, 'Bread Factory')">Bread Factory: Cost 100</div>
+        <div class="upgrade" onclick="buyUpgrade(20, 200, 'Master Baker')">Master Baker: Cost 200</div>
+        <div class="upgrade" onclick="buyUpgrade(50, 500, 'Artisan Bakery')">Artisan Bakery: Cost 500</div>
+        <div class="upgrade" onclick="buyUpgrade(100, 1000, 'Bread Empire')">Bread Empire: Cost 1000</div>
+        <div class="upgrade" onclick="buyUpgrade(200, 2000, 'Golden Oven')">Golden Oven: Cost 2000</div>
+        <div class="upgrade" onclick="buyUpgrade(500, 5000, 'Legendary Bread Crown')">Legendary Bread Crown: Cost 5000</div>
     </div>
 
     <script>
         let breadCount = 0;
-        let clickPower = 1;
-        let autoBake = 0;
-        let breadDouble = false;
+        let breadPerClick = 1;
+        
+        function updateBreadCount() {
+            document.getElementById('bread-count').innerText = 'Bread: ' + breadCount;
+        }
 
-        document.getElementById('bread-oven').addEventListener('click', function() {
-            let gain = clickPower * (breadDouble ? 2 : 1);
-            breadCount += gain;
-            updateDisplay();
+        document.getElementById('bake-button').addEventListener('click', function() {
+            breadCount += breadPerClick;
+            updateBreadCount();
         });
 
-        function buyUpgrade(type) {
-            if (type === 'clickPower' && breadCount >= 10) {
-                breadCount -= 10;
-                clickPower++;
-            }
-            if (type === 'autoBake' && breadCount >= 25) {
-                breadCount -= 25;
-                autoBake++;
-            }
-            if (type === 'doubleBreads' && breadCount >= 100 && !breadDouble) {
-                breadCount -= 100;
-                breadDouble = true;
-            }
-            updateDisplay();
-        }
+        document.getElementById('shop-button').addEventListener('click', function() {
+            const shop = document.getElementById('upgrade-shop');
+            shop.style.display = shop.style.display === 'none' ? 'flex' : 'none';
+        });
 
-        function updateDisplay() {
-            document.getElementById('bread-count').innerText = breadCount;
-            document.getElementById('click-power').innerText = clickPower;
-            document.getElementById('auto-bake').innerText = autoBake;
+        function buyUpgrade(cost, price, name) {
+            if (breadCount >= price) {
+                breadCount -= price;
+                breadPerClick += cost;
+                updateBreadCount();
+                alert(name + ' purchased! Bread Per Click: ' + breadPerClick);
+            } else {
+                alert('Not enough bread for ' + name);
+            }
         }
-
-        setInterval(function() {
-            breadCount += autoBake * (breadDouble ? 2 : 1);
-            updateDisplay();
-        }, 1000);
     </script>
 </body>
 </html>
