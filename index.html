@@ -6,74 +6,100 @@
     <title>Bread Game</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            background-color: #f0e68c;
-            margin: 0;
+            background-color: #f5e1c3;
         }
         #gameArea {
-            background-color: #fff3e0;
-            border: 2px solid #d2691e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #8b4513;
+            border-radius: 10px;
             padding: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
+            background-color: #fffbe6;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        #breadList, #hiddenChallenges {
-            list-style-type: none;
-            padding: 0;
-            margin: 10px 0;
+        #score {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-        #hiddenChallenges {
-            display: none;
+        #toast {
+            width: 100px;
+            height: 100px;
+            background-color: #deb887;
+            border-radius: 10px;
+            transition: transform 0.2s;
         }
-        .bread {
-            background-color: #ffdead;
-            margin: 5px 0;
-            padding: 10px;
-            border: 1px solid #cd853f;
+        #toast:hover {
+            transform: scale(1.1);
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #a0522d;
+        }
+        #feedback {
+            margin-top: 10px;
+            font-size: 18px;
+            height: 20px;
         }
     </style>
 </head>
 <body>
     <div id="gameArea">
-        <h1>Bread Game</h1>
-        <ul id="breadList">
-            <li class="bread">Sourdough</li>
-            <li class="bread">Baguette</li>
-            <li class="bread">Rye Bread</li>
-            <li class="bread">Pita</li>
-        </ul>
-        <ul id="hiddenChallenges">
-            <li class="bread">Wild Challenge: Bread Maze</li>
-            <li class="bread">Secret Bread Puzzle</li>
-            <li class="bread">Mystery Bread Trivia</li>
-        </ul>
-        <button id="toggleButton">Discover More</button>
+        <div id="score">Score: 0</div>
+        <div id="toast"></div>
+        <button onclick="addScore()">Make Toast</button>
+        <div id="feedback"></div>
     </div>
+
     <script>
-        const breadItems = document.querySelectorAll('.bread');
-        const hiddenChallenges = document.getElementById('hiddenChallenges');
-        const toggleButton = document.getElementById('toggleButton');
-        let toggle = false;
+        let score = 0;
 
-        breadItems.forEach(bread => {
-            bread.addEventListener('click', () => {
-                bread.classList.toggle('selected');
-                if (Math.random() > 0.8) {
-                    alert('Surprise! A new flavor dimension has appeared!');
+        function addScore() {
+            const feedback = document.getElementById('feedback');
+            const randomFactor = Math.random();
+            if (randomFactor < 0.3) {
+                score--;
+                feedback.innerText = "Oops, burned the toast!";
+            } else if (randomFactor < 0.7) {
+                score++;
+                feedback.innerText = "Perfectly toasted!";
+            } else {
+                const doubleOrNothing = Math.random() < 0.5;
+                if (doubleOrNothing) {
+                    score += 2;
+                    feedback.innerText = "Double toasted success!";
+                } else {
+                    score /= 2;
+                    feedback.innerText = "Toast crumbled!";
                 }
-            });
-        });
+            }
+            document.getElementById('score').innerText = 'Score: ' + Math.floor(score);
+            feedback.style.color = generateRandomColor();
+        }
 
-        toggleButton.addEventListener('click', () => {
-            toggle = !toggle;
-            hiddenChallenges.style.display = toggle ? 'block' : 'none';
-            toggleButton.textContent = toggle ? 'Hide Challenges' : 'Discover More';
-        });
+        function generateRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
     </script>
 </body>
 </html>
