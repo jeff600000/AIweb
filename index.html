@@ -3,128 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Game</title>
+    <title>Bread Adventure Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f3eac2;
+            background-color: #f4f1e9;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
-
-        #gameContainer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 2px solid #c49c48;
+        #game {
+            width: 400px;
+            height: 400px;
+            background-color: #fff3e1;
+            border: 5px solid #d1a561;
             border-radius: 10px;
-            padding: 20px;
-            background-color: #fff8e8;
+            position: relative;
+            overflow: hidden;
         }
-
-        #oven {
-            width: 200px;
-            height: 200px;
-            background-color: #d2691e;
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        #ovenInner {
-            width: 150px;
-            height: 150px;
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #dough {
+        #bread {
             width: 50px;
             height: 50px;
-            background-color: #f0c695;
-            border-radius: 25px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            background-color: #d4a374;
+            position: absolute;
+            border-radius: 10px;
+            top: 175px;
+            left: 175px;
+            transition: top 0.1s, left 0.1s;
         }
-
-        #controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        button {
-            margin: 10px 0;
-            padding: 10px 20px;
-            background-color: #f3ac4d;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        button:hover {
-            background-color: #d88d36;
-        }
-
         #score {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #c65800;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: #5d4037;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="oven">
-            <div id="ovenInner">
-                <div id="dough"></div>
-            </div>
-        </div>
-        <div id="controls">
-            <button id="bakeButton">Bake</button>
-            <button id="expandOven">Expand Oven</button>
-        </div>
-        <div id="score">
-            <div>Baked Breads: <span id="breadCount">0</span></div>
-            <div>Oven Level: <span id="ovenLevel">1</span></div>
-        </div>
+    <div id="game">
+        <div id="bread"></div>
+        <div id="score">Score: 0</div>
     </div>
-
     <script>
-        let breadCount = 0;
-        let ovenLevel = 1;
-        let dough = document.getElementById('dough');
-        let breadCountDisplay = document.getElementById('breadCount');
-        let ovenLevelDisplay = document.getElementById('ovenLevel');
+        const bread = document.getElementById('bread');
+        const scoreDisplay = document.getElementById('score');
+        const gameArea = document.getElementById('game');
+        let score = 0;
+        let vx = 1;
+        let vy = 0;
+        let moving = false;
 
-        document.getElementById('bakeButton').addEventListener('click', function() {
-            breadCount += ovenLevel;
-            breadCountDisplay.textContent = breadCount;
-            dough.style.backgroundColor = ovenLevel > 2 ? '#996633' : '#f0c695';
-        });
+        function updatePosition() {
+            const rect = bread.getBoundingClientRect();
+            const newX = rect.x + vx * 10;
+            const newY = rect.y + vy * 10;
+            
+            if (newX >= 0 && newX <= gameArea.clientWidth - rect.width && newY >= 0 && newY <= gameArea.clientHeight - rect.height) {
+                bread.style.left = `${newX}px`;
+                bread.style.top = `${newY}px`;
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+            }
+        }
 
-        document.getElementById('expandOven').addEventListener('click', function() {
-            if (breadCount >= 10 * ovenLevel) {
-                breadCount -= 10 * ovenLevel;
-                ovenLevel += 1;
-                ovenLevelDisplay.textContent = ovenLevel;
-                breadCountDisplay.textContent = breadCount;
-                
-                let oven = document.getElementById('ovenInner');
-                oven.style.width = `${150 + 20 * (ovenLevel - 1)}px`;
-                oven.style.height = `${150 + 20 * (ovenLevel - 1)}px`;
-                
-                dough.style.width = `${50 + 10 * (ovenLevel - 1)}px`;
-                dough.style.height = `${50 + 10 * (ovenLevel - 1)}px`;
+        window.addEventListener('keydown', (event) => {
+            if (moving) return;
+            moving = true;
+
+            switch (event.key) {
+                case 'ArrowUp':
+                    vx = 0; vy = -1;
+                    break;
+                case 'ArrowDown':
+                    vx = 0; vy = 1;
+                    break;
+                case 'ArrowLeft':
+                    vx = -1; vy = 0;
+                    break;
+                case 'ArrowRight':
+                    vx = 1; vy = 0;
+                    break;
             }
         });
+
+        setInterval(() => {
+            if(moving) updatePosition();
+            moving = false;
+        }, 100);
     </script>
 </body>
 </html>
