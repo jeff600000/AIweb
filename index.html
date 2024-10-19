@@ -7,119 +7,128 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f3f3f3;
+            background-color: #f8f4e3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        #game {
-            margin-top: 50px;
+        h1 {
+            color: #8b4513;
         }
-        #bread {
-            width: 100px;
-            height: 100px;
-            background-color: wheat;
+        #breadCounter {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+        #gameContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #breadButton {
+            background-color: #ffdead;
+            border: none;
+            padding: 20px;
+            cursor: pointer;
+            font-size: 1.5em;
             border-radius: 10px;
-            margin: 20px auto;
+            transition: background-color 0.3s;
         }
-        #controls {
-            margin: 20px;
+        #breadButton:hover {
+            background-color: #deb887;
         }
         #shop {
-            margin-top: 40px;
+            margin-top: 20px;
         }
         .upgrade {
-            margin: 10px;
+            background-color: #deb887;
+            margin: 5px;
             padding: 10px;
-            border: 1px solid #ccc;
-            background-color: white;
+            border-radius: 5px;
             cursor: pointer;
-            display: inline-block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .upgrade:hover {
-            background-color: #f0f0f0;
+        .upgrade.disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
-    <div id="game">
-        <div id="bread"></div>
-        <div id="controls">
-            <button onclick="bake()">Bake Bread</button>
-            <div>Score: <span id="score">0</span></div>
-            <div>Fullness: <span id="fullness">0</span></div>
-        </div>
+    <h1>Bread Adventure Game</h1>
+    <div id="breadCounter">Bread: 0</div>
+    <div id="gameContainer">
+        <button id="breadButton">Bake Bread</button>
     </div>
     <div id="shop">
-        <h2>Upgrade Shop</h2>
-        <div class="upgrade" onclick="buyUpgrade('wheat')">
-            Upgrade Wheat - Cost: <span id="wheatCost">10</span>
+        <div class="upgrade" data-cost="10" data-bonus="1">
+            <span>Better Yeast</span><span>10 Bread</span>
         </div>
-        <div class="upgrade" onclick="buyUpgrade('oven')">
-            Upgrade Oven - Cost: <span id="ovenCost">20</span>
+        <div class="upgrade" data-cost="25" data-bonus="3">
+            <span>Advanced Oven</span><span>25 Bread</span>
         </div>
-        <div class="upgrade" onclick="buyUpgrade('bakery')">
-            Upgrade Bakery - Cost: <span id="bakeryCost">50</span>
+        <div class="upgrade" data-cost="50" data-bonus="5">
+            <span>Master Baker</span><span>50 Bread</span>
         </div>
-        <div class="upgrade" onclick="buyUpgrade('transport')">
-            Upgrade Transport - Cost: <span id="transportCost">100</span>
+        <div class="upgrade" data-cost="100" data-bonus="10">
+            <span>Bakery</span><span>100 Bread</span>
+        </div>
+        <div class="upgrade" data-cost="250" data-bonus="20">
+            <span>Bread Factory</span><span>250 Bread</span>
+        </div>
+        <div class="upgrade" data-cost="500" data-bonus="50">
+            <span>Industrial Ovens</span><span>500 Bread</span>
+        </div>
+        <div class="upgrade" data-cost="1000" data-bonus="100">
+            <span>Bread Empire</span><span>1000 Bread</span>
+        </div>
+        <div class="upgrade" data-cost="2500" data-bonus="250">
+            <span>International Bread</span><span>2500 Bread</span>
+        </div>
+        <div class="upgrade" data-cost="5000" data-bonus="500">
+            <span>Global Domination</span><span>5000 Bread</span>
+        </div>
+        <div class="upgrade" data-cost="10000" data-bonus="1000">
+            <span>Galactic Breads</span><span>10000 Bread</span>
         </div>
     </div>
     <script>
-        let score = 0;
-        let breadCapacity = 10;
-        let bakePower = 1;
-        let ovenEfficiency = 1;
-        let transportUpgrade = 1;
-        
-        function bake() {
-            if(score < breadCapacity) {
-                score += bakePower;
-                updateScore();
-                document.getElementById('fullness').innerText = (score / breadCapacity * 100).toFixed(1) + '%';
-            }
-        }
-        
-        function updateScore() {
-            document.getElementById('score').innerText = score;
-        }
+        let breadCount = 0;
+        let breadPerClick = 1;
 
-        function buyUpgrade(type) {
-            switch(type) {
-                case 'wheat':
-                    if(score >= 10) {
-                        score -= 10;
-                        bakePower += 1;
-                        document.getElementById('wheatCost').innerText = 15;
-                        updateScore();
-                    }
-                    break;
-                case 'oven':
-                    if(score >= 20) {
-                        score -= 20;
-                        breadCapacity += 10;
-                        ovenEfficiency += 1;
-                        document.getElementById('ovenCost').innerText = 30;
-                        updateScore();
-                    }
-                    break;
-                case 'bakery':
-                    if(score >= 50) {
-                        score -= 50;
-                        bakePower += 2;
-                        document.getElementById('bakeryCost').innerText = 75;
-                        updateScore();
-                    }
-                    break;
-                case 'transport':
-                    if(score >= 100) {
-                        score -= 100;
-                        transportUpgrade += 1;
-                        document.getElementById('transportCost').innerText = 150;
-                        updateScore();
-                    }
-                    break;
-                default:
-                    break;
-            }
+        const breadCounter = document.getElementById('breadCounter');
+        const breadButton = document.getElementById('breadButton');
+        const upgrades = document.querySelectorAll('.upgrade');
+
+        breadButton.addEventListener('click', () => {
+            breadCount += breadPerClick;
+            updateBreadCounter();
+        });
+
+        upgrades.forEach(upgrade => {
+            upgrade.addEventListener('click', () => {
+                const cost = parseInt(upgrade.getAttribute('data-cost'));
+                const bonus = parseInt(upgrade.getAttribute('data-bonus'));
+                if (breadCount >= cost && !upgrade.classList.contains('disabled')) {
+                    breadCount -= cost;
+                    breadPerClick += bonus;
+                    upgrade.classList.add('disabled');
+                    updateBreadCounter();
+                }
+            });
+        });
+
+        function updateBreadCounter() {
+            breadCounter.textContent = `Bread: ${breadCount}`;
+            upgrades.forEach(upgrade => {
+                const cost = parseInt(upgrade.getAttribute('data-cost'));
+                if (breadCount >= cost && !upgrade.classList.contains('disabled')) {
+                    upgrade.classList.remove('disabled');
+                } else {
+                    upgrade.classList.add('disabled');
+                }
+            });
         }
     </script>
 </body>
