@@ -3,82 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Brain Game</title>
+    <title>Bread Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            background-color: #f0e68c;
             margin: 0;
-            overflow: hidden;
         }
-        #game-container {
+        #gameArea {
+            background-color: #fff3e0;
+            border: 2px solid #d2691e;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
-        #bread {
-            width: 100px;
-            height: 100px;
-            background-color: tan;
-            border-radius: 50%;
-            animation: float 3s ease-in-out infinite;
+        #breadList, #hiddenChallenges {
+            list-style-type: none;
+            padding: 0;
+            margin: 10px 0;
         }
-        @keyframes float {
-            0%, 100% {
-                transform: translatey(0px);
-            }
-            50% {
-                transform: translatey(-20px);
-            }
+        #hiddenChallenges {
+            display: none;
         }
-        #instructions, #score {
-            margin: 20px 0;
+        .bread {
+            background-color: #ffdead;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #cd853f;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="instructions">Click the bread to collect points! Watch out for mind-bending twists!</div>
-        <div id="bread"></div>
-        <div id="score"></div>
+    <div id="gameArea">
+        <h1>Bread Game</h1>
+        <ul id="breadList">
+            <li class="bread">Sourdough</li>
+            <li class="bread">Baguette</li>
+            <li class="bread">Rye Bread</li>
+            <li class="bread">Pita</li>
+        </ul>
+        <ul id="hiddenChallenges">
+            <li class="bread">Wild Challenge: Bread Maze</li>
+            <li class="bread">Secret Bread Puzzle</li>
+            <li class="bread">Mystery Bread Trivia</li>
+        </ul>
+        <button id="toggleButton">Discover More</button>
     </div>
     <script>
-        let score = 0;
-        let gameActive = true;
+        const breadItems = document.querySelectorAll('.bread');
+        const hiddenChallenges = document.getElementById('hiddenChallenges');
+        const toggleButton = document.getElementById('toggleButton');
+        let toggle = false;
 
-        const bread = document.getElementById('bread');
-        const scoreDisplay = document.getElementById('score');
-
-        function updateScore() {
-            scoreDisplay.textContent = `Score: ${score}`;
-        }
-
-        function twistMechanic() {
-            if (Math.random() > 0.8) {
-                bread.style.backgroundColor = bread.style.backgroundColor === 'tan' ? 'peru' : 'tan';
-                if (Math.random() > 0.5) {
-                    document.body.style.backgroundColor = document.body.style.backgroundColor === '#f4f4f9' ? '#fadadd' : '#f4f4f9';
+        breadItems.forEach(bread => {
+            bread.addEventListener('click', () => {
+                bread.classList.toggle('selected');
+                if (Math.random() > 0.8) {
+                    alert('Surprise! A new flavor dimension has appeared!');
                 }
-            }
-        }
-
-        bread.addEventListener('click', () => {
-            if (!gameActive) return;
-            score++;
-            updateScore();
-            twistMechanic();
+            });
         });
 
-        function gameLoop() {
-            if (!gameActive) return;
-            twistMechanic();
-            setTimeout(gameLoop, 2000);
-        }
-
-        updateScore();
-        gameLoop();
+        toggleButton.addEventListener('click', () => {
+            toggle = !toggle;
+            hiddenChallenges.style.display = toggle ? 'block' : 'none';
+            toggleButton.textContent = toggle ? 'Hide Challenges' : 'Discover More';
+        });
     </script>
 </body>
 </html>
