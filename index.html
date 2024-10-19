@@ -2,105 +2,182 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Quest</title>
+    <title>Bread-Themed Game</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; }
-        canvas { background-color: #f4e7c5; display: block; margin: 0 auto; }
-        #healthBar { position: fixed; top: 10px; left: 10px; width: 200px; height: 20px; background: lightgray; }
-        .health { height: 100%; background: limegreen; }
-        #narrative { position: fixed; bottom: 50px; left: 10px; background: white; padding: 10px; border: 2px solid #000; }
-        #score { position: fixed; top: 10px; right: 10px; background: white; padding: 5px; border: 2px solid #000; }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f0e3;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #d1a054;
+            background-color: #fff5e1;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #f4a261;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #e76f51;
+        }
+        #score {
+            font-size: 20px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div id="healthBar"><div class="health"></div></div>
-    <div id="narrative">Welcome to Bread Quest! Use arrow keys to start your journey.</div>
+    <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <div id="controls">
+        <button onclick="startGame()">Start</button>
+        <button onclick="pauseGame()">Pause</button>
+        <button onclick="resetGame()">Reset</button>
+    </div>
     <div id="score">Score: 0</div>
-    <audio id="bgm" loop>
-        <source src="cheerful-music.mp3" type="audio/mp3">
-    </audio>
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
-        const bgm = document.getElementById('bgm');
-        // Uncomment below to play music (ensure the file is available)
-        // bgm.play(); 
-
-        let player = { x: 50, y: 50, width: 40, height: 40, speed: 2 };
-        let health = 100;
+        const tileSize = 20;
+        const mapWidth = canvas.width / tileSize;
+        const mapHeight = canvas.height / tileSize;
         let score = 0;
-        let level = 1;
-        let narrative = document.getElementById('narrative');
-        let healthBar = document.querySelector('.health');
-        let scoreDisplay = document.getElementById('score');
 
-        let keys = {};
-        document.addEventListener('keydown', (e) => keys[e.key] = true);
-        document.addEventListener('keyup', (e) => keys[e.key] = false);
+        const player = {
+            x: 5,
+            y: 5,
+            color: '#e1c699'
+        };
 
-        function gameLoop() {
-            update();
-            render();
-            requestAnimationFrame(gameLoop);
+        const ingredients = [
+            { x: randomPosition(), y: randomPosition(), color: 'green' },
+            { x: randomPosition(), y: randomPosition(), color: 'red' },
+            { x: randomPosition(), y: randomPosition(), color: 'yellow' }
+        ];
+
+        const hotZones = [
+            { x: randomPosition(), y: randomPosition(), color: 'red' },
+            { x: randomPosition(), y: randomPosition(), color: 'red' }
+        ];
+
+        let gameInterval;
+        
+        function startGame() {
+            if (!gameInterval) {
+                gameInterval = setInterval(updateGame, 100);
+            }
+        }
+        
+        function pauseGame() {
+            clearInterval(gameInterval);
+            gameInterval = null;
+        }
+        
+        function resetGame() {
+            player.x = 5;
+            player.y = 5;
+            score = 0;
+            document.getElementById('score').textContent = `Score: ${score}`;
+            ingredients.forEach(ing => {
+                ing.x = randomPosition();
+                ing.y = randomPosition();
+            });
+            startGame();
         }
 
-        function update() {
-            handleInput();
+        function updateGame() {
+            clearCanvas();
+            drawPlayer();
+            drawIngredients();
+            drawHotZones();
             checkCollisions();
-            updateUI();
         }
 
-        function render() {
+        function drawPlayer() {
+            drawSquare(player.x, player.y, player.color);
+        }
+
+        function drawIngredients() {
+            ingredients.forEach(ing => drawSquare(ing.x, ing.y, ing.color));
+        }
+
+        function drawHotZones() {
+            hotZones.forEach(zone => drawCircle(zone.x, zone.y, zone.color));
+        }
+
+        function drawSquare(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+        }
+
+        function drawCircle(x, y, color) {
+            ctx.beginPath();
+            ctx.arc(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, tileSize / 2, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function clearCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "blue";
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            // Add more rendering for levels, ingredients, and hazards here
         }
 
-        function handleInput() {
-            if (keys['ArrowUp'] || keys['w'] && player.y > 0) player.y -= player.speed;
-            if (keys['ArrowDown'] || keys['s'] && player.y < canvas.height - player.height) player.y += player.speed;
-            if (keys['ArrowLeft'] || keys['a'] && player.x > 0) player.x -= player.speed;
-            if (keys['ArrowRight'] || keys['d'] && player.x < canvas.width - player.width) player.x += player.speed;
+        function randomPosition() {
+            return Math.floor(Math.random() * mapWidth);
         }
 
         function checkCollisions() {
-            // This function will handle collision detection (ingredients collection, hazards interaction)
-        }
+            ingredients.forEach((ing, index) => {
+                if (player.x === ing.x && player.y === ing.y) {
+                    score++;
+                    document.getElementById('score').textContent = `Score: ${score}`;
+                    ingredients.splice(index, 1);
+                }
+            });
 
-        function updateUI() {
-            healthBar.style.width = health + '%';
-            scoreDisplay.textContent = 'Score: ' + score;
-            
-            // Updating narrative based on the player's level
-            switch (level) {
-                case 1:
-                    narrative.textContent = "Level 1: Collect ingredients in the pantry!";
-                    break;
-                case 2:
-                    narrative.textContent = "Level 2: Arrange ingredients on the counter!";
-                    break;
-                case 3:
-                    narrative.textContent = "Level 3: Bake the perfect loaf!";
-                    break;
-                default:
-                    narrative.textContent = "Explore and become the Bread Master!";
-            }
+            hotZones.forEach(zone => {
+                if (Math.abs(player.x - zone.x) < 1 && Math.abs(player.y - zone.y) < 1) {
+                    alert('Oops! You got too close to a hot zone!');
+                    resetGame();
+                }
+            });
 
-            // Check for level progression
-            if (score >= 10 && level === 1) {
-                level = 2;
-                // Load Level 2 setups
-            } else if (score >= 20 && level === 2) {
-                level = 3;
-                // Load Level 3 setups
+            if (ingredients.length === 0) {
+                alert('You collected all the ingredients! Sandwich complete!');
+                resetGame();
             }
         }
 
-        gameLoop();
+        document.addEventListener('keydown', (e) => {
+            if (gameInterval) {
+                switch (e.key) {
+                    case 'ArrowUp':
+                        if (player.y > 0) player.y--;
+                        break;
+                    case 'ArrowDown':
+                        if (player.y < mapHeight - 1) player.y++;
+                        break;
+                    case 'ArrowLeft':
+                        if (player.x > 0) player.x--;
+                        break;
+                    case 'ArrowRight':
+                        if (player.x < mapWidth - 1) player.x++;
+                        break;
+                }
+            }
+        });
     </script>
 </body>
 </html>
