@@ -3,165 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Navigate Game</title>
+    <title>Bread Quest</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f4e7c3;
             margin: 0;
             overflow: hidden;
-            font-family: Arial, sans-serif;
-            background-color: #f2e8d5;
         }
-
         #gameCanvas {
             display: block;
-            background-color: #ffffff;
-            border: 2px solid #d4c394;
-            margin: auto;
+            margin: 0 auto;
+            background-color: #ffe5b4;
             position: relative;
         }
-
-        #score {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 24px;
-            color: #6b4d1c;
+        #startScreen, #winScreen {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
         }
-
-        #resetButton {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 5px 15px;
-            background-color: #6b4d1c;
-            color: #fff;
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #d2691e;
             border: none;
+            border-radius: 5px;
+            color: white;
             cursor: pointer;
-            font-size: 18px;
         }
-
-        #resetButton:hover {
-            background-color: #8b5e2b;
+        button:hover {
+            background: #b35715;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div id="score">Score: 0</div>
-    <button id="resetButton">Reset</button>
 
-    <script>
-        // Grabbing the canvas element and setting up the rendering context
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+<div id="startScreen">
+    <h1>Bread Quest</h1>
+    <button onclick="startGame()">Start Game</button>
+</div>
 
-        const breadSize = 30;
-        const obstacleWidth = 40;
-        const obstacleHeight = 10;
+<div id="winScreen">
+    <h1>Toasted! You Win!</h1>
+    <button onclick="resetGame()">Play Again</button>
+</div>
 
-        let bread = { x: 50, y: 300, width: breadSize, height: breadSize, color: '#d4a373' };
-        let obstacles = [];
-        let score = 0;
-        let gameOver = false;
+<canvas id="gameCanvas" width="800" height="400"></canvas>
 
-        const obstacleSpeed = 2;
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let gameRunning = false;
 
-        function createObstacle() {
-            return {
-                x: Math.random() * canvas.width,
-                y: 0,
-                speed: obstacleSpeed + Math.random() * 2
-            };
-        }
+    const player = {
+        x: 50,
+        y: 300,
+        width: 20,
+        height: 20,
+        speed: 5,
+        velocityY: 0,
+        jumpStrength: 15,
+        grounded: false
+    };
 
-        // Initializing a loop for obstacle creation
-        setInterval(() => {
-            obstacles.push(createObstacle());
-        }, 1000);
+    const butterPats = [
+        {x: 150, y: 340, collected: false},
+        {x: 350, y: 280, collected: false},
+        {x: 600, y: 340, collected: false}
+    ];
 
-        function drawBread() {
-            ctx.fillStyle = bread.color;
-            ctx.fillRect(bread.x, bread.y, bread.width, bread.height);
-        }
+    const platforms = [
+        {x: 0, y: 380, width: 800, height: 20},
+        {x: 100, y: 350, width: 100, height: 10},
+        {x: 300, y: 300, width: 100, height: 10},
+        {x: 500, y: 350, width: 150, height: 10}
+    ];
 
-        function drawObstacles() {
-            ctx.fillStyle = '#333';
-            obstacles.forEach(obstacle => {
-                ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
-            });
-        }
+    function startGame() {
+        document.getElementById('startScreen').style.display = 'none';
+        gameRunning = true;
+        main();
+    }
 
-        function updateObstacles() {
-            obstacles.forEach(obstacle => {
-                obstacle.y += obstacle.speed;
-                if (obstacle.y > canvas.height) {
-                    score += 10;
-                    document.getElementById('score').innerText = `Score: ${score}`;
-                    obstacles.shift();
-                }
-            });
-        }
+    function resetGame() {
+        player.x = 50;
+        player.y = 300;
+        player.velocityY = 0;
+        player.grounded = false;
+        butterPats.forEach(butter => butter.collected = false);
+        document.getElementById('winScreen').style.display = 'none';
+        gameRunning = true;
+        main();
+    }
 
-        function checkCollision() {
-            for (let obstacle of obstacles) {
-                if (
-                    bread.x < obstacle.x + obstacleWidth &&
-                    bread.x + bread.width > obstacle.x &&
-                    bread.y < obstacle.y + obstacleHeight &&
-                    bread.y + bread.height > obstacle.y
-                ) {
-                    gameOver = true;
-                    alert('Game Over!');
-                    break;
-                }
+    function drawPlayer() {
+        ctx.fillStyle = '#FFF5B1';
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawButterPats() {
+        ctx.fillStyle = '#FFD700';
+        butterPats.forEach(butter => {
+            if (!butter.collected) {
+                ctx.beginPath();
+                ctx.arc(butter.x + 10, butter.y + 10, 10, 0, Math.PI * 2);
+                ctx.fill();
             }
+        });
+    }
 
-            if (bread.x + bread.width >= canvas.width) {
-                alert('You win!');
-                gameOver = true;
+    function drawPlatforms() {
+        ctx.fillStyle = '#8B4513';
+        platforms.forEach(platform => {
+            ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+        });
+    }
+
+    function detectCollisions() {
+        platforms.forEach(platform => {
+            if (player.x < platform.x + platform.width && player.x + player.width > platform.x &&
+                player.y < platform.y + platform.height && player.y + player.height > platform.y) {
+                player.grounded = true;
+                player.y = platform.y - player.height;
             }
-        }
+        });
 
-        function moveBread(e) {
-            const step = 10;
-            if (!gameOver) {
-                if (e.key === 'ArrowUp' && bread.y - step >= 0) {
-                    bread.y -= step;
-                } else if (e.key === 'ArrowDown' && bread.y + step <= canvas.height - bread.height) {
-                    bread.y += step;
-                } else if (e.key === 'ArrowLeft' && bread.x - step >= 0) {
-                    bread.x -= step;
-                } else if (e.key === 'ArrowRight' && bread.x + step <= canvas.width - bread.width) {
-                    bread.x += step;
-                }
+        butterPats.forEach(butter => {
+            if (!butter.collected && player.x < butter.x + 20 && player.x + player.width > butter.x &&
+                player.y < butter.y + 20 && player.y + player.height > butter.y) {
+                butter.collected = true;
             }
+        });
+
+        if (butterPats.every(butter => butter.collected)) {
+            gameRunning = false;
+            document.getElementById('winScreen').style.display = 'block';
         }
+    }
 
-        function resetGame() {
-            bread = { x: 50, y: 300, width: breadSize, height: breadSize, color: '#d4a373' };
-            obstacles = [];
-            score = 0;
-            gameOver = false;
-            document.getElementById('score').innerText = 'Score: 0';
+    function applyGravity() {
+        if (!player.grounded) {
+            player.velocityY += 1;
+        } else {
+            player.velocityY = 0;
         }
+    }
 
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBread();
-            drawObstacles();
-            updateObstacles();
-            checkCollision();
+    function updatePlayer() {
+        player.y += player.velocityY;
 
-            if (!gameOver) {
-                requestAnimationFrame(gameLoop);
-            }
+        if (player.y + player.height >= canvas.height) {
+            player.grounded = true;
+            player.y = canvas.height - player.height;
+        } else {
+            player.grounded = false;
         }
+        
+        detectCollisions();
+    }
 
-        document.addEventListener('keydown', moveBread);
-        document.getElementById('resetButton').addEventListener('click', resetGame);
+    function main() {
+        if (!gameRunning) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        drawPlatforms();
+        drawPlayer();
+        drawButterPats();
+        
+        updatePlayer();
+        applyGravity();
+        
+        requestAnimationFrame(main);
+    }
 
-        // Start the game loop
-        gameLoop();
-    </script>
+    window.addEventListener('keydown', (e) => {
+        if (!gameRunning) return;
+
+        if (e.code === 'ArrowRight') player.x += player.speed;
+        if (e.code === 'ArrowLeft') player.x -= player.speed;
+        if (e.code === 'ArrowUp' && player.grounded) player.velocityY = -player.jumpStrength;
+    });
+
+    document.getElementById('startScreen').style.display = 'block';
+</script>
+
 </body>
 </html>
