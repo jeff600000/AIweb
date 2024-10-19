@@ -3,224 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bakery Dash</title>
+    <title>Bread Navigate Game</title>
     <style>
-        /* Basic CSS resets and setup */
         body {
             margin: 0;
             overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            background: #f4e7d3; /* Warm bakery color */
+            font-family: Arial, sans-serif;
+            background-color: #f2e8d5;
         }
 
-        canvas {
+        #gameCanvas {
             display: block;
-            background: #efefef;  /* Simple bakery kitchen background */
-            border: 1px solid #d4aa6a; /* Border to represent kitchen walls */
+            background-color: #ffffff;
+            border: 2px solid #d4c394;
+            margin: auto;
+            position: relative;
         }
 
-        .game-over {
+        #score {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+            top: 10px;
+            left: 10px;
             font-size: 24px;
-            color: #d44;
-            display: none;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
+            color: #6b4d1c;
+        }
+
+        #resetButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 15px;
+            background-color: #6b4d1c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        #resetButton:hover {
+            background-color: #8b5e2b;
         }
     </style>
 </head>
 <body>
-    <div class="game-over">
-        <p>Game Over!</p>
-        <p id="final-score">Score: 0</p>
-    </div>
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="score">Score: 0</div>
+    <button id="resetButton">Reset</button>
+
     <script>
-        // Setup canvas and context
+        // Grabbing the canvas element and setting up the rendering context
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 800;
-        canvas.height = 600;
 
-        // Game state variables
-        const player = {
-            x: 50,
-            y: 50,
-            width: 30,
-            height: 30,
-            speed: 4,
-            dx: 0,
-            dy: 0
-        };
-        const breads = [];
-        const hazards = [];
+        const breadSize = 30;
+        const obstacleWidth = 40;
+        const obstacleHeight = 10;
+
+        let bread = { x: 50, y: 300, width: breadSize, height: breadSize, color: '#d4a373' };
+        let obstacles = [];
         let score = 0;
         let gameOver = false;
 
-        // Control keys setup
-        const keys = {
-            ArrowUp: false,
-            ArrowDown: false,
-            ArrowLeft: false,
-            ArrowRight: false,
-            w: false,
-            a: false,
-            s: false,
-            d: false,
-        };
+        const obstacleSpeed = 2;
 
-        // Listen for key events
-        document.addEventListener('keydown', (e) => {
-            if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
-        });
-        document.addEventListener('keyup', (e) => {
-            if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
-        });
-
-        // Character update logic
-        function updatePlayer() {
-            player.dx = 0;
-            player.dy = 0;
-            if (keys.ArrowUp || keys.w) player.dy = -player.speed;
-            if (keys.ArrowDown || keys.s) player.dy = player.speed;
-            if (keys.ArrowLeft || keys.a) player.dx = -player.speed;
-            if (keys.ArrowRight || keys.d) player.dx = player.speed;
-
-            player.x += player.dx;
-            player.y += player.dy;
-
-            if (player.x < 0) player.x = 0;
-            if (player.y < 0) player.y = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-            if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
-        }
-
-        // Randomly generate bread and hazards
-        function addBread() {
-            const newBread = {
-                x: Math.random() * (canvas.width - 20),
-                y: Math.random() * (canvas.height - 20),
-                width: 20,
-                height: 20
-            };
-            breads.push(newBread);
-        }
-
-        function addHazard() {
-            const newHazard = {
+        function createObstacle() {
+            return {
                 x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                width: 20,
-                height: 20,
-                dx: (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 2),
-                dy: (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 2)
+                y: 0,
+                speed: obstacleSpeed + Math.random() * 2
             };
-            hazards.push(newHazard);
         }
 
-        // Update hazards movement
-        function updateHazards() {
-            hazards.forEach(hazard => {
-                hazard.x += hazard.dx;
-                hazard.y += hazard.dy;
-                if (hazard.x < 0 || hazard.x + hazard.width > canvas.width) hazard.dx *= -1;
-                if (hazard.y < 0 || hazard.y + hazard.height > canvas.height) hazard.dy *= -1;
+        // Initializing a loop for obstacle creation
+        setInterval(() => {
+            obstacles.push(createObstacle());
+        }, 1000);
+
+        function drawBread() {
+            ctx.fillStyle = bread.color;
+            ctx.fillRect(bread.x, bread.y, bread.width, bread.height);
+        }
+
+        function drawObstacles() {
+            ctx.fillStyle = '#333';
+            obstacles.forEach(obstacle => {
+                ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
             });
         }
 
-        // Draw the player, bread, and hazards
-        function drawPlayer() {
-            ctx.fillStyle = '#fcaf58'; // Baker color
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
-
-        function drawBreads() {
-            breads.forEach(bread => {
-                ctx.fillStyle = '#f5d2b8'; // Bread color
-                ctx.fillRect(bread.x, bread.y, bread.width, bread.height);
-            });
-        }
-
-        function drawHazards() {
-            ctx.fillStyle = '#392b26'; // Hazard color
-            hazards.forEach(hazard => {
-                ctx.fillRect(hazard.x, hazard.y, hazard.width, hazard.height);
-            });
-        }
-
-        // Check for collisions between the player and other objects
-        function checkCollisions() {
-            // Check bread collision
-            breads.forEach((bread, index) => {
-                if (player.x < bread.x + bread.width &&
-                    player.x + player.width > bread.x &&
-                    player.y < bread.y + bread.height &&
-                    player.y + player.height > bread.y) {
-                    breads.splice(index, 1);
+        function updateObstacles() {
+            obstacles.forEach(obstacle => {
+                obstacle.y += obstacle.speed;
+                if (obstacle.y > canvas.height) {
                     score += 10;
-                }
-            });
-
-            // Check hazard collision
-            hazards.forEach(hazard => {
-                if (player.x < hazard.x + hazard.width &&
-                    player.x + player.width > hazard.x &&
-                    player.y < hazard.y + hazard.height &&
-                    player.y + player.height > hazard.y) {
-                    gameOver = true;
+                    document.getElementById('score').innerText = `Score: ${score}`;
+                    obstacles.shift();
                 }
             });
         }
 
-        // Main game loop
-        function gameLoop() {
-            if (gameOver) {
-                document.querySelector('.game-over').style.display = 'block';
-                document.getElementById('final-score').innerText = `Score: ${score}`;
-                return;
+        function checkCollision() {
+            for (let obstacle of obstacles) {
+                if (
+                    bread.x < obstacle.x + obstacleWidth &&
+                    bread.x + bread.width > obstacle.x &&
+                    bread.y < obstacle.y + obstacleHeight &&
+                    bread.y + bread.height > obstacle.y
+                ) {
+                    gameOver = true;
+                    alert('Game Over!');
+                    break;
+                }
             }
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            updatePlayer();
-            updateHazards();
-            checkCollisions();
-
-            drawPlayer();
-            drawBreads();
-            drawHazards();
-
-            ctx.fillStyle = '#000';
-            ctx.fillText(`Score: ${score}`, 10, 20);
-
-            requestAnimationFrame(gameLoop);
+            if (bread.x + bread.width >= canvas.width) {
+                alert('You win!');
+                gameOver = true;
+            }
         }
 
-        // Start game
-        function startGame() {
-            breads.length = 0;
-            hazards.length = 0;
+        function moveBread(e) {
+            const step = 10;
+            if (!gameOver) {
+                if (e.key === 'ArrowUp' && bread.y - step >= 0) {
+                    bread.y -= step;
+                } else if (e.key === 'ArrowDown' && bread.y + step <= canvas.height - bread.height) {
+                    bread.y += step;
+                } else if (e.key === 'ArrowLeft' && bread.x - step >= 0) {
+                    bread.x -= step;
+                } else if (e.key === 'ArrowRight' && bread.x + step <= canvas.width - bread.width) {
+                    bread.x += step;
+                }
+            }
+        }
+
+        function resetGame() {
+            bread = { x: 50, y: 300, width: breadSize, height: breadSize, color: '#d4a373' };
+            obstacles = [];
             score = 0;
             gameOver = false;
-            document.querySelector('.game-over').style.display = 'none';
-
-            for (let i = 0; i < 5; i++) addBread();
-            for (let i = 0; i < 3; i++) addHazard();
-
-            gameLoop();
+            document.getElementById('score').innerText = 'Score: 0';
         }
 
-        // Initial start screen and instructions
-        window.onload = () => {
-            alert('Welcome to Bakery Dash! Use arrow keys or WASD to move. Collect breads and avoid hazards!');
-            startGame();
-        };
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBread();
+            drawObstacles();
+            updateObstacles();
+            checkCollision();
+
+            if (!gameOver) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        document.addEventListener('keydown', moveBread);
+        document.getElementById('resetButton').addEventListener('click', resetGame);
+
+        // Start the game loop
+        gameLoop();
     </script>
 </body>
 </html>
