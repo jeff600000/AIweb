@@ -1,162 +1,207 @@
-<!-- I need to put this here, dont ask why --><!DOCTYPE html>
+<!-- I need to put this here, dont ask why -->```html
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Quest: The Rise of the Dough</title>
+    <title>Bread Quest: The Ultimate Toast</title>
     <style>
         body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background-color: #f7e7d5;
+            font-family: Arial, sans-serif;
+            background-color: #fef5e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
             overflow: hidden;
         }
-
-        #gameCanvas {
-            background-color: #f4dabe;
-            display: block;
-            margin: 0 auto;
+        #gameArea {
+            position: relative;
+            width: 800px;
+            height: 400px;
+            border: 2px solid #000;
+            overflow: hidden;
+            background: linear-gradient(to right, #ffffff, #ffe6b3);
         }
-
-        #ui {
+        #bread {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: tan;
+            border-radius: 10%;
+        }
+        #knife, #rollingPin, #oil {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+        }
+        #knife {
+            background: url('🔪') no-repeat center/contain;
+        }
+        #rollingPin {
+            background: url('🍞') no-repeat center/contain;
+        }
+        #oil {
+            background: url('🛢️') no-repeat center/contain;
+        }
+        #powerUps .butter, #powerUps .jam, #powerUps .toppings {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+        }
+        .butter {
+            background: url('🧈') no-repeat center/contain;
+        }
+        .jam {
+            background: url('🍓') no-repeat center/contain;
+        }
+        .toppings {
+            background: url('🍯') no-repeat center/contain;
+        }
+        #score {
             position: absolute;
             top: 10px;
             left: 10px;
-            color: #5d3a1a;
+            font-size: 20px;
         }
-
-        .button {
-            padding: 10px;
-            background-color: #d7bfa6;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
+        #endScreen {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
-
 <body>
-    <div id="ui">
-        <h1>Bread Quest: The Rise of the Dough</h1>
-        <button class="button" onclick="startGame()">Start Game</button>
-        <p id="questLog"></p>
+    <div id="gameArea">
+        <div id="bread"></div>
+        <div id="obstacles">
+            <div id="knife" class="hidden"></div>
+            <div id="rollingPin" class="hidden"></div>
+            <div id="oil" class="hidden"></div>
+        </div>
+        <div id="powerUps">
+            <div class="butter hidden"></div>
+            <div class="jam hidden"></div>
+            <div class="toppings hidden"></div>
+        </div>
+        <div id="score">Score: 0</div>
+        <div id="endScreen" class="hidden">
+            <h1>Congratulations!</h1>
+            <p>Your Score: <span id="finalScore">0</span></p>
+            <button onclick="restartGame()">Play Again</button>
+        </div>
     </div>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let gameActive = false;
-        let questIndex = 0;
-        const quests = [
-            "Welcome to Breadtopia! Collect flour in Yeast Meadows. 🌾",
-            "Gather magic yeast in Sourdough Forest. 🌳",
-            "Find rare spices in Rye Highlands. ⛰️",
-            "Bake a powerful loaf to protect Breadtopia! 🥖"
-        ];
-
-        const player = {
-            x: 50,
-            y: 50,
-            width: 50,
-            height: 50,
-            speed: 5
-        };
-
-        const resources = [];
-
-        function startGame() {
-            gameActive = true;
-            questIndex = 0;
-            updateQuestLog();
-            populateResources();
-            requestAnimationFrame(gameLoop);
-        }
-
-        function updateQuestLog() {
-            document.getElementById('questLog').innerText = quests[questIndex];
-        }
-
-        function populateResources() {
-            for (let i = 0; i < 10; i++) {
-                resources.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    width: 30,
-                    height: 30,
-                    collected: false
-                });
-            }
-        }
+        const bread = document.getElementById('bread');
+        const gameArea = document.getElementById('gameArea');
+        const knife = document.getElementById('knife');
+        const rollingPin = document.getElementById('rollingPin');
+        const oil = document.getElementById('oil');
+        const butter = document.querySelector('.butter');
+        const jam = document.querySelector('.jam');
+        const toppings = document.querySelector('.toppings');
+        const scoreElement = document.getElementById('score');
+        const endScreen = document.getElementById('endScreen');
+        const finalScore = document.getElementById('finalScore');
+        
+        let positionX = 0;
+        let positionY = 175;
+        let score = 0;
+        let gameEnded = false;
+        let speed = 5;
 
         function gameLoop() {
-            if (!gameActive) return;
-            update();
-            render();
-            requestAnimationFrame(gameLoop);
-        }
-
-        function update() {
-            if (isArrowKeyDown('ArrowLeft')) player.x -= player.speed;
-            if (isArrowKeyDown('ArrowRight')) player.x += player.speed;
-            if (isArrowKeyDown('ArrowUp')) player.y -= player.speed;
-            if (isArrowKeyDown('ArrowDown')) player.y += player.speed;
-
-            resources.forEach(resource => {
-                if (detectCollision(player, resource) && !resource.collected) {
-                    resource.collected = true;
+            if (!gameEnded) {
+                handleCollisions();
+                positionX += speed;
+                if (positionX > 750) {
+                    endGame();
                 }
-            });
-
-            if (resources.every(resource => resource.collected)) {
-                questIndex++;
-                if (questIndex < quests.length) {
-                    updateQuestLog();
-                    resources.forEach(resource => resource.collected = false);
-                } else {
-                    gameActive = false;
-                    alert("Congratulations! You've baked the ultimate bread! 🎉");
-                }
+                bread.style.transform = `translate(${positionX}px, ${positionY}px)`;
+                requestAnimationFrame(gameLoop);
             }
         }
 
-        function render() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function handleCollisions() {
+            // Basic collision logic with obstacles and power-ups
+            // & updating score
+            let collisions = [
+                {element: knife, points: -10},
+                {element: rollingPin, points: -5},
+                {element: oil, points: -5},
+                {element: butter, points: 20},
+                {element: jam, points: 30},
+                {element: toppings, points: 50}
+            ];
 
-            ctx.fillStyle = '#ae6f43';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-
-            resources.forEach(resource => {
-                if (!resource.collected) {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(resource.x, resource.y, resource.width, resource.height);
+            collisions.forEach(obj => {
+                if (checkCollision(bread, obj.element)) {
+                    updateScore(obj.points);
                 }
             });
         }
 
-        function isArrowKeyDown(key) {
-            return keys[key];
+        function updateScore(points) {
+            score += points;
+            scoreElement.textContent = `Score: ${score}`;
         }
 
-        function detectCollision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width &&
-                rect1.x + rect1.width > rect2.x &&
-                rect1.y < rect2.y + rect2.height &&
-                rect1.y + rect1.height > rect2.y;
+        function checkCollision(bread, element) {
+            const breadRect = bread.getBoundingClientRect();
+            const elemRect = element.getBoundingClientRect();
+            return !(
+                breadRect.top > elemRect.bottom ||
+                breadRect.right < elemRect.left ||
+                breadRect.bottom < elemRect.top ||
+                breadRect.left > elemRect.right
+            );
         }
 
-        const keys = {};
-        window.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
+        function endGame() {
+            gameEnded = true;
+            endScreen.classList.remove('hidden');
+            finalScore.textContent = score;
+        }
+
+        function restartGame() {
+            gameEnded = false;
+            positionX = 0;
+            score = 0;
+            scoreElement.textContent = `Score: 0`;
+            endScreen.classList.add('hidden');
+            gameLoop();
+        }
+
+        document.addEventListener('keydown', (event) => {
+            switch(event.key) {
+                case 'ArrowLeft':
+                    positionX = Math.max(0, positionX - speed);
+                    break;
+                case 'ArrowRight':
+                    positionX = Math.min(750, positionX + speed);
+                    break;
+                case 'ArrowUp':
+                    positionY = Math.max(0, positionY - 30);
+                    break;
+                case 'ArrowDown':
+                    positionY = Math.min(350, positionY + 30);
+                    break;
+                default:
+                    break;
+            }
         });
 
-        window.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
+        gameLoop();
     </script>
 </body>
-
 </html>
+```
