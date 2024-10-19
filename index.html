@@ -3,69 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Breadventure Game</title>
+    <title>Ultimate Toast Quest</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background-color: #f8f0e3;
-            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background-color: #fff8dc;
         }
-        #gameCanvas {
-            border: 2px solid #333;
-            background-color: #fffaf0;
+        canvas {
+            display: block;
+        }
+        #game-over, #game-win {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 20px;
+            border: 2px solid #000;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas"></canvas>
+    <div id="game-over">Game Over</div>
+    <div id="game-win">You're Toast!</div>
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        // Game Variables
-        const breadWidth = 50;
-        const breadHeight = 30;
-        let breadX = canvas.width / 2 - breadWidth / 2;
-        let breadY = canvas.height - breadHeight - 10;
-        let breadSpeed = 5;
-        let score = 0;
+        let bread = {
+            x: canvas.width / 2,
+            y: canvas.height - 60,
+            width: 50,
+            height: 50,
+            speed: 5,
+            score: 0
+        };
 
-        // Game Functions
-        function drawBread() {
-            ctx.fillStyle = '#d2691e';
-            ctx.fillRect(breadX, breadY, breadWidth, breadHeight);
+        const obstacles = [];
+        const powerUps = [];
+        const enemyTypes = [];
+
+        function initGame() {
+            // Initialize game loop, obstacles, power-ups, etc.
+            requestAnimationFrame(gameLoop);
         }
 
-        function drawScore() {
-            ctx.font = '20px Arial';
-            ctx.fillStyle = '#333';
-            ctx.fillText('Score: ' + score, 10, 20);
-        }
-
-        function moveBread(event) {
-            if (event.key === 'ArrowLeft' && breadX > 0) {
-                breadX -= breadSpeed;
-            } else if (event.key === 'ArrowRight' && breadX < canvas.width - breadWidth) {
-                breadX += breadSpeed;
-            }
-        }
-
-        function update() {
+        function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBread();
-            drawScore();
-            requestAnimationFrame(update);
+            handleObstacles();
+            handlePowerUps();
+            handleEnemyTypes();
+            requestAnimationFrame(gameLoop);
         }
 
-        // Event Listener
-        document.addEventListener('keydown', moveBread);
+        function drawBread() {
+            ctx.fillStyle = 'tan';
+            ctx.fillRect(bread.x, bread.y, bread.width, bread.height);
+        }
 
-        // Start the game
-        update();
+        function handleObstacles() {
+            // Logic for rendering and managing obstacles
+        }
+
+        function handlePowerUps() {
+            // Logic for rendering and managing power-ups
+        }
+
+        function handleEnemyTypes() {
+            // Logic for rendering and managing enemy types
+        }
+
+        function checkCollisionWithObstacles() {
+            // Collision detection between bread and obstacles
+        }
+
+        function checkCollisionWithPowerUps() {
+            // Collision detection between bread and power-ups
+        }
+
+        function checkCollisionWithEnemies() {
+            // Collision detection between bread and enemies
+        }
+
+        function winCondition() {
+            return bread.score >= 100; // Modify this value as needed
+        }
+
+        function gameOver() {
+            document.getElementById('game-over').style.display = 'block';
+        }
+        
+        function gameWin() {
+            document.getElementById('game-win').style.display = 'block';
+        }
+
+        window.addEventListener('keydown', (e) => {
+            switch(e.code) {
+                case 'ArrowUp':
+                    bread.y -= bread.speed;
+                    break;
+                case 'ArrowDown':
+                    bread.y += bread.speed;
+                    break;
+                case 'ArrowLeft':
+                    bread.x -= bread.speed;
+                    break;
+                case 'ArrowRight':
+                    bread.x += bread.speed;
+                    break;
+            }
+        });
+
+        initGame();
     </script>
 </body>
 </html>
