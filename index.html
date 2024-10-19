@@ -3,108 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure Game</title>
+    <title>Bread Adventure</title>
     <style>
         body, html {
             margin: 0;
-            padding: 0;
             overflow: hidden;
+            background-color: #ffebcd;
             font-family: Arial, sans-serif;
-            background-color: #fcebb6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         #gameCanvas {
-            display: block;
-            margin: 0 auto;
-            background-image: url('kitchen_background.jpg'); /* Add your background image URL */
-            background-size: cover;
-            border: 2px solid #dab38a;
+            background-color: #fff3e0;
+            border: 5px solid #d2691e;
+        }
+        .score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ffb347;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
+    <div class="score">Score: 0</div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
 
-        // Game Variables
-        let bread = { x: 50, y: 520, width: 50, height: 50, speed: 5 };
-        let breadImage = new Image();
-        breadImage.src = 'bread_character.png'; // Add your bread character image URL
-
-        let obstacles = [];
-        let points = 0;
-        let gameRunning = true;
-        let levels = 1;
-
-        // Bread Controls
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowUp' && bread.y > 0) {
-                bread.y -= bread.speed;
-            } else if (event.key === 'ArrowDown' && bread.y < canvas.height - bread.height) {
-                bread.y += bread.speed;
-            } else if (event.key === 'ArrowLeft' && bread.x > 0) {
-                bread.x -= bread.speed;
-            } else if (event.key === 'ArrowRight' && bread.x < canvas.width - bread.width) {
-                bread.x += bread.speed;
+        const bread = {
+            x: canvas.width / 2,
+            y: canvas.height - 50,
+            width: 50,
+            height: 50,
+            dx: 0,
+            speed: 5,
+            draw() {
+                ctx.fillStyle = "#f4a460";
+                ctx.fillRect(this.x, this.y, this.width, this.height);
             }
-        });
+        };
 
-        // Initialize game
-        function init() {
-            createObstacles();
-            gameLoop();
+        const toppings = [];
+        const obstacles = [];
+        const toppingsEmoji = ['🍅', '🥬', '🧀'];
+        const obstaclesEmoji = ['🔥', '🕷️'];
+        let score = 0;
+
+        function createToppings() {
+            const topping = {
+                x: Math.random() * (canvas.width - 20),
+                y: -20,
+                size: 20,
+                emoji: toppingsEmoji[Math.floor(Math.random() * toppingsEmoji.length)],
+                speed: 2
+            };
+            toppings.push(topping);
         }
-        
-        // Create obstacles
+
         function createObstacles() {
-            for (let i = 0; i < levels * 2; i++) {
-                let x = Math.random() * (canvas.width - 50);
-                let y = Math.random() * (canvas.height - 150);
-                obstacles.push({ x: x, y: y, width: 50, height: 50 });
-            }
+            const obstacle = {
+                x: Math.random() * (canvas.width - 20),
+                y: -20,
+                size: 20,
+                emoji: obstaclesEmoji[Math.floor(Math.random() * obstaclesEmoji.length)],
+                speed: 3
+            };
+            obstacles.push(obstacle);
         }
 
-        // Game loop
-        function gameLoop() {
-            if (gameRunning) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function drawToppings() {
+            toppings.forEach((topping, index) => {
+                ctx.font = "20px Arial";
+                ctx.fillText(topping.emoji, topping.x, topping.y);
+                topping.y += topping.speed;
 
-                // Draw Bread
-                ctx.drawImage(breadImage, bread.x, bread.y, bread.width, bread.height);
-
-                // Draw Obstacles
-                obstacles.forEach(obstacle => {
-                    ctx.fillStyle = 'red'; // Replace with image and more complex drawing
-                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                });
-
-                // Check for collisions
-                checkCollisions();
-
-                // Update game
-                // Points increase logic and difficulty level up can be added here
-
-                requestAnimationFrame(gameLoop);
-            }
-        }
-
-        // Check collisions
-        function checkCollisions() {
-            obstacles.forEach(obstacle => {
-                if (bread.x < obstacle.x + obstacle.width &&
-                    bread.x + bread.width > obstacle.x &&
-                    bread.y < obstacle.y + obstacle.height &&
-                    bread.y + bread.height > obstacle.y) {
-                    gameRunning = false;
-                    alert('Game Over! Final Score: ' + points);
+                if (topping.y > canvas.height) {
+                    toppings.splice(index, 1);
+                } else if (
+                    topping.x < bread.x + bread.width &&
+                    topping.x + topping.size > bread.x &&
+                    topping.y < bread.y + bread.height &&
+                    topping.y + topping.size > bread.y
+                ) {
+                    score++;
+                    toppings.splice(index, 1);
+                    document.querySelector('.score').textContent = `Score: ${score}`;
                 }
             });
         }
 
-        // Start the Game
-        window.onload = init;
+        function drawObstacles() {
+            obstacles.forEach((obstacle, index) => {
+                ctx.font = "20px Arial";
+                ctx.fillText(obstacle.emoji, obstacle.x, obstacle.y);
+                obstacle.y += obstacle.speed;
 
+                if (obstacle.y > canvas.height) {
+                    obstacles.splice(index, 1);
+                } else if (
+                    obstacle.x < bread.x + bread.width &&
+                    obstacle.x + obstacle.size > bread.x &&
+                    obstacle.y < bread.y + bread.height &&
+                    obstacle.y + obstacle.size > bread.y
+                ) {
+                    alert("Game Over! Your score: " + score);
+                    document.location.reload();
+                }
+            });
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            bread.draw();
+            drawToppings();
+            drawObstacles();
+            bread.x += bread.dx;
+
+            if (bread.x < 0) bread.x = 0;
+            if (bread.x + bread.width > canvas.width) bread.x = canvas.width - bread.width;
+
+            requestAnimationFrame(update);
+        }
+
+        function moveLeft() {
+            bread.dx = -bread.speed;
+        }
+
+        function moveRight() {
+            bread.dx = bread.speed;
+        }
+
+        function stopMovement() {
+            bread.dx = 0;
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft") moveLeft();
+            if (e.key === "ArrowRight") moveRight();
+        });
+
+        document.addEventListener("keyup", stopMovement);
+
+        setInterval(createToppings, 1500);
+        setInterval(createObstacles, 2000);
+
+        update();
     </script>
 </body>
 </html>
