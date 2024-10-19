@@ -7,186 +7,121 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4e7c3;
+            background: #f2e2b3; /* Kitchen counter color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            overflow: hidden;
         }
-        #gameCanvas {
-            display: block;
-            margin: 0 auto;
-            background-color: #ffe5b4;
+        .game-container {
+            width: 500px;
+            height: 300px;
+            border: 2px solid #c09e6f; /* Cutting board color */
             position: relative;
+            overflow: hidden;
+            background: #fff3e2; /* Cutting board color */
         }
-        #startScreen, #winScreen {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #d2691e;
-            border: none;
+        #loafy {
+            width: 40px;
+            height: 20px;
+            position: absolute;
+            bottom: 10px;
+            left: 230px;
+            background: #deb887; /* Bread color */
             border-radius: 5px;
-            color: white;
-            cursor: pointer;
         }
-        button:hover {
-            background: #b35715;
+        .butter {
+            width: 20px;
+            height: 20px;
+            background: #ffdd57; /* Butter color */
+            position: absolute;
+            border-radius: 10px;
+        }
+        .knife {
+            width: 40px;
+            height: 10px;
+            background: #8b8b8b; /* Knife color */
+            position: absolute;
+            top: 0;
+            animation: moveKnife 2s infinite alternate;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        @keyframes moveKnife {
+            from { left: 0; }
+            to { left: 460px; }
         }
     </style>
 </head>
 <body>
+    <div class="game-container">
+        <div id="score">Score: 0</div>
+        <div id="loafy"></div>
+        <div class="butter" style="top: 100px; left: 50px;"></div>
+        <div class="butter" style="top: 180px; left: 400px;"></div>
+        <div class="knife" style="top: 60px; left: 0;"></div>
+        <div class="knife" style="top: 200px; left: 0;"></div>
+    </div>
 
-<div id="startScreen">
-    <h1>Bread Quest</h1>
-    <button onclick="startGame()">Start Game</button>
-</div>
+    <script>
+        const loafy = document.getElementById('loafy');
+        const butters = document.querySelectorAll('.butter');
+        const knives = document.querySelectorAll('.knife');
+        let score = 0;
+        const scoreDisplay = document.getElementById('score');
+        let isGameOver = false;
 
-<div id="winScreen">
-    <h1>Toasted! You Win!</h1>
-    <button onclick="resetGame()">Play Again</button>
-</div>
+        document.addEventListener('keydown', (event) => {
+            if (isGameOver) return;
 
-<canvas id="gameCanvas" width="800" height="400"></canvas>
-
-<script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    let gameRunning = false;
-
-    const player = {
-        x: 50,
-        y: 300,
-        width: 20,
-        height: 20,
-        speed: 5,
-        velocityY: 0,
-        jumpStrength: 15,
-        grounded: false
-    };
-
-    const butterPats = [
-        {x: 150, y: 340, collected: false},
-        {x: 350, y: 280, collected: false},
-        {x: 600, y: 340, collected: false}
-    ];
-
-    const platforms = [
-        {x: 0, y: 380, width: 800, height: 20},
-        {x: 100, y: 350, width: 100, height: 10},
-        {x: 300, y: 300, width: 100, height: 10},
-        {x: 500, y: 350, width: 150, height: 10}
-    ];
-
-    function startGame() {
-        document.getElementById('startScreen').style.display = 'none';
-        gameRunning = true;
-        main();
-    }
-
-    function resetGame() {
-        player.x = 50;
-        player.y = 300;
-        player.velocityY = 0;
-        player.grounded = false;
-        butterPats.forEach(butter => butter.collected = false);
-        document.getElementById('winScreen').style.display = 'none';
-        gameRunning = true;
-        main();
-    }
-
-    function drawPlayer() {
-        ctx.fillStyle = '#FFF5B1';
-        ctx.fillRect(player.x, player.y, player.width, player.height);
-    }
-
-    function drawButterPats() {
-        ctx.fillStyle = '#FFD700';
-        butterPats.forEach(butter => {
-            if (!butter.collected) {
-                ctx.beginPath();
-                ctx.arc(butter.x + 10, butter.y + 10, 10, 0, Math.PI * 2);
-                ctx.fill();
+            switch(event.key) {
+                case 'ArrowLeft':
+                    loafy.style.left = Math.max(0, loafy.offsetLeft - 20) + 'px';
+                    break;
+                case 'ArrowRight':
+                    loafy.style.left = Math.min(460, loafy.offsetLeft + 20) + 'px';
+                    break;
+                case ' ':
+                    loafy.style.bottom = '50px';
+                    setTimeout(() => loafy.style.bottom = '10px', 200);
+                    break;
             }
-        });
-    }
-
-    function drawPlatforms() {
-        ctx.fillStyle = '#8B4513';
-        platforms.forEach(platform => {
-            ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-        });
-    }
-
-    function detectCollisions() {
-        platforms.forEach(platform => {
-            if (player.x < platform.x + platform.width && player.x + player.width > platform.x &&
-                player.y < platform.y + platform.height && player.y + player.height > platform.y) {
-                player.grounded = true;
-                player.y = platform.y - player.height;
-            }
+            checkCollisions();
         });
 
-        butterPats.forEach(butter => {
-            if (!butter.collected && player.x < butter.x + 20 && player.x + player.width > butter.x &&
-                player.y < butter.y + 20 && player.y + player.height > butter.y) {
-                butter.collected = true;
-            }
-        });
+        function checkCollisions() {
+            butters.forEach((butter) => {
+                if (isColliding(loafy, butter)) {
+                    butter.style.display = 'none';
+                    score++;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                }
+            });
 
-        if (butterPats.every(butter => butter.collected)) {
-            gameRunning = false;
-            document.getElementById('winScreen').style.display = 'block';
+            knives.forEach((knife) => {
+                if (isColliding(loafy, knife)) {
+                    alert('Game Over!');
+                    isGameOver = true;
+                }
+            });
         }
-    }
 
-    function applyGravity() {
-        if (!player.grounded) {
-            player.velocityY += 1;
-        } else {
-            player.velocityY = 0;
+        function isColliding(a, b) {
+            const aRect = a.getBoundingClientRect();
+            const bRect = b.getBoundingClientRect();
+            return !(
+                aRect.top > bRect.bottom ||
+                aRect.bottom < bRect.top ||
+                aRect.left > bRect.right ||
+                aRect.right < bRect.left
+            );
         }
-    }
-
-    function updatePlayer() {
-        player.y += player.velocityY;
-
-        if (player.y + player.height >= canvas.height) {
-            player.grounded = true;
-            player.y = canvas.height - player.height;
-        } else {
-            player.grounded = false;
-        }
-        
-        detectCollisions();
-    }
-
-    function main() {
-        if (!gameRunning) return;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        drawPlatforms();
-        drawPlayer();
-        drawButterPats();
-        
-        updatePlayer();
-        applyGravity();
-        
-        requestAnimationFrame(main);
-    }
-
-    window.addEventListener('keydown', (e) => {
-        if (!gameRunning) return;
-
-        if (e.code === 'ArrowRight') player.x += player.speed;
-        if (e.code === 'ArrowLeft') player.x -= player.speed;
-        if (e.code === 'ArrowUp' && player.grounded) player.velocityY = -player.jumpStrength;
-    });
-
-    document.getElementById('startScreen').style.display = 'block';
-</script>
-
+    </script>
 </body>
 </html>
