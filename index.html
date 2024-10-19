@@ -1,70 +1,73 @@
 <!-- I need to put this here, dont ask why --><!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {
-  background-color: #f0e68c;
-}
-#game {
-  position: relative;
-  height: 400px;
-  width: 600px;
-  border:1px solid #000;
-}
-.bread {
-  position: absolute;
-  bottom: 0;
-  background-color: #d2b48c;
-  height: 50px;
-  width: 50px;
-}
-</style>
-<script>
-var bread;
-function startGame() {
-    bread = new component(30, 30, "red", 10, 120);
-    game.start();
-}
-var game = {
-    canvas : document.createElement("canvas"),
-    start : function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
-        this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateGame, 20);
-    },
-    clear : function() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-}
-function component(width, height, color, x, y) {
-    this.width = width;
-    this.height = height;
-    this.speedX = 0;
-    this.speedY = 0;    
-    this.x = x;
-    this.y = y;    
-    this.update = function() {
-        ctx = game.context;
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-    }
-    this.newPos = function() {
-        this.x += this.speedX;
-        this.y += this.speedY;        
-    }    
-}
-function updateGame() {
-    game.clear();
-    bread.newPos();    
-    bread.update();
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bread Game</title>
+    <style>
+        body {
+            background-color: #fdf6e3;
+            font-family: Arial, sans-serif;
+        }
+        #gameContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: center;
+        }
+        #startButton, #kneadButton, #bakeButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body onload="startGame()" id="game">
-<div class="bread"></div>
+<body>
+    <div id="gameContainer">
+        <button id="startButton">Start Making Bread</button>
+        <div id="gameArea" style="display:none;">
+            <button id="kneadButton">Knead Dough</button>
+            <button id="bakeButton">Bake Bread</button>
+            <h2 id="status"></h2>
+            <h2 id="progress"></h2>
+        </div>
+    </div>
+    <script>
+        let progress = 0;
+        const statusElement = document.getElementById('status');
+        const progressElement = document.getElementById('progress');
+        const kneadButton = document.getElementById('kneadButton');
+        const bakeButton = document.getElementById('bakeButton');
+        
+        document.getElementById('startButton').addEventListener('click', function() {
+            this.style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            statusElement.innerHTML = 'Knead the dough!';
+            progressElement.innerHTML = 'Progress: ' + progress + '%';
+        });
 
+        kneadButton.addEventListener('click', function() {
+            progress += Math.floor(Math.random() * 20) + 5;
+            if (progress >= 100) {
+                progress = 100;
+                statusElement.innerHTML = 'Dough is ready to bake!';
+                kneadButton.disabled = true;
+                bakeButton.disabled = false;
+            }
+            progressElement.innerHTML = 'Progress: ' + progress + '%';
+        });
+
+        bakeButton.addEventListener('click', function() {
+            statusElement.innerHTML = 'Bread is baking...';
+            bakeButton.disabled = true;
+            setTimeout(() => {
+                statusElement.innerHTML = 'Bread is done! Enjoy your delicious bread.';
+            }, 3000);
+        });
+
+        bakeButton.disabled = true;
+    </script>
 </body>
 </html>
