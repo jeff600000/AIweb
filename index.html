@@ -3,132 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure Game</title>
+    <title>Bread Adventure RPG</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f4e3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: sans-serif;
+            background-color: #f3e5ab;
+            color: #3b3a30;
+            text-align: center;
         }
-        h1 {
-            color: #8b4513;
-        }
-        #breadCounter {
-            font-size: 2em;
-            margin: 20px 0;
-        }
-        #gameContainer {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #breadButton {
-            background-color: #ffdead;
-            border: none;
+        #game-area {
+            margin: 50px auto;
             padding: 20px;
-            cursor: pointer;
-            font-size: 1.5em;
+            width: 80%;
+            max-width: 600px; 
+            background: #ece0c8;
             border-radius: 10px;
-            transition: background-color 0.3s;
         }
-        #breadButton:hover {
-            background-color: #deb887;
-        }
-        #shop {
-            margin-top: 20px;
+        .button {
+            padding: 10px 20px;
+            background: #6d4c41;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
         }
         .upgrade {
-            background-color: #deb887;
-            margin: 5px;
+            margin: 20px 0;
             padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: #d7ccc8;
+            border-radius: 8px;
         }
-        .upgrade.disabled {
-            background-color: #d3d3d3;
-            cursor: not-allowed;
+        #bread {
+            font-size: 2em;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Bread Adventure Game</h1>
-    <div id="breadCounter">Bread: 0</div>
-    <div id="gameContainer">
-        <button id="breadButton">Bake Bread</button>
-    </div>
-    <div id="shop">
-        <div class="upgrade" data-cost="10" data-bonus="1">
-            <span>Better Yeast</span><span>10 Bread</span>
+    <div id="game-area">
+        <h1>Bread Adventure RPG</h1>
+        <div>
+            <div id="bread">Bread: 0</div>
+            <button class="button" onclick="bakeBread()">Bake Bread</button>
         </div>
-        <div class="upgrade" data-cost="25" data-bonus="3">
-            <span>Advanced Oven</span><span>25 Bread</span>
+        <div id="shop" class="upgrade">
+            <h3>Upgrades</h3>
+            <button class="button" onclick="buyUpgrade(0)">Buy Toaster (10 Bread)</button>
+            <button class="button" onclick="buyUpgrade(1)">Hire Baker (50 Bread)</button>
+            <button class="button" onclick="buyUpgrade(2)">Upgrade Oven (100 Bread)</button>
+            <button class="button" onclick="buyUpgrade(3)">Buy Bread Slicer (200 Bread)</button>
+            <button class="button" onclick="buyUpgrade(4)">Bakery Extension (500 Bread)</button>
+            <button class="button" onclick="buyUpgrade(5)">Bread Mixer (1000 Bread)</button>
+            <button class="button" onclick="buyUpgrade(6)">Ancient Recipe Book (2000 Bread)</button>
+            <button class="button" onclick="buyUpgrade(7)">Hire Master Baker (5000 Bread)</button>
+            <button class="button" onclick="buyUpgrade(8)">Golden Oven (10000 Bread)</button>
+            <button class="button" onclick="buyUpgrade(9)">Master Baking Academy (20000 Bread)</button>
         </div>
-        <div class="upgrade" data-cost="50" data-bonus="5">
-            <span>Master Baker</span><span>50 Bread</span>
-        </div>
-        <div class="upgrade" data-cost="100" data-bonus="10">
-            <span>Bakery</span><span>100 Bread</span>
-        </div>
-        <div class="upgrade" data-cost="250" data-bonus="20">
-            <span>Bread Factory</span><span>250 Bread</span>
-        </div>
-        <div class="upgrade" data-cost="500" data-bonus="50">
-            <span>Industrial Ovens</span><span>500 Bread</span>
-        </div>
-        <div class="upgrade" data-cost="1000" data-bonus="100">
-            <span>Bread Empire</span><span>1000 Bread</span>
-        </div>
-        <div class="upgrade" data-cost="2500" data-bonus="250">
-            <span>International Bread</span><span>2500 Bread</span>
-        </div>
-        <div class="upgrade" data-cost="5000" data-bonus="500">
-            <span>Global Domination</span><span>5000 Bread</span>
-        </div>
-        <div class="upgrade" data-cost="10000" data-bonus="1000">
-            <span>Galactic Breads</span><span>10000 Bread</span>
+        <div id="stats">
+            <h3>Stats</h3>
+            <div>Level: <span id="level">1</span></div>
+            <div>Bread Per Click: <span id="breadPerClick">1</span></div>
         </div>
     </div>
     <script>
-        let breadCount = 0;
+        let bread = 0;
         let breadPerClick = 1;
+        let level = 1;
+        const upgrades = [
+            { name: 'Toaster', cost: 10, multiplier: 1.5 },
+            { name: 'Hire Baker', cost: 50, multiplier: 1.8 },
+            { name: 'Upgrade Oven', cost: 100, multiplier: 2 },
+            { name: 'Buy Bread Slicer', cost: 200, multiplier: 2.5 },
+            { name: 'Bakery Extension', cost: 500, multiplier: 3 },
+            { name: 'Bread Mixer', cost: 1000, multiplier: 4 },
+            { name: 'Ancient Recipe Book', cost: 2000, multiplier: 5 },
+            { name: 'Hire Master Baker', cost: 5000, multiplier: 7 },
+            { name: 'Golden Oven', cost: 10000, multiplier: 10 },
+            { name: 'Master Baking Academy', cost: 20000, multiplier: 15 }
+        ];
+        
+        function bakeBread() {
+            bread += breadPerClick;
+            updateDisplay();
+        }
 
-        const breadCounter = document.getElementById('breadCounter');
-        const breadButton = document.getElementById('breadButton');
-        const upgrades = document.querySelectorAll('.upgrade');
+        function buyUpgrade(index) {
+            const upgrade = upgrades[index];
+            if (bread >= upgrade.cost) {
+                bread -= upgrade.cost;
+                breadPerClick *= upgrade.multiplier;
+                upgrade.cost = Math.round(upgrade.cost * 1.5);
+                checkLevelUp();
+                updateDisplay();
+            }
+        }
 
-        breadButton.addEventListener('click', () => {
-            breadCount += breadPerClick;
-            updateBreadCounter();
-        });
+        function checkLevelUp() {
+            if (breadPerClick >= 10 * level) {
+                level += 1;
+            }
+        }
 
-        upgrades.forEach(upgrade => {
-            upgrade.addEventListener('click', () => {
-                const cost = parseInt(upgrade.getAttribute('data-cost'));
-                const bonus = parseInt(upgrade.getAttribute('data-bonus'));
-                if (breadCount >= cost && !upgrade.classList.contains('disabled')) {
-                    breadCount -= cost;
-                    breadPerClick += bonus;
-                    upgrade.classList.add('disabled');
-                    updateBreadCounter();
-                }
-            });
-        });
-
-        function updateBreadCounter() {
-            breadCounter.textContent = `Bread: ${breadCount}`;
-            upgrades.forEach(upgrade => {
-                const cost = parseInt(upgrade.getAttribute('data-cost'));
-                if (breadCount >= cost && !upgrade.classList.contains('disabled')) {
-                    upgrade.classList.remove('disabled');
-                } else {
-                    upgrade.classList.add('disabled');
-                }
-            });
+        function updateDisplay() {
+            document.getElementById('bread').textContent = `Bread: ${bread}`;
+            document.getElementById('breadPerClick').textContent = breadPerClick;
+            document.getElementById('level').textContent = level;
         }
     </script>
 </body>
