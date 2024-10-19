@@ -6,122 +6,85 @@
     <title>Bread Game</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f7f0e0;
             font-family: Arial, sans-serif;
+            background-color: #f8f4e6;
+            margin: 0;
+            padding: 20px;
         }
-        #gameArea {
-            margin-top: 20px;
-            background-color: #fff9e3;
-            border: 2px solid #b38a58;
-            width: 300px;
-            height: 300px;
+        #gameContainer {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        #bread {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            background-color: #c68642;
+            border-radius: 50%;
             position: relative;
+            display: inline-block;
         }
-        .bread {
+        #flour, #water, #yeast {
             width: 50px;
-            height: 30px;
-            background-color: #d4aa70;
-            position: absolute;
-            border-radius: 0 0 10px 10px;
+            height: 50px;
+            margin: 5px;
+            display: inline-block;
         }
-        #scoreBoard {
-            margin-top: 20px;
-            font-size: 18px;
+        #flour {
+            background-color: #ffffff;
         }
-        #instructionArea {
-            margin-top: 20px;
-            font-size: 14px;
+        #water {
+            background-color: #00bfff;
         }
-        .button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #d4aa70;
-            border: none;
-            color: white;
-            border-radius: 5px;
-        }
-        .button:hover {
-            background-color: #b38a58;
+        #yeast {
+            background-color: #a52a2a;
         }
     </style>
 </head>
 <body>
-    <div id="gameArea"></div>
-    <div id="scoreBoard">Score: 0</div>
-    <button class="button" onclick="startGame()">Start Game</button>
-    <div id="instructionArea">Use arrow keys to catch bread slices!</div>
-
+    <div id="gameContainer">
+        <div id="bread"></div>
+        <div>
+            <div id="flour"></div>
+            <div id="water"></div>
+            <div id="yeast"></div>
+        </div>
+        <button onclick="startGame()">Start Baking</button>
+    </div>
     <script>
-        const gameArea = document.getElementById('gameArea');
-        const scoreBoard = document.getElementById('scoreBoard');
-        const instructionArea = document.getElementById('instructionArea');
-
-        let score = 0;
-        let gameInterval;
-        let breadInterval;
-
-        document.addEventListener('keydown', function(event) {
-            const character = document.querySelector('.character');
-            let left = parseInt(character.style.left.replace('px', ''));
-
-            switch(event.key) {
-                case 'ArrowLeft':
-                    if (left > 0) {
-                        character.style.left = (left - 10) + 'px';
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (left < 250) {
-                        character.style.left = (left + 10) + 'px';
-                    }
-                    break;
-            }
-        });
+        let flourStock = 5;
+        let waterStock = 5;
+        let yeastStock = 5;
+        let breadAmount = 0;
+        let flourIncrement = 1;
+        let waterIncrement = 1;
+        let yeastIncrement = 1;
 
         function startGame() {
-            resetGame();
-
-            gameInterval = setInterval(moveBread, 50);
-            breadInterval = setInterval(spawnBread, 1000);
+            const interval = setInterval(() => {
+                updateResources();
+                checkBreadStatus();
+            }, 1000);
         }
 
-        function resetGame() {
-            gameArea.innerHTML = '<div class="character" style="left: 125px; bottom: 0;">&nbsp;</div>';
-            score = 0;
-            scoreBoard.textContent = 'Score: ' + score;
-            clearInterval(gameInterval);
-            clearInterval(breadInterval);
+        function updateResources() {
+            document.getElementById('flour').textContent = `Flour: ${flourStock}`;
+            document.getElementById('water').textContent = `Water: ${waterStock}`;
+            document.getElementById('yeast').textContent = `Yeast: ${yeastStock}`;
+            document.getElementById('bread').textContent = `Bread: ${breadAmount}`;
         }
 
-        function spawnBread() {
-            const bread = document.createElement('div');
-            bread.className = 'bread';
-            bread.style.left = Math.floor(Math.random() * 250) + 'px';
-            bread.style.top = '0px';
-            gameArea.appendChild(bread);
-        }
-
-        function moveBread() {
-            const breads = document.querySelectorAll('.bread');
-            const character = document.querySelector('.character');
-            const charLeft = parseInt(character.style.left.replace('px', ''));
-
-            breads.forEach(bread => {
-                let top = parseInt(bread.style.top.replace('px', ''));
-                if (top < 270) {
-                    bread.style.top = (top + 5) + 'px';
-                } else {
-                    if (parseInt(bread.style.left.replace('px', '')) >= charLeft && 
-                        parseInt(bread.style.left.replace('px', '')) <= charLeft + 50) {
-                        score += 10;
-                        scoreBoard.textContent = 'Score: ' + score;
-                    }
-                    bread.remove();
-                }
-            });
+        function checkBreadStatus() {
+            if (flourStock >= 2 && waterStock >= 2 && yeastStock >= 1) {
+                breadAmount++;
+                flourStock -= 2;
+                waterStock -= 2;
+                yeastStock--;
+            } else {
+                clearInterval(interval);
+                alert('Not enough ingredients to bake more bread!');
+            }
         }
     </script>
 </body>
