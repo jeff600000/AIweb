@@ -3,86 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Game</title>
+    <title>Bread Adventure Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
+            background-color: #f3e5ab;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            margin: 0;
         }
-        #game-area {
-            width: 400px;
-            height: 600px;
-            border: 2px solid #333;
-            background-color: #fff;
-            position: relative;
-            overflow: hidden;
+        .game-container {
+            width: 600px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff6e5;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .bread {
-            width: 50px;
-            height: 50px;
+        .game-title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #d2691e;
+        }
+        .game-story {
+            margin-bottom: 20px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .action-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 18px;
             background-color: #d2691e;
-            position: absolute;
+            color: #fff;
+            border: none;
             border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .action-button:hover {
+            background-color: #b85317;
         }
     </style>
 </head>
 <body>
-    <div id="game-area"></div>
-    
+    <div class="game-container">
+        <div class="game-title">Bread Adventure Game</div>
+        <div class="game-story" id="game-story">
+        </div>
+        <button class="action-button" id="action-button"></button>
+    </div>
     <script>
-        const gameArea = document.getElementById('game-area');
-        
-        class Bread {
-            constructor() {
-                this.element = document.createElement('div');
-                this.element.classList.add('bread');
-                this.resetPosition();
-                gameArea.appendChild(this.element);
+        const storyElement = document.getElementById('game-story');
+        const buttonElement = document.getElementById('action-button');
+
+        let gameState = {
+            storyIndex: 0,
+            inventory: [],
+        };
+
+        const story = [
+            {
+                text: "You wake up in a world made entirely of bread. Everything looks delicious!",
+                button: "Explore the world",
+                action: () => nextStory()
+            },
+            {
+                text: "You find yourself in a village of Pretzel People who need your help.",
+                button: "Help the villagers",
+                action: () => {
+                    gameState.inventory.push("Pretzel Sword");
+                    nextStory();
+                }
+            },
+            {
+                text: "Armed with a Pretzel Sword, you're ready to fight against the invading Pumpernickel Pirates.",
+                button: "Fight the Pirates",
+                action: () => nextStory()
+            },
+            {
+                text: "Congratulations! You defeat the Pumpernickel Pirates and have saved the village.",
+                button: "Restart",
+                action: () => {
+                    gameState.storyIndex = -1;
+                    gameState.inventory = [];
+                    nextStory();
+                }
             }
-            
-            resetPosition() {
-                this.x = Math.random() * (gameArea.offsetWidth - 50);
-                this.y = Math.random() * (gameArea.offsetHeight - 50);
-                this.element.style.left = `${this.x}px`;
-                this.element.style.top = `${this.y}px`;
-            }
+        ];
+
+        function nextStory() {
+            gameState.storyIndex++;
+            const currentStory = story[gameState.storyIndex];
+            storyElement.innerHTML = currentStory.text;
+            buttonElement.innerText = currentStory.button;
+            buttonElement.onclick = currentStory.action;
         }
-        
-        let breads = [];
-        
-        const createBread = () => {
-            const bread = new Bread();
-            breads.push(bread);
-            
-            if (breads.length < 20) {
-                setTimeout(createBread, 2000);
-            }
-        };
-        
-        createBread();
-        
-        const updateBreads = () => {
-            breads.forEach(bread => {
-                bread.x += Math.random() * 10 - 5;
-                bread.y += Math.random() * 10 - 5;
-                
-                if (bread.x < 0 || bread.x > gameArea.offsetWidth - 50) bread.x = Math.random() * (gameArea.offsetWidth - 50);
-                if (bread.y < 0 || bread.y > gameArea.offsetHeight - 50) bread.y = Math.random() * (gameArea.offsetHeight - 50);
-                
-                bread.element.style.left = `${bread.x}px`;
-                bread.element.style.top = `${bread.y}px`;
-            });
-        };
-        
-        setInterval(updateBreads, 50);
-        
+
+        nextStory();
     </script>
 </body>
 </html>
