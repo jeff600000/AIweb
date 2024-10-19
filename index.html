@@ -3,124 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Quest</title>
+    <title>Bread Rush</title>
     <style>
-        body, html {
+        body {
             margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
         }
         #gameCanvas {
+            background-color: #f8f0e3;
             display: block;
-            background-color: #87CEEB; /* Initial sky-blue color for Level 1 */
+            margin: 20px auto;
+            border: 2px solid #bb6464;
         }
-        #startScreen, #creditScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            font-size: 20px;
-            z-index: 2;
+        .inventory, .scoreboard {
+            text-align: center;
+            margin-bottom: 10px;
         }
-        .hidden {
-            display: none;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 20px;
-            cursor: pointer;
+        #timer {
+            font-size: 24px;
+            color: #bb6464;
         }
     </style>
 </head>
 <body>
-    <div id="startScreen">
-        <h1>Bread Quest</h1>
-        <p>Collect ingredients and become the ultimate baker!</p>
-        <button onclick="startGame()">Start Game</button>
+    <div class="inventory">
+        <h3>Inventory: <span id="inventory">Flour: 0, Water: 0, Yeast: 0</span></h3>
     </div>
-    <canvas id="gameCanvas"></canvas>
-    <div id="creditScreen" class="hidden">
-        <h1>Congratulations!</h1>
-        <p>You have completed Bread Quest.</p>
-        <button onclick="restartGame()">Restart</button>
+    <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <div class="scoreboard">
+        <h3>Score: <span id="score">0</span></h3>
+        <h3 id="timer">Time: 03:00</h3>
     </div>
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        let currentLevel = 0;
-        const levelDesigns = [
-            { name: 'Wheat Fields', bgColor: '#87CEEB', obstacles: '🌾', enemies: '🐦' },
-            { name: 'Yeast Caves', bgColor: '#696969', obstacles: '🕳️', enemies: '🦇' },
-            { name: 'Salt Mines', bgColor: '#EEE8AA', obstacles: '🪨', enemies: '🚃' },
-            { name: 'Dairy Farms', bgColor: '#98FB98', obstacles: '🌾', enemies: '🐐' },
-            { name: 'Enchanted Oven', bgColor: '#FFA07A', obstacles: '🔥', enemies: '🚪' },
-        ];
-        let score = 0;
-        let gameScreenVisible = false;
 
-        function startGame() {
-            document.getElementById('startScreen').classList.add('hidden');
-            updateCanvasSize();
-            currentLevel = 1;
-            score = 0;
-            gameScreenVisible = true;
-            gameLoop();
+        // Game variables
+        const TIMER_INITIAL = 180;
+        let timer = TIMER_INITIAL;
+        let bakeryScore = 0;
+        const inventory = { flour: 0, water: 0, yeast: 0 };
+
+        // Player object
+        const player = {
+            x: 100,
+            y: 100,
+            width: 20,
+            height: 20,
+            speed: 5
+        };
+
+        // Ingredient positions
+        const ingredients = {
+            flour: { x: 50, y: 50 },
+            water: { x: 400, y: 50 },
+            yeast: { x: 200, y: 250 },
+            oven: { x: 350, y: 250 }
+        };
+
+        // Handle player movement
+        const keys = {};
+        window.addEventListener('keydown', (e) => keys[e.key] = true);
+        window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+        function updatePlayerPosition() {
+            if (keys['ArrowUp'] && player.y > 0) player.y -= player.speed;
+            if (keys['ArrowDown'] && player.y < canvas.height - player.height) player.y += player.speed;
+            if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+            if (keys['ArrowRight'] && player.x < canvas.width - player.width) player.x += player.speed;
         }
 
-        function restartGame() {
-            document.getElementById('creditScreen').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
-        }
-
-        function updateCanvasSize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        function gameLoop() {
-            if (!gameScreenVisible) return;
-            updateGame();
-            renderGame();
-            requestAnimationFrame(gameLoop);
-        }
-
-        function updateGame() {
-            // Here we would handle game logic such as movement, physics, and level transitions
-            // For simplicity, we will move through levels based on score just as a placeholder demo
-            if (score >= 5) {
-                currentLevel += 1;
-                score = 0;
-                if (currentLevel > levelDesigns.length) {
-                    gameScreenVisible = false;
-                    document.getElementById('creditScreen').classList.remove('hidden');
+        // Check collision with ingredients or oven
+        function checkCollisions() {
+            for (let [name, position] of Object.entries(ingredients)) {
+                if (player.x < position.x + player.width &&
+                    player.x + player.width > position.x &&
+                    player.y < position.y + player.height &&
+                    player.y + player.height > position.y) {
+                    handleIngredientCollection(name);
                 }
             }
         }
 
-        function renderGame() {
-            const level = levelDesigns[currentLevel - 1];
-            ctx.fillStyle = level.bgColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Level: ${level.name}`, 20, 30);
-            ctx.fillText(`Score: ${score}`, 20, 60);
-
-            ctx.font = '50px Arial';
-            ctx.fillText(level.obstacles, canvas.width / 2, canvas.height / 2);
-            ctx.fillText(level.enemies, canvas.width / 2 + 60, canvas.height / 2);
+        // Handle collection of ingredients
+        function handleIngredientCollection(name) {
+            if (name === 'oven' && inventory.flour > 0 && inventory.water > 0 && inventory.yeast > 0) {
+                bakeBread();
+            } else if (name !== 'oven') {
+                inventory[name]++;
+                document.getElementById('inventory').innerText = `Flour: ${inventory.flour}, Water: ${inventory.water}, Yeast: ${inventory.yeast}`;
+            }
         }
 
-        window.addEventListener('resize', updateCanvasSize);
+        // Handle baking process
+        function bakeBread() {
+            bakeryScore += Math.floor((inventory.flour + inventory.water + inventory.yeast) * 10);  // Example scoring
+            inventory.flour = inventory.water = inventory.yeast = 0;
+            document.getElementById('score').innerText = bakeryScore.toString();
+            document.getElementById('inventory').innerText = `Flour: 0, Water: 0, Yeast: 0`;
+            // Play baking sound effect (not implemented, can be added via Audio API)
+        }
+
+        // Game loop
+        function gameLoop() {
+            updatePlayerPosition();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawEnvironment();
+            drawPlayer();
+
+            checkCollisions();
+            updateTimer();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Draw kitchen environment
+        function drawEnvironment() {
+            // Draw flour
+            ctx.fillStyle = '#d3d3d3';
+            ctx.fillRect(ingredients.flour.x, ingredients.flour.y, 30, 30);
+            ctx.fillText('Flour', ingredients.flour.x, ingredients.flour.y - 5);
+            
+            // Draw water
+            ctx.fillStyle = '#add8e6';
+            ctx.fillRect(ingredients.water.x, ingredients.water.y, 30, 30);
+            ctx.fillText('Water', ingredients.water.x, ingredients.water.y - 5);
+            
+            // Draw yeast
+            ctx.fillStyle = '#ffdbac';
+            ctx.fillRect(ingredients.yeast.x, ingredients.yeast.y, 30, 30);
+            ctx.fillText('Yeast', ingredients.yeast.x, ingredients.yeast.y - 5);
+            
+            // Draw oven
+            ctx.fillStyle = '#8b4513';
+            ctx.fillRect(ingredients.oven.x, ingredients.oven.y, 30, 30);
+            ctx.fillText('Oven', ingredients.oven.x, ingredients.oven.y - 5);
+        }
+
+        // Draw player (baker character)
+        function drawPlayer() {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        // Update and display the timer
+        function updateTimer() {
+            if (timer > 0) {
+                timer -= 0.016; // Rough approximation of FPS
+                const minutes = Math.floor(timer / 60);
+                const seconds = Math.floor(timer % 60);
+                document.getElementById('timer').innerText = `Time: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                endGame();
+            }
+        }
+
+        // End game and display score
+        function endGame() {
+            alert(`Time's up! Your final score is: ${bakeryScore}`);
+            document.location.reload();
+        }
+
+        // Start the game loop
+        gameLoop();
     </script>
 </body>
 </html>
