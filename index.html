@@ -1,187 +1,200 @@
-<!-- I need to put this here, dont ask why --><!DOCTYPE html>
+<!-- I need to put this here, dont ask why -->```html
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BreadQuest</title>
+    <title>Bread Platformer Game</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #f8f8f8;
-            font-family: Arial, sans-serif;
+            background-color: #ffe5b4;
         }
-        #gameCanvas {
+        canvas {
             display: block;
-            background-color: #dedede;
+            margin: 0 auto;
+            background-color: #fff3e0;
+            border: 2px solid #d2691e;
         }
         #ui {
             position: absolute;
             top: 10px;
-            right: 10px;
-            color: #333;
-        }
-        #progressBar {
-            height: 20px;
-            width: 200px;
-            background-color: #ddd;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid #aaa;
-            margin-bottom: 10px;
-        }
-        #progress {
-            height: 100%;
-            width: 0;
-            background-color: #76c7c0;
+            width: 100%;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            color: #543005;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
     <div id="ui">
-        <div id="progressBar"><div id="progress"></div></div>
-        <div id="score">Score: 0</div>
+        Score: <span id="score">0</span> | Lives: <span id="lives">3</span> | Level: <span id="level">1</span>
     </div>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        const bread = { x: 50, y: 350, width: 20, height: 20, dx: 0, dy: 0, jump: false };
-        const gravity = 0.5;
-        const platforms = [
-            { x: 0, y: 380, width: 800, height: 20 },
-            { x: 100, y: 320, width: 100, height: 10 },
-            { x: 300, y: 250, width: 80, height: 10 },
-            { x: 450, y: 200, width: 100, height: 10 }
-        ];
-        const ingredients = [
-            { x: 130, y: 290, collected: false },
-            { x: 340, y: 220, collected: false },
-            { x: 480, y: 170, collected: false }
-        ];
-        const toaster = { x: 750, y: 350, width: 30, height: 30 };
+        let gameRunning = true;
         let score = 0;
-        let collectedIngredients = 0;
-        
-        function drawBread() {
-            ctx.fillStyle = '#DAA520';
-            ctx.fillRect(bread.x, bread.y, bread.width, bread.height);
-        }
+        let lives = 3;
+        let currentLevel = 1;
 
-        function drawPlatforms() {
-            ctx.fillStyle = '#A9A9A9';
-            platforms.forEach(platform => ctx.fillRect(platform.x, platform.y, platform.width, platform.height));
-        }
+        const bread = {
+            x: 50,
+            y: 300,
+            width: 20,
+            height: 20,
+            dx: 0,
+            dy: 0,
+            speed: 3,
+            jumpPower: 7,
+            grounded: false
+        };
 
-        function drawIngredients() {
-            ctx.fillStyle = '#32CD32';
-            ingredients.forEach(ingredient => {
-                if (!ingredient.collected) {
-                    ctx.beginPath();
-                    ctx.arc(ingredient.x, ingredient.y, 10, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-        }
+        const gravity = 0.3;
+        const platforms = [
+            { x: 0, y: 380, width: 800, height: 20 }, // ground
+            { x: 100, y: 300, width: 100, height: 10 }, 
+            { x: 300, y: 250, width: 120, height: 10 },
+            // Additional platforms for more challenging levels
+        ];
+        const butterCoins = [
+            { x: 130, y: 270, width: 10, height: 10, collected: false },
+            { x: 340, y: 220, width: 10, height: 10, collected: false },
+            // Additional coins for more challenging levels
+        ];
+        const enemies = [
+            { x: 400, y: 360, width: 20, height: 20, dx: 1 },
+            // Additional enemies for more challenging levels
+        ];
 
-        function drawToaster() {
-            ctx.fillStyle = '#FF4500';
-            ctx.fillRect(toaster.x, toaster.y, toaster.width, toaster.height);
-        }
+        let keys = {};
 
-        function checkCollisions() {
-            platforms.forEach(platform => {
+        document.addEventListener('keydown', (e) => keys[e.key] = true);
+        document.addEventListener('keyup', (e) => keys[e.key] = false);
+
+        function update() {
+            if (!gameRunning) return;
+
+            // Movement
+            bread.dx = 0;
+            if (keys['ArrowRight']) bread.dx += bread.speed;
+            if (keys['ArrowLeft']) bread.dx -= bread.speed;
+            if (keys[' '] && bread.grounded) {
+                bread.dy = -bread.jumpPower;
+                bread.grounded = false;
+            }
+
+            bread.x += bread.dx;
+            bread.y += bread.dy;
+
+            // Gravity
+            bread.dy += gravity;
+
+            // Collision detection
+            bread.grounded = false;
+            for (const platform of platforms) {
                 if (bread.x < platform.x + platform.width &&
                     bread.x + bread.width > platform.x &&
                     bread.y < platform.y + platform.height &&
                     bread.y + bread.height > platform.y) {
+                    bread.grounded = true;
                     bread.dy = 0;
                     bread.y = platform.y - bread.height;
-                    bread.jump = false;
                 }
-            });
+            }
 
-            ingredients.forEach(ingredient => {
-                if (!ingredient.collected && bread.x < ingredient.x + 10 &&
-                    bread.x + bread.width > ingredient.x &&
-                    bread.y < ingredient.y + 10 &&
-                    bread.y + bread.height > ingredient.y) {
-                    ingredient.collected = true;
+            // Collect coins
+            for (const coin of butterCoins) {
+                if (!coin.collected &&
+                    bread.x < coin.x + coin.width &&
+                    bread.x + bread.width > coin.x &&
+                    bread.y < coin.y + coin.height &&
+                    bread.y + bread.height > coin.y) {
+                    coin.collected = true;
                     score += 10;
-                    collectedIngredients += 1;
-                    document.getElementById('score').innerText = `Score: ${score}`;
-                    document.getElementById('progress').style.width = `${(collectedIngredients / ingredients.length) * 100}%`;
+                    document.getElementById('score').innerText = score;
                 }
-            });
+            }
 
-            if (bread.x < toaster.x + toaster.width &&
-                bread.x + bread.width > toaster.x &&
-                bread.y < toaster.y + toaster.height &&
-                bread.y + bread.height > toaster.y && collectedIngredients === ingredients.length) {
-                alert('Level Complete!');
-                resetGame();
+            // Enemy interaction
+            for (const enemy of enemies) {
+                enemy.x += enemy.dx;
+                if (enemy.x < 0 || enemy.x + enemy.width > canvas.width) {
+                    enemy.dx *= -1;
+                }
+                if (bread.x < enemy.x + enemy.width &&
+                    bread.x + bread.width > enemy.x &&
+                    bread.y < enemy.y + enemy.height &&
+                    bread.y + bread.height > enemy.y) {
+                    lives--;
+                    document.getElementById('lives').innerText = lives;
+                    if (lives == 0) {
+                        gameRunning = false;
+                        alert('Game Over!');
+                    }
+                    resetPlayer();
+                }
+            }
+
+            // Next level or win condition
+            if (score >= 20) {
+                currentLevel++;
+                document.getElementById('level').innerText = currentLevel;
+                score = 0;
+                document.getElementById('score').innerText = score;
+                if (currentLevel > 3) {
+                    gameRunning = false;
+                    alert('Congratulations! You won!');
+                }
             }
         }
 
-        function update() {
-            bread.dy += gravity;
-            bread.y += bread.dy;
-            
-            if (bread.x + bread.dx > 0 && bread.x + bread.dx < canvas.width - bread.width) {
-                bread.x += bread.dx;
-            }
-
-            checkCollisions();
-        }
-
-        function resetGame() {
+        function resetPlayer() {
             bread.x = 50;
-            bread.y = 350;
-            bread.dx = 0;
-            bread.dy = 0;
-            bread.jump = false;
-            score = 0;
-            collectedIngredients = 0;
-            ingredients.forEach(ingredient => ingredient.collected = false);
-            document.getElementById('score').innerText = 'Score: 0';
-            document.getElementById('progress').style.width = '0%';
+            bread.y = 300;
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPlatforms();
-            drawBread();
-            drawIngredients();
-            drawToaster();
+            ctx.fillStyle = '#67442e';
+
+            // Draw platforms
+            platforms.forEach(platform => {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+            });
+
+            // Draw bread character
+            ctx.fillStyle = '#d4a373';
+            ctx.fillRect(bread.x, bread.y, bread.width, bread.height);
+
+            // Draw butter coins
+            ctx.fillStyle = '#ffd700';
+            butterCoins.forEach(coin => {
+                if (!coin.collected) {
+                    ctx.fillRect(coin.x, coin.y, coin.width, coin.height);
+                }
+            });
+
+            // Draw enemies
+            ctx.fillStyle = '#ba7e4a';
+            enemies.forEach(enemy => {
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            });
         }
 
-        function loop() {
+        function gameLoop() {
             update();
             draw();
-            requestAnimationFrame(loop);
+            requestAnimationFrame(gameLoop);
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') {
-                bread.dx = 2;
-            }
-            if (e.key === 'ArrowLeft') {
-                bread.dx = -2;
-            }
-            if (e.key === ' ' && !bread.jump) {
-                bread.dy = -10;
-                bread.jump = true;
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-                bread.dx = 0;
-            }
-        });
-
-        loop();
+        gameLoop();
     </script>
 </body>
 </html>
+```
