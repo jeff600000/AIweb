@@ -6,179 +6,186 @@
     <title>Bread Quest</title>
     <style>
         body {
-            background-color: #f8efe4;
+            font-family: Arial, sans-serif;
+            background-color: #f3eac2;
+            margin: 0;
+            overflow: hidden;
+        }
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #fff5e1;
+            border: 5px solid #d9c7a3;
+        }
+        #startScreen, #endScreen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Arial', sans-serif;
+            flex-direction: column;
         }
-
-        #gameCanvas {
-            border: 2px solid #b5651d;
-            background-color: #ffeeda;
-            display: block;
+        #startButton, #restartButton {
+            background-color: #d9c7a3;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #score {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #775e3b;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const BREAD_SIZE = 30;
-        const TOAST_TIME = 60;
-        let bread = { x: 50, y: 50, size: BREAD_SIZE, vx: 5, vy: 5 };
-        let obstacles = [];
-        let toppings = [];
-        let score = 0;
-        let timeLeft = TOAST_TIME;
-        let gameInterval;
-        let timerInterval;
 
-        function drawBread() {
-            const breadImg = new Image();
-            breadImg.src = 'path_to_bread_image';
-            breadImg.onload = () => {
-                ctx.drawImage(breadImg, bread.x, bread.y, bread.size, bread.size);
-            };
-        }
+<div id="startScreen">
+    <h1>Bread Quest</h1>
+    <button id="startButton">Start Game</button>
+</div>
 
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBread();
-            updateObstacles();
-            updateToppings();
-            checkCollisions();
-            displayScore();
-            displayTimer();
-        }
+<canvas id="gameCanvas" width="800" height="600"></canvas>
 
-        function drawObstacles() {
-            ctx.fillStyle = 'black';
-            obstacles.forEach(obstacle => {
-                ctx.fillRect(obstacle.x, obstacle.y, obstacle.size, obstacle.size);
+<div id="score">Score: 0</div>
+
+<div id="endScreen" style="display: none;">
+    <h1>Game Over</h1>
+    <div id="finalScore"></div>
+    <button id="restartButton">Restart Game</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startScreen = document.getElementById('startScreen');
+    const endScreen = document.getElementById('endScreen');
+    const startButton = document.getElementById('startButton');
+    const restartButton = document.getElementById('restartButton');
+    const scoreElement = document.getElementById('score');
+    const finalScore = document.getElementById('finalScore');
+    
+    let score = 0;
+    let gameInterval;
+    let gameOver = false;
+    let player = { x: 50, y: 50, width: 40, height: 40 };
+    let breadPieces = [];
+    let obstacles = [];
+
+    startButton.addEventListener('click', startGame);
+    restartButton.addEventListener('click', restartGame);
+
+    function startGame() {
+        startScreen.style.display = 'none';
+        gameOver = false;
+        score = 0;
+        player.x = 50;
+        player.y = 50;
+        breadPieces = generateItems(5, 'bread');
+        obstacles = generateItems(3, 'obstacle');
+        scoreElement.textContent = `Score: ${score}`;
+        gameInterval = setInterval(gameLoop, 1000 / 60);
+    }
+
+    function restartGame() {
+        endScreen.style.display = 'none';
+        startGame();
+    }
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawPlayer();
+        drawItems(breadPieces, 'brown');
+        drawItems(obstacles, 'red');
+        checkCollisions();
+        movePlayer();
+    }
+
+    function drawPlayer() {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawItems(items, color) {
+        ctx.fillStyle = color;
+        items.forEach(item => ctx.fillRect(item.x, item.y, item.width, item.height));
+    }
+
+    function generateItems(count, type) {
+        let items = [];
+        for (let i = 0; i < count; i++) {
+            items.push({
+                x: Math.floor(Math.random() * (canvas.width - 20)),
+                y: Math.floor(Math.random() * (canvas.height - 20)),
+                width: 20,
+                height: 20,
+                type: type
             });
         }
+        return items;
+    }
 
-        function updateObstacles() {
-            obstacles.forEach(obstacle => {
-                obstacle.y += 2; 
-                if (obstacle.y > canvas.height) {
-                    obstacle.y = 0;
-                    obstacle.x = Math.random() * canvas.width;
+    function checkCollisions() {
+        breadPieces.forEach((bread, index) => {
+            if (isColliding(player, bread)) {
+                breadPieces.splice(index, 1);
+                score += 10;
+                scoreElement.textContent = `Score: ${score}`;
+                playSound('collect.mp3');
+                if (breadPieces.length === 0) {
+                    breadPieces = generateItems(5, 'bread');
                 }
-            });
-        }
-
-        function drawToppings() {
-            toppings.forEach(topping => {
-                ctx.fillStyle = topping.color;
-                ctx.fillRect(topping.x, topping.y, topping.size, topping.size);
-            });
-        }
-
-        function updateToppings() {
-            toppings.forEach(topping => {
-                topping.y += 1;
-                if (topping.y > canvas.height) {
-                    topping.y = -10;
-                    topping.x = Math.random() * canvas.width;
-                }
-            });
-        }
-
-        function checkCollisions() {
-            obstacles.forEach(obstacle => {
-                if (
-                    bread.x < obstacle.x + obstacle.size &&
-                    bread.x + bread.size > obstacle.x &&
-                    bread.y < obstacle.y + obstacle.size &&
-                    bread.y + bread.size > obstacle.y
-                ) {
-                    endGame();
-                }
-            });
-
-            toppings = toppings.filter(topping => {
-                if (
-                    bread.x < topping.x + topping.size &&
-                    bread.x + bread.size > topping.x &&
-                    bread.y < topping.y + topping.size &&
-                    bread.y + bread.size > topping.y
-                ) {
-                    score += topping.points;
-                    return false;
-                }
-                return true;
-            });
-        }
-
-        function displayScore() {
-            ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Score: ${score}`, 10, 20);
-        }
-
-        function displayTimer() {
-            ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Time Left: ${timeLeft}`, canvas.width - 150, 20);
-        }
-
-        function moveBread(event) {
-            switch (event.key) {
-                case 'ArrowUp':
-                    if (bread.y > 0) bread.y -= bread.vy;
-                    break;
-                case 'ArrowDown':
-                    if (bread.y + bread.size < canvas.height) bread.y += bread.vy;
-                    break;
-                case 'ArrowLeft':
-                    if (bread.x > 0) bread.x -= bread.vx;
-                    break;
-                case 'ArrowRight':
-                    if (bread.x + bread.size < canvas.width) bread.x += bread.vx;
-                    break;
             }
-        }
+        });
 
-        function initGame() {
-            for (let i = 0; i < 5; i++) {
-                obstacles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: 20
-                });
-            }
-
-            toppings.push({ x: 200, y: 0, size: 10, points: 10, color: 'yellow' });
-            toppings.push({ x: 300, y: -20, size: 10, points: 20, color: 'red' });
-            toppings.push({ x: 400, y: -50, size: 10, points: 30, color: 'orange' });
-
-            gameInterval = setInterval(updateGame, 1000 / 60);
-            timerInterval = setInterval(updateTimer, 1000);
-            document.addEventListener('keydown', moveBread);
-        }
-
-        function updateTimer() {
-            if (timeLeft > 0) {
-                timeLeft--;
-            } else {
+        obstacles.forEach(obstacle => {
+            if (isColliding(player, obstacle)) {
+                clearInterval(gameInterval);
+                playSound('hit.mp3');
                 endGame();
             }
-        }
+        });
+    }
 
-        function endGame() {
-            clearInterval(gameInterval);
-            clearInterval(timerInterval);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillText(`Game Over! Final Score: ${score}`, 100, canvas.height / 2);
-            ctx.fillText('Refresh to Restart', 120, canvas.height / 2 + 30);
-        }
+    function endGame() {
+        gameOver = true;
+        finalScore.textContent = `Final Score: ${score}`;
+        endScreen.style.display = 'flex';
+    }
 
-        initGame();
-    </script>
+    function isColliding(entity1, entity2) {
+        return (
+            entity1.x < entity2.x + entity2.width &&
+            entity1.x + entity1.width > entity2.x &&
+            entity1.y < entity2.y + entity2.height &&
+            entity1.y + entity1.height > entity2.y
+        );
+    }
+
+    function movePlayer() {
+        document.addEventListener('keydown', event => {
+            if (event.key === 'ArrowRight') player.x += 5;
+            if (event.key === 'ArrowLeft') player.x -= 5;
+            if (event.key === 'ArrowUp') player.y -= 5;
+            if (event.key === 'ArrowDown') player.y += 5;
+        });
+
+        player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+        player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+    }
+
+    function playSound(src) {
+        const sound = new Audio(src);
+        sound.play();
+    }
+</script>
+
 </body>
 </html>
