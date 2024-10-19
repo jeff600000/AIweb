@@ -3,151 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Quest</title>
+    <title>Bread Adventure Quest</title>
     <style>
-        canvas {
-            border: 2px solid #000;
-            background-color: #f5deb3;
-            display: block;
-            margin: 0 auto;
-        }
-        body {
+        body { margin: 0; overflow: hidden; }
+        canvas { background-color: #fff8e7; display: block; margin: auto; }
+        #gameInfo {
             text-align: center;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Bread Quest</h1>
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
-    <p>Score: <span id="score">0</span></p>
+    <div id="gameInfo">Arrow keys to move. Collect butter pats! 🍞</div>
+    <canvas id="gameCanvas"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
-        const context = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
+        let keys = {};
+        const stageWidth = window.innerWidth;
+        const stageHeight = window.innerHeight - 50;
+        canvas.width = stageWidth;
+        canvas.height = stageHeight;
+
+        class Bread {
+            constructor() {
+                this.x = 50;
+                this.y = stageHeight - 60;
+                this.width = 40;
+                this.height = 40;
+                this.speed = 2;
+                this.dy = 0;
+                this.jumpStrength = 15;
+                this.jumping = false;
+            }
+
+            draw() {
+                ctx.fillStyle = '#f5d7b9';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(this.x + 10, this.y + 10, 4, 0, Math.PI * 2);
+                ctx.arc(this.x + 30, this.y + 10, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            move() {
+                if (keys['ArrowLeft']) this.x -= this.speed;
+                if (keys['ArrowRight']) this.x += this.speed;
+                if (keys['ArrowUp'] && !this.jumping) {
+                    this.jumping = true;
+                    this.dy = -this.jumpStrength;
+                }
+
+                this.y += this.dy;
+                if (this.jumping || this.y < stageHeight - this.height) {
+                    this.dy += 0.5;
+                }
+
+                if (this.y + this.height >= stageHeight) {
+                    this.y = stageHeight - this.height;
+                    this.jumping = false;
+                }
+            }
+        }
+
+        class ButterPat {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 10;
+                this.height = 10;
+            }
+
+            draw() {
+                ctx.fillStyle = '#ffe135';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            collidesWith(bread) {
+                return bread.x < this.x + this.width &&
+                       bread.x + bread.width > this.x &&
+                       bread.y < this.y + this.height &&
+                       bread.y + bread.height > this.y;
+            }
+        }
+
+        class ToasterGoal {
+            constructor() {
+                this.x = stageWidth - 70;
+                this.y = stageHeight - 40;
+                this.width = 40;
+                this.height = 40;
+            }
+
+            draw() {
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            collidesWith(bread) {
+                return bread.x < this.x + this.width &&
+                       bread.x + bread.width > this.x &&
+                       bread.y < this.y + this.height &&
+                       bread.y + bread.height > this.y;
+            }
+        }
+
+        const bread = new Bread();
+        let butterPats = [
+            new ButterPat(stageWidth / 4, stageHeight - 100),
+            new ButterPat(stageWidth / 2, stageHeight - 150),
+            new ButterPat(stageWidth - 100, stageHeight - 200)
+        ];
+        const toaster = new ToasterGoal();
         let score = 0;
-        let speed = 2;
-        let hazardsHit = 0;
-        const maxHazards = 10;
 
-        const toast = {
-            x: 300,
-            y: 350,
-            width: 20,
-            height: 20,
-            dx: 0,
-            dy: 0
-        };
+        function update() {
+            ctx.clearRect(0, 0, stageWidth, stageHeight);
 
-        const toppings = [];
-        const hazards = [];
+            bread.move();
+            bread.draw();
+            
+            for (let i = 0; i < butterPats.length; i++) {
+                butterPats[i].draw();
+                if (butterPats[i].collidesWith(bread)) {
+                    butterPats.splice(i, 1);
+                    score++;
+                    i--;
+                }
+            }
 
-        window.addEventListener('keydown', moveToast);
-        window.addEventListener('keyup', stopToast);
-
-        function moveToast(event) {
-            if (event.key === 'ArrowRight') toast.dx = speed;
-            if (event.key === 'ArrowLeft') toast.dx = -speed;
-            if (event.key === 'ArrowUp') toast.dy = -speed;
-            if (event.key === 'ArrowDown') toast.dy = speed;
-        }
-
-        function stopToast(event) {
-            if (['ArrowRight', 'ArrowLeft'].includes(event.key)) toast.dx = 0;
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) toast.dy = 0;
-        }
-
-        function gameLoop() {
-            clearCanvas();
-            moveToastSprite();
-            handleEdgeCollision();
-            drawToast();
-            handleItemCollision(toppings, collectTopping);
-            handleItemCollision(hazards, hitHazard);
-            drawItems(toppings, 'green');
-            drawItems(hazards, 'red');
-            generateItems(toppings, 5, 'topping');
-            generateItems(hazards, 2, 'hazard');
-            updateScore();
-            if(hazardsHit < maxHazards) {
-                requestAnimationFrame(gameLoop);
-            } else {
-                alert("Game Over! You hit too many hazards.");
+            toaster.draw();
+            if (toaster.collidesWith(bread)) {
+                alert('Congratulations! You collected ' + score + ' butter pats!');
                 document.location.reload();
             }
+
+            window.requestAnimationFrame(update);
         }
 
-        function clearCanvas() {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        window.addEventListener('keydown', e => keys[e.key] = true);
+        window.addEventListener('keyup', e => keys[e.key] = false);
 
-        function moveToastSprite() {
-            toast.x += toast.dx;
-            toast.y += toast.dy;
-        }
-
-        function handleEdgeCollision() {
-            if (toast.x < 0) toast.x = 0;
-            if (toast.x + toast.width > canvas.width) toast.x = canvas.width - toast.width;
-            if (toast.y < 0) toast.y = 0;
-            if (toast.y + toast.height > canvas.height) toast.y = canvas.height - toast.height;
-        }
-
-        function drawToast() {
-            context.fillStyle = 'tan';
-            context.fillRect(toast.x, toast.y, toast.width, toast.height);
-        }
-
-        function generateItems(array, chance, type) {
-            if (Math.random() < chance * 0.01) {
-                array.push({
-                    x: Math.random() * (canvas.width - 10),
-                    y: Math.random() * (canvas.height - 10),
-                    width: 10,
-                    height: 10,
-                    type: type
-                });
-            }
-        }
-
-        function drawItems(array, color) {
-            context.fillStyle = color;
-            array.forEach(item => {
-                context.fillRect(item.x, item.y, item.width, item.height);
-            });
-        }
-
-        function handleItemCollision(array, callback) {
-            array.forEach((item, index) => {
-                if (
-                    toast.x < item.x + item.width &&
-                    toast.x + toast.width > item.x &&
-                    toast.y < item.y + item.height &&
-                    toast.y + toast.height > item.y
-                ) {
-                    callback(index);
-                }
-            });
-        }
-
-        function collectTopping(index) {
-            toppings.splice(index, 1);
-            score += 10;
-        }
-
-        function hitHazard(index) {
-            hazards.splice(index, 1);
-            speed = Math.max(1, speed - 0.5);
-            hazardsHit++;
-            setTimeout(() => {
-                speed = 2;
-            }, 3000);
-        }
-
-        function updateScore() {
-            document.getElementById('score').innerText = score;
-        }
-
-        gameLoop();
+        update();
     </script>
 </body>
 </html>
