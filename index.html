@@ -6,100 +6,111 @@
     <title>Bread Game</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            background-color: #f8e4c1;
-            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f3f4ed;
         }
-        .game-container {
+        #game-area {
+            margin-top: 50px;
             text-align: center;
-            background: #f3d9a6;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
-        .bread {
-            background-color: #c69c6d;
-            border-radius: 5px;
-            border: 3px solid #8b5e34;
-            width: 60px;
-            height: 30px;
-            display: inline-block;
-            margin: 10px 0;
-        }
-        button {
-            background-color: #ff7f50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
+        #bread-oven {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #8b4513;
+            background: #deb887;
+            border-radius: 50%;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #ff4500;
-        }
-        .store {
+        #bread-count {
+            font-size: 2em;
             margin-top: 20px;
+        }
+        #shop {
+            margin-top: 50px;
+            text-align: left;
+            border: 2px solid #8b4513;
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            background: #fff8dc;
+        }
+        .upgrade {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .upgrade button {
+            padding: 5px 10px;
+            background-color: #f4a460;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Bread Game</h1>
-        <div id="breadCounter" class="bread"></div>
-        <button onclick="bakeBread()">Bake Bread</button>
-        <button onclick="sellBread()">Sell Bread</button>
-        <div class="store">
-            <button onclick="upgradeOven()">Upgrade Oven (Cost: 10 breads)</button>
-            <button onclick="hireBaker()">Hire Baker (Cost: 50 breads)</button>
+    <div id="game-area">
+        <div id="bread-oven"></div>
+        <div id="bread-count">0</div>
+    </div>
+    <div id="shop">
+        <h3>Shop</h3>
+        <div class="upgrade">
+            <span>Click Power: <span id="click-power">1</span></span>
+            <button onclick="buyUpgrade('clickPower')">Buy (10 breads)</button>
+        </div>
+        <div class="upgrade">
+            <span>Auto-bake: <span id="auto-bake">0</span>/s</span>
+            <button onclick="buyUpgrade('autoBake')">Buy (25 breads)</button>
+        </div>
+        <div class="upgrade">
+            <span>Double Breads</span>
+            <button onclick="buyUpgrade('doubleBreads')">Buy (100 breads)</button>
         </div>
     </div>
+
     <script>
         let breadCount = 0;
-        let ovenPower = 1;
-        let bakers = 0;
+        let clickPower = 1;
+        let autoBake = 0;
+        let breadDouble = false;
 
-        function bakeBread() {
-            breadCount += ovenPower;
-            updateBreadCounter();
-        }
+        document.getElementById('bread-oven').addEventListener('click', function() {
+            let gain = clickPower * (breadDouble ? 2 : 1);
+            breadCount += gain;
+            updateDisplay();
+        });
 
-        function sellBread() {
-            if (breadCount > 0) {
-                breadCount--;
-                updateBreadCounter();
-            }
-        }
-
-        function upgradeOven() {
-            if (breadCount >= 10) {
+        function buyUpgrade(type) {
+            if (type === 'clickPower' && breadCount >= 10) {
                 breadCount -= 10;
-                ovenPower++;
-                updateBreadCounter();
+                clickPower++;
             }
-        }
-
-        function hireBaker() {
-            if (breadCount >= 50) {
-                breadCount -= 50;
-                bakers++;
-                setInterval(() => {
-                    breadCount++;
-                    updateBreadCounter();
-                }, 1000);
+            if (type === 'autoBake' && breadCount >= 25) {
+                breadCount -= 25;
+                autoBake++;
             }
+            if (type === 'doubleBreads' && breadCount >= 100 && !breadDouble) {
+                breadCount -= 100;
+                breadDouble = true;
+            }
+            updateDisplay();
         }
 
-        function updateBreadCounter() {
-            document.getElementById("breadCounter").textContent = `Breads: ${breadCount}`;
+        function updateDisplay() {
+            document.getElementById('bread-count').innerText = breadCount;
+            document.getElementById('click-power').innerText = clickPower;
+            document.getElementById('auto-bake').innerText = autoBake;
         }
 
-        updateBreadCounter();
+        setInterval(function() {
+            breadCount += autoBake * (breadDouble ? 2 : 1);
+            updateDisplay();
+        }, 1000);
     </script>
 </body>
 </html>
