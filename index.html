@@ -3,213 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toastie's Adventure in Breadland</title>
+    <title>Bread Adventure</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-        #gameCanvas {
-            display: block;
-            background-color: #f5e5c4; /* Bread-like color */
-        }
-        #ui {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: #333;
-        }
-        .button {
-            padding: 10px 20px;
-            background-color: #e3a857;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .start-screen, .game-over-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            z-index: 10;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f5deb3; margin: 0; overflow: hidden; }
+        canvas { background: #ffe4b5; display: block; margin: 0 auto; }
+        #game-over { display: none; text-align: center; font-size: 30px; }
     </style>
 </head>
 <body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="game-over">You've become toast! Refresh to play again.</div>
 
-<div id="ui">
-    Score: <span id="score">0</span>
-</div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-<canvas id="gameCanvas" width="800" height="400"></canvas>
+        let breadX = 50, breadY = 300;
+        let breadWidth = 50, breadHeight = 30;
+        let breadSpeed = 5;
+        let breadYVelocity = 0;
+        let gravity = 0.8;
+        let onGround = false;
 
-<div class="start-screen" id="startScreen">
-    <h1>Welcome to Breadland!</h1>
-    <p>Collect butter spreadables while avoiding obstacles!</p>
-    <p>Controls: Arrow keys to move and jump</p>
-    <button class="button" onclick="startGame()">Play</button>
-</div>
+        let butterAndJam = [
+            { x: 200, y: 300, collected: false },
+            { x: 400, y: 250, collected: false },
+            { x: 600, y: 270, collected: false }
+        ];
 
-<div class="game-over-screen" id="gameOverScreen" style="display:none;">
-    <h1>Game Over!</h1>
-    <button class="button" onclick="restartGame()">Restart</button>
-</div>
+        let rollingPins = [
+            { x: 300, y: 350 },
+            { x: 500, y: 320 }
+        ];
 
-<script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+        let finishLineX = 750;
 
-// Game Variables
-let player, gameOver, score, obstacles, items, gravity;
+        let keys = {};
 
-// Initialize Game variables
-function initGame() {
-    player = {
-        x: 50,
-        y: 300,
-        width: 20,
-        height: 30,
-        xVelocity: 0,
-        yVelocity: 0,
-        isJumping: false
-    };
-    gameOver = false;
-    score = 0;
-    gravity = 1;
-    obstacles = [
-        {x: 200, y: 350, width: 50, height: 20},  // Rolling Pins
-        {x: 400, y: 320, width: 30, height: 50}   // Toasters
-    ];
-    items = [
-        {x: 150, y: 300, width: 10, height: 10},  // Butter Spreadables
-        {x: 350, y: 280, width: 10, height: 10}
-    ];
-}
+        window.addEventListener('keydown', e => keys[e.key] = true);
+        window.addEventListener('keyup', e => keys[e.key] = false);
 
-// Draw Functions
-function drawPlayer() {
-    ctx.fillStyle = 'peru';
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-}
-
-function drawObstacles() {
-    obstacles.forEach(obstacle => {
-        ctx.fillStyle = 'sienna';
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-    });
-}
-
-function drawItems() {
-    items.forEach(item => {
-        ctx.fillStyle = 'gold';
-        ctx.fillRect(item.x, item.y, item.width, item.height);
-    });
-}
-
-// Game Mechanics
-function handlePlayerMovement() {
-    player.x += player.xVelocity;
-    player.y += player.yVelocity;
-    player.yVelocity += gravity;
-
-    if (player.y + player.height > canvas.height) {
-        player.y = canvas.height - player.height;
-        player.isJumping = false;
-    }
-}
-
-function handleCollisions() {
-    obstacles.forEach(obstacle => {
-        if (collides(player, obstacle)) {
-            gameOver = true;
-        }
-    });
-
-    items.forEach((item, index) => {
-        if (collides(player, item)) {
-            score += 10;
-            items.splice(index, 1);
-        }
-    });
-}
-
-function collides(rect1, rect2) {
-    return rect1.x < rect2.x + rect2.width &&
-           rect1.x + rect1.width > rect2.x &&
-           rect1.y < rect2.y + rect2.height &&
-           rect1.height + rect1.y > rect2.y;
-}
-
-// Game Loop
-function update() {
-    if (gameOver) return;
-    handlePlayerMovement();
-    handleCollisions();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawPlayer();
-    drawObstacles();
-    drawItems();
-    document.getElementById('score').innerText = score;
-    requestAnimationFrame(update);
-}
-
-// Controls
-document.addEventListener('keydown', (e) => {
-    switch(e.code) {
-        case 'ArrowRight':
-            player.xVelocity = 5;
-            break;
-        case 'ArrowLeft':
-            player.xVelocity = -5;
-            break;
-        case 'ArrowUp':
-            if (!player.isJumping) {
-                player.yVelocity = -15;
-                player.isJumping = true;
+        function update() {
+            if (keys['ArrowRight'] && breadX < canvas.width - breadWidth) breadX += breadSpeed;
+            if (keys['ArrowLeft'] && breadX > 0) breadX -= breadSpeed;
+            if (keys['ArrowUp'] && onGround) {
+                breadYVelocity = -15;
+                onGround = false;
             }
-            break;
-    }
-});
 
-document.addEventListener('keyup', (e) => {
-    switch(e.code) {
-        case 'ArrowRight':
-        case 'ArrowLeft':
-            player.xVelocity = 0;
-            break;
-    }
-});
+            breadYVelocity += gravity;
+            breadY += breadYVelocity;
+            if (breadY > canvas.height - breadHeight) {
+                breadY = canvas.height - breadHeight;
+                onGround = true;
+            }
 
-// Start and Restart
-function startGame() {
-    document.getElementById('startScreen').style.display = 'none';
-    initGame();
-    update();
-}
+            butterAndJam.forEach(item => {
+                if (!item.collected && breadX < item.x + 10 && breadX + breadWidth > item.x && breadY < item.y + 10 && breadY + breadHeight > item.y) {
+                    item.collected = true;
+                }
+            });
 
-function restartGame() {
-    document.getElementById('gameOverScreen').style.display = 'none';
-    initGame();
-    update();
-}
+            rollingPins.forEach(pin => {
+                if (breadX < pin.x + 30 && breadX + breadWidth > pin.x && breadY < pin.y + 10 && breadY + breadHeight > pin.y) {
+                    gameOver();
+                }
+            });
 
-canvas.addEventListener('mouseenter', () => {
-    if (gameOver) {
-        document.getElementById('gameOverScreen').style.display = 'block';
-    }
-});
+            if (breadX + breadWidth >= finishLineX) {
+                gameOver();
+            }
+        }
 
-initGame();
-</script>
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'brown';
+            ctx.fillRect(breadX, breadY, breadWidth, breadHeight);
+
+            butterAndJam.forEach(item => {
+                if (!item.collected) {
+                    ctx.fillStyle = 'yellow';
+                    ctx.fillRect(item.x, item.y, 10, 10);
+                }
+            });
+
+            ctx.fillStyle = 'purple';
+            rollingPins.forEach(pin => {
+                ctx.fillRect(pin.x, pin.y, 30, 10);
+            });
+
+            ctx.fillStyle = 'orange';
+            ctx.fillRect(finishLineX, canvas.height - 50, 10, 50);
+        }
+
+        function gameOver() {
+            document.getElementById('game-over').style.display = 'block';
+            cancelAnimationFrame(animate);
+        }
+
+        function animate() {
+            update();
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
 </body>
 </html>
