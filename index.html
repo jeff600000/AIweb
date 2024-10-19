@@ -3,77 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Quest: A Text Adventure</title>
+    <title>Whack-a-Mole Game</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f0e3;
-            color: #5f4b32;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
         }
-        .game-container {
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: left;
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+            margin-bottom: 20px;
         }
-        button {
-            background-color: #d5a858;
-            border: none;
+        .hole {
+            width: 100px;
+            height: 100px;
+            background-color: #91a3b0;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        .mole {
+            width: 80px;
+            height: 80px;
+            background-color: #774936;
+            border-radius: 50%;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: top 0.3s;
+        }
+        .mole.visible {
+            top: 20%;
+        }
+        .score-board, .timer {
+            margin: 5px;
+        }
+        .start-button {
             padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
-            margin-bottom: 10px;
         }
-        button:hover {
-            background-color: #c18a46;
-        }
-        .shop-item {
-            margin: 5px 0;
-            padding: 8px;
-            background-color: #e3c69b;
+        .start-button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Bread Quest: The Crusty Chronicle</h1>
-        <p id="story">You awake in a small bakery filled with the warm scent of freshly baked bread. Your quest is to master the art of bread-making and uncover the secret recipe of the Golden Loaf.</p>
-        <div id="options">
-            <button onclick="explore()">Explore the Bakery</button>
-            <button onclick="startJourney()">Start Your Journey</button>
+    <div class="score-board">Score: <span id="score">0</span></div>
+    <div class="timer">Time Left: <span id="timer">60</span>s</div>
+    <button class="start-button" onclick="startGame()">Start Game</button>
+    <div class="game-board">
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
         </div>
-        <div id="shop" style="display: none;">
-            <h3>Bakery Shop</h3>
-            <div class="shop-item">Yeast - 5 coins</div>
-            <div class="shop-item">Flour - 10 coins</div>
-            <div class="shop-item">Water - 3 coins</div>
-            <div class="shop-item">Sugar - 7 coins</div>
-            <div class="shop-item">Salt - 2 coins</div>
-            <div class="shop-item">Baking Pan - 15 coins</div>
-            <div class="shop-item">Rolling Pin - 12 coins</div>
-            <div class="shop-item">Oven - 50 coins</div>
-            <div class="shop-item">Apron - 8 coins</div>
-            <div class="shop-item">Golden Loaf Recipe - ?? coins</div>
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
+        </div>
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
+        </div>
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
+        </div>
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
+        </div>
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
+        </div>
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
+        </div>
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
+        </div>
+        <div class="hole" onclick="whackMole(this)">
+            <div class="mole"></div>
         </div>
     </div>
-
     <script>
-        let coins = 20;
+        let score = 0;
+        let timeLeft = 60;
+        let gameInterval;
+        let moleInterval;
 
-        function explore() {
-            document.getElementById("story").innerText = "You explore the bakery and find various ingredients and tools that might aid your bread-making journey. You have " + coins + " coins.";
-            document.getElementById("shop").style.display = 'block';
+        function showMole() {
+            const holes = document.querySelectorAll('.hole');
+            holes.forEach(hole => {
+                hole.querySelector('.mole').classList.remove('visible');
+            });
+            const randomHole = holes[Math.floor(Math.random() * holes.length)];
+            randomHole.querySelector('.mole').classList.add('visible');
         }
 
-        function startJourney() {
-            const journeyElement = document.createElement('p');
-            journeyElement.innerText = "Your journey begins! You travel through the Flour Forest, venture across the Yeasty Mountains, and delve into the Salt Mines. Along the way, you encounter puzzles and mini-games that test your skills and reward you with bread coins.";
-            document.querySelector('.game-container').appendChild(journeyElement);
-            document.getElementById('options').style.display = 'none';
+        function startGame() {
+            score = 0;
+            timeLeft = 60;
+            document.getElementById('score').textContent = score;
+            document.getElementById('timer').textContent = timeLeft;
 
-            setTimeout(() => {
-                alert("Congratulations! You have reached the end of your journey and uncovered the legendary Golden Loaf!");
-            }, 5000);
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval);
+                    clearInterval(moleInterval);
+                    alert('Game Over! Your score is ' + score);
+                }
+            }, 1000);
+
+            moleInterval = setInterval(showMole, 1000);
+        }
+
+        function whackMole(hole) {
+            if (hole.querySelector('.mole').classList.contains('visible')) {
+                score++;
+                document.getElementById('score').textContent = score;
+                hole.querySelector('.mole').classList.remove('visible');
+            }
         }
     </script>
 </body>
