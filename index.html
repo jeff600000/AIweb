@@ -3,125 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Quest</title>
+    <title>Toastie's Adventure in Breadland</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2e2b3; /* Kitchen counter color */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body, html {
             margin: 0;
-        }
-        .game-container {
-            width: 500px;
-            height: 300px;
-            border: 2px solid #c09e6f; /* Cutting board color */
-            position: relative;
+            padding: 0;
             overflow: hidden;
-            background: #fff3e2; /* Cutting board color */
+            font-family: Arial, sans-serif;
         }
-        #loafy {
-            width: 40px;
-            height: 20px;
-            position: absolute;
-            bottom: 10px;
-            left: 230px;
-            background: #deb887; /* Bread color */
-            border-radius: 5px;
+        #gameCanvas {
+            display: block;
+            background-color: #f5e5c4; /* Bread-like color */
         }
-        .butter {
-            width: 20px;
-            height: 20px;
-            background: #ffdd57; /* Butter color */
-            position: absolute;
-            border-radius: 10px;
-        }
-        .knife {
-            width: 40px;
-            height: 10px;
-            background: #8b8b8b; /* Knife color */
-            position: absolute;
-            top: 0;
-            animation: moveKnife 2s infinite alternate;
-        }
-        #score {
+        #ui {
             position: absolute;
             top: 10px;
             left: 10px;
-            font-size: 20px;
-            font-weight: bold;
+            color: #333;
         }
-        @keyframes moveKnife {
-            from { left: 0; }
-            to { left: 460px; }
+        .button {
+            padding: 10px 20px;
+            background-color: #e3a857;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .start-screen, .game-over-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div id="score">Score: 0</div>
-        <div id="loafy"></div>
-        <div class="butter" style="top: 100px; left: 50px;"></div>
-        <div class="butter" style="top: 180px; left: 400px;"></div>
-        <div class="knife" style="top: 60px; left: 0;"></div>
-        <div class="knife" style="top: 200px; left: 0;"></div>
-    </div>
 
-    <script>
-        const loafy = document.getElementById('loafy');
-        const butters = document.querySelectorAll('.butter');
-        const knives = document.querySelectorAll('.knife');
-        let score = 0;
-        const scoreDisplay = document.getElementById('score');
-        let isGameOver = false;
+<div id="ui">
+    Score: <span id="score">0</span>
+</div>
 
-        document.addEventListener('keydown', (event) => {
-            if (isGameOver) return;
+<canvas id="gameCanvas" width="800" height="400"></canvas>
 
-            switch(event.key) {
-                case 'ArrowLeft':
-                    loafy.style.left = Math.max(0, loafy.offsetLeft - 20) + 'px';
-                    break;
-                case 'ArrowRight':
-                    loafy.style.left = Math.min(460, loafy.offsetLeft + 20) + 'px';
-                    break;
-                case ' ':
-                    loafy.style.bottom = '50px';
-                    setTimeout(() => loafy.style.bottom = '10px', 200);
-                    break;
+<div class="start-screen" id="startScreen">
+    <h1>Welcome to Breadland!</h1>
+    <p>Collect butter spreadables while avoiding obstacles!</p>
+    <p>Controls: Arrow keys to move and jump</p>
+    <button class="button" onclick="startGame()">Play</button>
+</div>
+
+<div class="game-over-screen" id="gameOverScreen" style="display:none;">
+    <h1>Game Over!</h1>
+    <button class="button" onclick="restartGame()">Restart</button>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Game Variables
+let player, gameOver, score, obstacles, items, gravity;
+
+// Initialize Game variables
+function initGame() {
+    player = {
+        x: 50,
+        y: 300,
+        width: 20,
+        height: 30,
+        xVelocity: 0,
+        yVelocity: 0,
+        isJumping: false
+    };
+    gameOver = false;
+    score = 0;
+    gravity = 1;
+    obstacles = [
+        {x: 200, y: 350, width: 50, height: 20},  // Rolling Pins
+        {x: 400, y: 320, width: 30, height: 50}   // Toasters
+    ];
+    items = [
+        {x: 150, y: 300, width: 10, height: 10},  // Butter Spreadables
+        {x: 350, y: 280, width: 10, height: 10}
+    ];
+}
+
+// Draw Functions
+function drawPlayer() {
+    ctx.fillStyle = 'peru';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function drawObstacles() {
+    obstacles.forEach(obstacle => {
+        ctx.fillStyle = 'sienna';
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    });
+}
+
+function drawItems() {
+    items.forEach(item => {
+        ctx.fillStyle = 'gold';
+        ctx.fillRect(item.x, item.y, item.width, item.height);
+    });
+}
+
+// Game Mechanics
+function handlePlayerMovement() {
+    player.x += player.xVelocity;
+    player.y += player.yVelocity;
+    player.yVelocity += gravity;
+
+    if (player.y + player.height > canvas.height) {
+        player.y = canvas.height - player.height;
+        player.isJumping = false;
+    }
+}
+
+function handleCollisions() {
+    obstacles.forEach(obstacle => {
+        if (collides(player, obstacle)) {
+            gameOver = true;
+        }
+    });
+
+    items.forEach((item, index) => {
+        if (collides(player, item)) {
+            score += 10;
+            items.splice(index, 1);
+        }
+    });
+}
+
+function collides(rect1, rect2) {
+    return rect1.x < rect2.x + rect2.width &&
+           rect1.x + rect1.width > rect2.x &&
+           rect1.y < rect2.y + rect2.height &&
+           rect1.height + rect1.y > rect2.y;
+}
+
+// Game Loop
+function update() {
+    if (gameOver) return;
+    handlePlayerMovement();
+    handleCollisions();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawPlayer();
+    drawObstacles();
+    drawItems();
+    document.getElementById('score').innerText = score;
+    requestAnimationFrame(update);
+}
+
+// Controls
+document.addEventListener('keydown', (e) => {
+    switch(e.code) {
+        case 'ArrowRight':
+            player.xVelocity = 5;
+            break;
+        case 'ArrowLeft':
+            player.xVelocity = -5;
+            break;
+        case 'ArrowUp':
+            if (!player.isJumping) {
+                player.yVelocity = -15;
+                player.isJumping = true;
             }
-            checkCollisions();
-        });
+            break;
+    }
+});
 
-        function checkCollisions() {
-            butters.forEach((butter) => {
-                if (isColliding(loafy, butter)) {
-                    butter.style.display = 'none';
-                    score++;
-                    scoreDisplay.textContent = `Score: ${score}`;
-                }
-            });
+document.addEventListener('keyup', (e) => {
+    switch(e.code) {
+        case 'ArrowRight':
+        case 'ArrowLeft':
+            player.xVelocity = 0;
+            break;
+    }
+});
 
-            knives.forEach((knife) => {
-                if (isColliding(loafy, knife)) {
-                    alert('Game Over!');
-                    isGameOver = true;
-                }
-            });
-        }
+// Start and Restart
+function startGame() {
+    document.getElementById('startScreen').style.display = 'none';
+    initGame();
+    update();
+}
 
-        function isColliding(a, b) {
-            const aRect = a.getBoundingClientRect();
-            const bRect = b.getBoundingClientRect();
-            return !(
-                aRect.top > bRect.bottom ||
-                aRect.bottom < bRect.top ||
-                aRect.left > bRect.right ||
-                aRect.right < bRect.left
-            );
-        }
-    </script>
+function restartGame() {
+    document.getElementById('gameOverScreen').style.display = 'none';
+    initGame();
+    update();
+}
+
+canvas.addEventListener('mouseenter', () => {
+    if (gameOver) {
+        document.getElementById('gameOverScreen').style.display = 'block';
+    }
+});
+
+initGame();
+</script>
 </body>
 </html>
