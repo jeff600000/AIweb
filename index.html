@@ -3,169 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Rush</title>
+    <title>Bread Quest</title>
     <style>
-        body {
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-        }
-        #gameCanvas {
-            background-color: #f8f0e3;
-            display: block;
-            margin: 20px auto;
-            border: 2px solid #bb6464;
-        }
-        .inventory, .scoreboard {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        #timer {
-            font-size: 24px;
-            color: #bb6464;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; }
+        canvas { background-color: #f4e7c5; display: block; margin: 0 auto; }
+        #healthBar { position: fixed; top: 10px; left: 10px; width: 200px; height: 20px; background: lightgray; }
+        .health { height: 100%; background: limegreen; }
+        #narrative { position: fixed; bottom: 50px; left: 10px; background: white; padding: 10px; border: 2px solid #000; }
+        #score { position: fixed; top: 10px; right: 10px; background: white; padding: 5px; border: 2px solid #000; }
     </style>
 </head>
 <body>
-    <div class="inventory">
-        <h3>Inventory: <span id="inventory">Flour: 0, Water: 0, Yeast: 0</span></h3>
-    </div>
-    <canvas id="gameCanvas" width="480" height="320"></canvas>
-    <div class="scoreboard">
-        <h3>Score: <span id="score">0</span></h3>
-        <h3 id="timer">Time: 03:00</h3>
-    </div>
-
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="healthBar"><div class="health"></div></div>
+    <div id="narrative">Welcome to Bread Quest! Use arrow keys to start your journey.</div>
+    <div id="score">Score: 0</div>
+    <audio id="bgm" loop>
+        <source src="cheerful-music.mp3" type="audio/mp3">
+    </audio>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Game variables
-        const TIMER_INITIAL = 180;
-        let timer = TIMER_INITIAL;
-        let bakeryScore = 0;
-        const inventory = { flour: 0, water: 0, yeast: 0 };
+        const bgm = document.getElementById('bgm');
+        // Uncomment below to play music (ensure the file is available)
+        // bgm.play(); 
 
-        // Player object
-        const player = {
-            x: 100,
-            y: 100,
-            width: 20,
-            height: 20,
-            speed: 5
-        };
+        let player = { x: 50, y: 50, width: 40, height: 40, speed: 2 };
+        let health = 100;
+        let score = 0;
+        let level = 1;
+        let narrative = document.getElementById('narrative');
+        let healthBar = document.querySelector('.health');
+        let scoreDisplay = document.getElementById('score');
 
-        // Ingredient positions
-        const ingredients = {
-            flour: { x: 50, y: 50 },
-            water: { x: 400, y: 50 },
-            yeast: { x: 200, y: 250 },
-            oven: { x: 350, y: 250 }
-        };
+        let keys = {};
+        document.addEventListener('keydown', (e) => keys[e.key] = true);
+        document.addEventListener('keyup', (e) => keys[e.key] = false);
 
-        // Handle player movement
-        const keys = {};
-        window.addEventListener('keydown', (e) => keys[e.key] = true);
-        window.addEventListener('keyup', (e) => keys[e.key] = false);
-
-        function updatePlayerPosition() {
-            if (keys['ArrowUp'] && player.y > 0) player.y -= player.speed;
-            if (keys['ArrowDown'] && player.y < canvas.height - player.height) player.y += player.speed;
-            if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
-            if (keys['ArrowRight'] && player.x < canvas.width - player.width) player.x += player.speed;
-        }
-
-        // Check collision with ingredients or oven
-        function checkCollisions() {
-            for (let [name, position] of Object.entries(ingredients)) {
-                if (player.x < position.x + player.width &&
-                    player.x + player.width > position.x &&
-                    player.y < position.y + player.height &&
-                    player.y + player.height > position.y) {
-                    handleIngredientCollection(name);
-                }
-            }
-        }
-
-        // Handle collection of ingredients
-        function handleIngredientCollection(name) {
-            if (name === 'oven' && inventory.flour > 0 && inventory.water > 0 && inventory.yeast > 0) {
-                bakeBread();
-            } else if (name !== 'oven') {
-                inventory[name]++;
-                document.getElementById('inventory').innerText = `Flour: ${inventory.flour}, Water: ${inventory.water}, Yeast: ${inventory.yeast}`;
-            }
-        }
-
-        // Handle baking process
-        function bakeBread() {
-            bakeryScore += Math.floor((inventory.flour + inventory.water + inventory.yeast) * 10);  // Example scoring
-            inventory.flour = inventory.water = inventory.yeast = 0;
-            document.getElementById('score').innerText = bakeryScore.toString();
-            document.getElementById('inventory').innerText = `Flour: 0, Water: 0, Yeast: 0`;
-            // Play baking sound effect (not implemented, can be added via Audio API)
-        }
-
-        // Game loop
         function gameLoop() {
-            updatePlayerPosition();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawEnvironment();
-            drawPlayer();
-
-            checkCollisions();
-            updateTimer();
-
+            update();
+            render();
             requestAnimationFrame(gameLoop);
         }
 
-        // Draw kitchen environment
-        function drawEnvironment() {
-            // Draw flour
-            ctx.fillStyle = '#d3d3d3';
-            ctx.fillRect(ingredients.flour.x, ingredients.flour.y, 30, 30);
-            ctx.fillText('Flour', ingredients.flour.x, ingredients.flour.y - 5);
-            
-            // Draw water
-            ctx.fillStyle = '#add8e6';
-            ctx.fillRect(ingredients.water.x, ingredients.water.y, 30, 30);
-            ctx.fillText('Water', ingredients.water.x, ingredients.water.y - 5);
-            
-            // Draw yeast
-            ctx.fillStyle = '#ffdbac';
-            ctx.fillRect(ingredients.yeast.x, ingredients.yeast.y, 30, 30);
-            ctx.fillText('Yeast', ingredients.yeast.x, ingredients.yeast.y - 5);
-            
-            // Draw oven
-            ctx.fillStyle = '#8b4513';
-            ctx.fillRect(ingredients.oven.x, ingredients.oven.y, 30, 30);
-            ctx.fillText('Oven', ingredients.oven.x, ingredients.oven.y - 5);
+        function update() {
+            handleInput();
+            checkCollisions();
+            updateUI();
         }
 
-        // Draw player (baker character)
-        function drawPlayer() {
-            ctx.fillStyle = '#fff';
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "blue";
             ctx.fillRect(player.x, player.y, player.width, player.height);
+            // Add more rendering for levels, ingredients, and hazards here
         }
 
-        // Update and display the timer
-        function updateTimer() {
-            if (timer > 0) {
-                timer -= 0.016; // Rough approximation of FPS
-                const minutes = Math.floor(timer / 60);
-                const seconds = Math.floor(timer % 60);
-                document.getElementById('timer').innerText = `Time: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            } else {
-                endGame();
+        function handleInput() {
+            if (keys['ArrowUp'] || keys['w'] && player.y > 0) player.y -= player.speed;
+            if (keys['ArrowDown'] || keys['s'] && player.y < canvas.height - player.height) player.y += player.speed;
+            if (keys['ArrowLeft'] || keys['a'] && player.x > 0) player.x -= player.speed;
+            if (keys['ArrowRight'] || keys['d'] && player.x < canvas.width - player.width) player.x += player.speed;
+        }
+
+        function checkCollisions() {
+            // This function will handle collision detection (ingredients collection, hazards interaction)
+        }
+
+        function updateUI() {
+            healthBar.style.width = health + '%';
+            scoreDisplay.textContent = 'Score: ' + score;
+            
+            // Updating narrative based on the player's level
+            switch (level) {
+                case 1:
+                    narrative.textContent = "Level 1: Collect ingredients in the pantry!";
+                    break;
+                case 2:
+                    narrative.textContent = "Level 2: Arrange ingredients on the counter!";
+                    break;
+                case 3:
+                    narrative.textContent = "Level 3: Bake the perfect loaf!";
+                    break;
+                default:
+                    narrative.textContent = "Explore and become the Bread Master!";
+            }
+
+            // Check for level progression
+            if (score >= 10 && level === 1) {
+                level = 2;
+                // Load Level 2 setups
+            } else if (score >= 20 && level === 2) {
+                level = 3;
+                // Load Level 3 setups
             }
         }
 
-        // End game and display score
-        function endGame() {
-            alert(`Time's up! Your final score is: ${bakeryScore}`);
-            document.location.reload();
-        }
-
-        // Start the game loop
         gameLoop();
     </script>
 </body>
