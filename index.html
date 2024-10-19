@@ -3,108 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure Game</title>
+    <title>Bread Game</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f3e5ab;
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f4e3;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .game-container {
-            width: 600px;
             padding: 20px;
-            border-radius: 10px;
-            background-color: #fff6e5;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .game-title {
+        .game-area {
+            border: 2px solid #c69c6d;
+            padding: 20px;
+            background-color: #fff8e1;
+            width: 300px;
             text-align: center;
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #d2691e;
         }
-        .game-story {
-            margin-bottom: 20px;
-            font-size: 18px;
-            line-height: 1.5;
-        }
-        .action-button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 18px;
-            background-color: #d2691e;
-            color: #fff;
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #c69c6d;
+            color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            border-radius: 5px;
         }
-        .action-button:hover {
-            background-color: #b85317;
+        .resources {
+            margin: 10px 0;
+        }
+        .upgrade {
+            display: none;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="game-title">Bread Adventure Game</div>
-        <div class="game-story" id="game-story">
+    <div class="game-area">
+        <div class="resources">
+            <div>Bread: <span id="bread">0</span></div>
+            <div>Flour Sacks: <span id="flour">0</span></div>
+            <div>Ovens: <span id="ovens">0</span></div>
         </div>
-        <button class="action-button" id="action-button"></button>
+        <button class="button" onclick="bakeBread()">Bake Bread</button>
+        <button class="button" onclick="buyFlour()">Buy Flour Sack</button>
+        <button class="button" onclick="buyOven()">Buy Oven</button>
+        <div class="upgrade" id="upgrade-oven">
+            <button class="button" onclick="upgradeOven()">Upgrade Oven</button>
+            <div>Upgrade Cost: <span id="upgrade-cost">10</span> Bread</div>
+        </div>
+        <div class="message" id="message"></div>
     </div>
     <script>
-        const storyElement = document.getElementById('game-story');
-        const buttonElement = document.getElementById('action-button');
+        let bread = 0;
+        let flourSacks = 0;
+        let ovens = 0;
+        let upgradeCost = 10;
+        let ovenLevel = 1;
 
-        let gameState = {
-            storyIndex: 0,
-            inventory: [],
-        };
-
-        const story = [
-            {
-                text: "You wake up in a world made entirely of bread. Everything looks delicious!",
-                button: "Explore the world",
-                action: () => nextStory()
-            },
-            {
-                text: "You find yourself in a village of Pretzel People who need your help.",
-                button: "Help the villagers",
-                action: () => {
-                    gameState.inventory.push("Pretzel Sword");
-                    nextStory();
-                }
-            },
-            {
-                text: "Armed with a Pretzel Sword, you're ready to fight against the invading Pumpernickel Pirates.",
-                button: "Fight the Pirates",
-                action: () => nextStory()
-            },
-            {
-                text: "Congratulations! You defeat the Pumpernickel Pirates and have saved the village.",
-                button: "Restart",
-                action: () => {
-                    gameState.storyIndex = -1;
-                    gameState.inventory = [];
-                    nextStory();
-                }
-            }
-        ];
-
-        function nextStory() {
-            gameState.storyIndex++;
-            const currentStory = story[gameState.storyIndex];
-            storyElement.innerHTML = currentStory.text;
-            buttonElement.innerText = currentStory.button;
-            buttonElement.onclick = currentStory.action;
+        function bakeBread() {
+            let breadToAdd = 1 + (flourSacks * 0.5) + (ovens * ovenLevel);
+            bread += breadToAdd;
+            updateDisplay();
         }
 
-        nextStory();
+        function buyFlour() {
+            if (bread >= 5) {
+                bread -= 5;
+                flourSacks++;
+                updateDisplay();
+            }
+        }
+
+        function buyOven() {
+            if (bread >= 20) {
+                bread -= 20;
+                ovens++;
+                updateDisplay();
+                document.getElementById('upgrade-oven').style.display = 'block';
+            }
+        }
+
+        function upgradeOven() {
+            if (bread >= upgradeCost) {
+                bread -= upgradeCost;
+                ovenLevel++;
+                upgradeCost += 10;
+                document.getElementById('upgrade-cost').textContent = upgradeCost;
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('bread').textContent = bread.toFixed(1);
+            document.getElementById('flour').textContent = flourSacks;
+            document.getElementById('ovens').textContent = ovens;
+        }
     </script>
 </body>
 </html>
