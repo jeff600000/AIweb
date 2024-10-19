@@ -3,105 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Making Game</title>
+    <title>Bread Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f1e4;
+            background-color: #f5f5dc;
             margin: 0;
             padding: 0;
+        }
+        #gameCanvas {
+            width: 100%;
+            height: 90vh;
+            background: #a0522d;
+        }
+        #ui {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            justify-content: space-around;
+            padding: 10px;
+            background-color: #deb887;
         }
-        #gameContainer {
-            text-align: center;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 600px;
+        #score, #inventory {
+            font-size: 1.2em;
         }
-        #breadCount {
-            font-size: 2em;
-            margin: 10px 0;
-        }
-        .button {
-            background-color: #ff9234;
-            border: none;
-            color: white;
-            padding: 15px 30px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
+        #toast {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #ddd;
             border-radius: 5px;
-            transition: background-color 0.3s;
+            display: none;
+            animation: fadeOut 3s forwards;
         }
-        .button:hover {
-            background-color: #d77b2d;
-        }
-        #upgrades {
-            margin-top: 20px;
+        @keyframes fadeOut {
+            0% {opacity: 1;}
+            80% {opacity: 1;}
+            100% {opacity: 0;}
         }
     </style>
 </head>
 <body>
-
-<div id="gameContainer">
-    <h1>Bread Game</h1>
-    <div id="breadCount">0</div>
-    <button class="button" onclick="makeBread()">Bake Bread</button>
-    <div id="upgrades">
-        <button class="button" onclick="buyUpgrade(1)">Purchase Baker (Cost: <span id="bakerCost">10</span>)</button>
-        <button class="button" onclick="buyUpgrade(2)">Purchase Oven (Cost: <span id="ovenCost">50</span>)</button>
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui">
+        <div id="score">Score: 0</div>
+        <div id="inventory">Inventory: 0</div>
     </div>
-</div>
+    <div id="toast"></div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let score = 0;
+        let inventory = 0;
 
-<script>
-    let breadCount = 0;
-    let bakers = 0;
-    let ovens = 0;
-
-    let bakerCost = 10;
-    let ovenCost = 50;
-    
-    function makeBread() {
-        breadCount += 1 + bakers;
-        updateBreadCount();
-    }
-
-    function buyUpgrade(upgradeType) {
-        if (upgradeType === 1 && breadCount >= bakerCost) {
-            bakers++;
-            breadCount -= bakerCost;
-            bakerCost = Math.floor(bakerCost * 1.2);
-        } else if (upgradeType === 2 && breadCount >= ovenCost) {
-            ovens++;
-            breadCount -= ovenCost;
-            ovenCost = Math.floor(ovenCost * 1.5);
-            setInterval(() => {
-                breadCount += ovens;
-                updateBreadCount();
-            }, 1000);
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight * 0.9;
         }
-        updateUI();
-    }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
 
-    function updateBreadCount() {
-        document.getElementById('breadCount').innerText = breadCount;
-    }
+        function collectBread(x, y) {
+            const breadSize = 50;
+            ctx.clearRect(x - breadSize/2, y - breadSize/2, breadSize, breadSize);
+            score += 10;
+            inventory++;
+            updateUI();
+            showToast("You collected a piece of bread!");
+        }
 
-    function updateUI() {
-        document.getElementById('bakerCost').innerText = bakerCost;
-        document.getElementById('ovenCost').innerText = ovenCost;
-    }
-</script>
+        function updateUI() {
+            document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('inventory').textContent = `Inventory: ${inventory}`;
+        }
 
+        canvas.addEventListener('click', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            collectBread(x, y);
+        });
+
+        function gameLoop() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            ctx.fillStyle = 'wheat';
+            ctx.beginPath();
+            ctx.arc(x, y, 25, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+
+            if (inventory >= 10) {
+                alert('You won! Reload the page to play again.');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            } else {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        gameLoop();
+    </script>
 </body>
 </html>
