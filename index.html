@@ -3,111 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Game</title>
+    <title>Bread Brain Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5dc;
-            margin: 0;
-            padding: 0;
-        }
-        #gameCanvas {
-            width: 100%;
-            height: 90vh;
-            background: #a0522d;
-        }
-        #ui {
+            background-color: #f4f4f9;
             display: flex;
-            justify-content: space-around;
-            padding: 10px;
-            background-color: #deb887;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
         }
-        #score, #inventory {
-            font-size: 1.2em;
+        #game-container {
+            text-align: center;
         }
-        #toast {
-            position: fixed;
-            bottom: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 20px;
-            background-color: #ddd;
-            border-radius: 5px;
-            display: none;
-            animation: fadeOut 3s forwards;
+        #bread {
+            width: 100px;
+            height: 100px;
+            background-color: tan;
+            border-radius: 50%;
+            animation: float 3s ease-in-out infinite;
         }
-        @keyframes fadeOut {
-            0% {opacity: 1;}
-            80% {opacity: 1;}
-            100% {opacity: 0;}
+        @keyframes float {
+            0%, 100% {
+                transform: translatey(0px);
+            }
+            50% {
+                transform: translatey(-20px);
+            }
+        }
+        #instructions, #score {
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
-    <div id="ui">
-        <div id="score">Score: 0</div>
-        <div id="inventory">Inventory: 0</div>
+    <div id="game-container">
+        <div id="instructions">Click the bread to collect points! Watch out for mind-bending twists!</div>
+        <div id="bread"></div>
+        <div id="score"></div>
     </div>
-    <div id="toast"></div>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
         let score = 0;
-        let inventory = 0;
+        let gameActive = true;
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight * 0.9;
-        }
-        
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-        
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        const bread = document.getElementById('bread');
+        const scoreDisplay = document.getElementById('score');
+
+        function updateScore() {
+            scoreDisplay.textContent = `Score: ${score}`;
         }
 
-        function collectBread(x, y) {
-            const breadSize = 50;
-            ctx.clearRect(x - breadSize/2, y - breadSize/2, breadSize, breadSize);
-            score += 10;
-            inventory++;
-            updateUI();
-            showToast("You collected a piece of bread!");
-        }
-
-        function updateUI() {
-            document.getElementById('score').textContent = `Score: ${score}`;
-            document.getElementById('inventory').textContent = `Inventory: ${inventory}`;
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const x = e.clientX;
-            const y = e.clientY;
-            collectBread(x, y);
-        });
-
-        function gameLoop() {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
-            ctx.fillStyle = 'wheat';
-            ctx.beginPath();
-            ctx.arc(x, y, 25, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fill();
-
-            if (inventory >= 10) {
-                alert('You won! Reload the page to play again.');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            } else {
-                requestAnimationFrame(gameLoop);
+        function twistMechanic() {
+            if (Math.random() > 0.8) {
+                bread.style.backgroundColor = bread.style.backgroundColor === 'tan' ? 'peru' : 'tan';
+                if (Math.random() > 0.5) {
+                    document.body.style.backgroundColor = document.body.style.backgroundColor === '#f4f4f9' ? '#fadadd' : '#f4f4f9';
+                }
             }
         }
 
+        bread.addEventListener('click', () => {
+            if (!gameActive) return;
+            score++;
+            updateScore();
+            twistMechanic();
+        });
+
+        function gameLoop() {
+            if (!gameActive) return;
+            twistMechanic();
+            setTimeout(gameLoop, 2000);
+        }
+
+        updateScore();
         gameLoop();
     </script>
 </body>
