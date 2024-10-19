@@ -3,167 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Top-Down Adventure Game</title>
+    <title>Breadventure Game</title>
     <style>
-        canvas {
-            background-color: #f0f0f0;
-            display: block;
-            margin: 0 auto;
-            border: 2px solid #000;
-        }
         body {
-            text-align: center;
-            margin-top: 20px;
-            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f0e3;
+            font-family: 'Arial', sans-serif;
         }
-        #game-info {
-            margin-bottom: 20px;
+        #gameCanvas {
+            border: 2px solid #333;
+            background-color: #fffaf0;
         }
     </style>
 </head>
 <body>
-    <div id="game-info">
-        <p>Score: <span id="score">0</span></p>
-        <button onclick="restartGame()">Restart</button>
-    </div>
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
-
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
     <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const tileSize = 20;
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-        const game = {
-            score: 0,
-            itemsToCollect: 5,
-            enemiesToDefeat: 3,
-            gameOver: false,
-            win: false,
-            restart: function(){
-                this.score = 0;
-                this.gameOver = false;
-                this.win = false;
-                player.x = tileSize;
-                player.y = tileSize;
-                items = generateItems(this.itemsToCollect);
-                enemies = generateEnemies(this.enemiesToDefeat);
-                updateScore();
-                drawGame();
-            }
-        };
+        // Game Variables
+        const breadWidth = 50;
+        const breadHeight = 30;
+        let breadX = canvas.width / 2 - breadWidth / 2;
+        let breadY = canvas.height - breadHeight - 10;
+        let breadSpeed = 5;
+        let score = 0;
 
-        const player = {
-            x: tileSize,
-            y: tileSize,
-            size: tileSize,
-            color: "blue",
-            move: function(dx, dy) {
-                if (!game.gameOver) {
-                    this.x += dx * tileSize;
-                    this.y += dy * tileSize;
-                    this.x = Math.max(0, Math.min(canvas.width - this.size, this.x));
-                    this.y = Math.max(0, Math.min(canvas.height - this.size, this.y));
-                    this.checkCollision();
-                }
-            },
-            checkCollision: function() {
-                items.forEach((item, index) => {
-                    if (item.x === this.x && item.y === this.y) {
-                        items.splice(index, 1);
-                        game.score += 10;
-                        updateScore();
-                        if (items.length === 0) {
-                            game.win = true;
-                            game.gameOver = true;
-                            alert("You win!");
-                        }
-                    }
-                });
-
-                enemies.forEach((enemy, index) => {
-                    if (enemy.x === this.x && enemy.y === this.y) {
-                        enemies.splice(index, 1);
-                        game.score += 5;
-                        updateScore();
-                        if (enemies.length === 0) {
-                            game.win = true;
-                            game.gameOver = true;
-                            alert("You defeated all enemies!");
-                        }
-                    }
-                });
-            }
-        };
-
-        function createEntity(x, y, color) {
-            return { x, y, size: tileSize, color };
+        // Game Functions
+        function drawBread() {
+            ctx.fillStyle = '#d2691e';
+            ctx.fillRect(breadX, breadY, breadWidth, breadHeight);
         }
 
-        function generateItems(num) {
-            const items = [];
-            for (let i = 0; i < num; i++) {
-                const x = Math.floor(Math.random() * (canvas.width / tileSize)) * tileSize;
-                const y = Math.floor(Math.random() * (canvas.height / tileSize)) * tileSize;
-                items.push(createEntity(x, y, 'green'));
+        function drawScore() {
+            ctx.font = '20px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText('Score: ' + score, 10, 20);
+        }
+
+        function moveBread(event) {
+            if (event.key === 'ArrowLeft' && breadX > 0) {
+                breadX -= breadSpeed;
+            } else if (event.key === 'ArrowRight' && breadX < canvas.width - breadWidth) {
+                breadX += breadSpeed;
             }
-            return items;
         }
 
-        function generateEnemies(num) {
-            const enemies = [];
-            for (let i = 0; i < num; i++) {
-                const x = Math.floor(Math.random() * (canvas.width / tileSize)) * tileSize;
-                const y = Math.floor(Math.random() * (canvas.height / tileSize)) * tileSize;
-                enemies.push(createEntity(x, y, 'red'));
-            }
-            return enemies;
-        }
-
-        let items = generateItems(game.itemsToCollect);
-        let enemies = generateEnemies(game.enemiesToDefeat);
-
-        function updateScore() {
-            document.getElementById("score").innerText = game.score;
-        }
-
-        function drawGame() {
+        function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawEntity(player);
-            items.forEach(drawEntity);
-            enemies.forEach(drawEntity);
+            drawBread();
+            drawScore();
+            requestAnimationFrame(update);
         }
 
-        function drawEntity(entity) {
-            ctx.fillStyle = entity.color;
-            ctx.fillRect(entity.x, entity.y, entity.size, entity.size);
-        }
+        // Event Listener
+        document.addEventListener('keydown', moveBread);
 
-        window.addEventListener("keydown", function(event) {
-            const {key} = event;
-            if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(key) && !game.gameOver) {
-                switch (key) {
-                    case "ArrowLeft":
-                        player.move(-1, 0);
-                        break;
-                    case "ArrowRight":
-                        player.move(1, 0);
-                        break;
-                    case "ArrowUp":
-                        player.move(0, -1);
-                        break;
-                    case "ArrowDown":
-                        player.move(0, 1);
-                        break;
-                }
-                drawGame();
-            }
-        });
-
-        function restartGame() {
-            game.restart();
-        }
-
-        drawGame();
+        // Start the game
+        update();
     </script>
 </body>
 </html>
