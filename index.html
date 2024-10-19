@@ -3,67 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure</title>
+    <title>Bread Making Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7eac1;
+            background-color: #f8f1e4;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
         }
-        #gameScreen {
-            width: 500px;
-            height: 500px;
-            border: 10px solid #d4a373;
-            position: relative;
-            background-color: #ffe5b4;
+        #gameContainer {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
         }
-        #bread {
-            width: 50px;
-            height: 50px;
-            background-color: #c4a484;
-            position: absolute;
+        #breadCount {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+        .button {
+            background-color: #ff9234;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #d77b2d;
+        }
+        #upgrades {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="gameScreen">
-        <div id="bread"></div>
+
+<div id="gameContainer">
+    <h1>Bread Game</h1>
+    <div id="breadCount">0</div>
+    <button class="button" onclick="makeBread()">Bake Bread</button>
+    <div id="upgrades">
+        <button class="button" onclick="buyUpgrade(1)">Purchase Baker (Cost: <span id="bakerCost">10</span>)</button>
+        <button class="button" onclick="buyUpgrade(2)">Purchase Oven (Cost: <span id="ovenCost">50</span>)</button>
     </div>
-    <script>
-        const bread = document.getElementById('bread');
-        const gameScreen = document.getElementById('gameScreen');
-        let breadPos = { x: 0, y: 0 };
-        let breadSpeed = 5;
+</div>
 
-        function moveBread(event) {
-            switch (event.key) {
-                case 'ArrowUp':
-                    if (breadPos.y > 0) breadPos.y -= breadSpeed;
-                    break;
-                case 'ArrowDown':
-                    if (breadPos.y < gameScreen.clientHeight - bread.clientHeight) breadPos.y += breadSpeed;
-                    break;
-                case 'ArrowLeft':
-                    if (breadPos.x > 0) breadPos.x -= breadSpeed;
-                    break;
-                case 'ArrowRight':
-                    if (breadPos.x < gameScreen.clientWidth - bread.clientWidth) breadPos.x += breadSpeed;
-                    break;
-            }
-            bread.style.left = breadPos.x + 'px';
-            bread.style.top = breadPos.y + 'px';
+<script>
+    let breadCount = 0;
+    let bakers = 0;
+    let ovens = 0;
+
+    let bakerCost = 10;
+    let ovenCost = 50;
+    
+    function makeBread() {
+        breadCount += 1 + bakers;
+        updateBreadCount();
+    }
+
+    function buyUpgrade(upgradeType) {
+        if (upgradeType === 1 && breadCount >= bakerCost) {
+            bakers++;
+            breadCount -= bakerCost;
+            bakerCost = Math.floor(bakerCost * 1.2);
+        } else if (upgradeType === 2 && breadCount >= ovenCost) {
+            ovens++;
+            breadCount -= ovenCost;
+            ovenCost = Math.floor(ovenCost * 1.5);
+            setInterval(() => {
+                breadCount += ovens;
+                updateBreadCount();
+            }, 1000);
         }
+        updateUI();
+    }
 
-        function startGame() {
-            window.addEventListener('keydown', moveBread);
-        }
+    function updateBreadCount() {
+        document.getElementById('breadCount').innerText = breadCount;
+    }
 
-        startGame();
-    </script>
+    function updateUI() {
+        document.getElementById('bakerCost').innerText = bakerCost;
+        document.getElementById('ovenCost').innerText = ovenCost;
+    }
+</script>
+
 </body>
 </html>
