@@ -6,68 +6,97 @@
     <title>Bread Game</title>
     <style>
         body {
-            background-color: #fdf6e3;
             font-family: Arial, sans-serif;
-        }
-        #gameContainer {
+            background-color: #f3e5ab;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             height: 100vh;
-            justify-content: center;
+            margin: 0;
         }
-        #startButton, #kneadButton, #bakeButton {
-            padding: 10px 20px;
-            font-size: 18px;
-            margin: 5px;
+        #game {
+            border: 2px solid #c19a6b;
+            padding: 20px;
+            background-color: #fff8dc;
+            width: 400px;
+            text-align: center;
+        }
+        #bread {
+            font-size: 3rem;
             cursor: pointer;
+            user-select: none;
+        }
+        #score {
+            font-size: 1.5rem;
+            margin: 20px 0;
+        }
+        #controls {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #c19a6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #d2b48c;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <button id="startButton">Start Making Bread</button>
-        <div id="gameArea" style="display:none;">
-            <button id="kneadButton">Knead Dough</button>
-            <button id="bakeButton">Bake Bread</button>
-            <h2 id="status"></h2>
-            <h2 id="progress"></h2>
+    <div id="game">
+        <div id="bread">🍞</div>
+        <div id="score">Score: 0</div>
+        <div id="controls">
+            <button onclick="bake()">Bake</button>
+            <button onclick="sell()">Sell</button>
+            <button onclick="upgrade()">Upgrade</button>
         </div>
     </div>
     <script>
-        let progress = 0;
-        const statusElement = document.getElementById('status');
-        const progressElement = document.getElementById('progress');
-        const kneadButton = document.getElementById('kneadButton');
-        const bakeButton = document.getElementById('bakeButton');
+        let score = 0;
+        let breadCount = 0;
+        let bakePower = 1;
+        let upgradeCost = 10;
         
-        document.getElementById('startButton').addEventListener('click', function() {
-            this.style.display = 'none';
-            document.getElementById('gameArea').style.display = 'block';
-            statusElement.innerHTML = 'Knead the dough!';
-            progressElement.innerHTML = 'Progress: ' + progress + '%';
+        document.getElementById('bread').addEventListener('click', function() {
+            breadCount += bakePower;
+            updateScore();
         });
 
-        kneadButton.addEventListener('click', function() {
-            progress += Math.floor(Math.random() * 20) + 5;
-            if (progress >= 100) {
-                progress = 100;
-                statusElement.innerHTML = 'Dough is ready to bake!';
-                kneadButton.disabled = true;
-                bakeButton.disabled = false;
+        function bake() {
+            score += breadCount;
+            breadCount = 0;
+            updateScore();
+        }
+
+        function sell() {
+            score += breadCount * 2;
+            breadCount = 0;
+            updateScore();
+        }
+
+        function upgrade() {
+            if (score >= upgradeCost) {
+                score -= upgradeCost;
+                bakePower += 1;
+                upgradeCost = Math.floor(upgradeCost * 1.5);
+                alert('Upgrade Successful! Bake Power: ' + bakePower);
+            } else {
+                alert('Not enough score to upgrade!');
             }
-            progressElement.innerHTML = 'Progress: ' + progress + '%';
-        });
+            updateScore();
+        }
 
-        bakeButton.addEventListener('click', function() {
-            statusElement.innerHTML = 'Bread is baking...';
-            bakeButton.disabled = true;
-            setTimeout(() => {
-                statusElement.innerHTML = 'Bread is done! Enjoy your delicious bread.';
-            }, 3000);
-        });
-
-        bakeButton.disabled = true;
+        function updateScore() {
+            document.getElementById('score').textContent = "Score: " + score + " | Bread: " + breadCount + " | Bake Power: " + bakePower + " | Upgrade Cost: " + upgradeCost;
+        }
     </script>
 </body>
 </html>
