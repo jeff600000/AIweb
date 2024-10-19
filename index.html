@@ -1,115 +1,103 @@
-<!-- I need to put this here, dont ask why --><!DOCTYPE html>
-<html lang="en">
+<!-- I need to put this here, dont ask why -->```html
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure Game</title>
     <style>
         body {
-            background-color: #f8f1e4;
+            background-color: #f0e2b6;
             font-family: Arial, sans-serif;
             text-align: center;
-            padding: 10px;
+            margin: 0;
+            padding: 20px;
         }
-        #game-board {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 60vh;
-        }
-        #bread {
-            width: 50px;
-            height: 50px;
-            background-color: #d4a373;
-            border-radius: 5px;
-            position: relative;
-        }
-        #oven {
-            width: 100px;
-            height: 100px;
-            background-color: #8d5524;
-            border-radius: 10px;
+        #oven, #decorations {
+            border: 5px solid #663300;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff7e6;
             display: inline-block;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
-        #score {
-            font-size: 24px;
-            margin-top: 20px;
+        #inventory {
+            padding-top: 20px;
         }
-        button {
-            margin: 5px;
-            padding: 10px;
-            background-color: #cdb380;
-            border: none;
+        .button {
+            background-color: #ffcc66;
+            border: 2px solid #cc6600;
             border-radius: 5px;
+            color: #663300;
+            padding: 10px;
             cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #cc9966;
         }
     </style>
 </head>
 <body>
-    <div id="game-board">
-        <div id="bread"></div>
-        <div id="oven"></div>
+    <div id="oven">
+        <canvas id="breadCanvas" width="400" height="400" style="border:1px solid #000;"></canvas>
+        <div id="controls">
+            <div class="button" onclick="bakeBread()">Bake Bread</div>
+            <div class="button" onclick="viewRecipe()">View Recipe</div>
+            <div class="button" onclick="resetGame()">Reset</div>
+        </div>
+        <div id="bakeInfo"></div>
     </div>
-    <div id="score">0</div>
-    <button id="move-left">Move Left</button>
-    <button id="move-right">Move Right</button>
-    <button id="bake-bread">Bake Bread</button>
-    <button id="reset-game">Reset Game</button>
+    <div id="decorations">
+        <div class="button" onclick="addDecoration('chocolate')">Add Chocolate Drizzle</div>
+        <div class="button" onclick="addDecoration('sprinkles')">Add Sprinkles</div>
+        <div class="button" onclick="addDecoration('nuts')">Add Nuts</div>
+    </div>
+    <div id="inventory"></div>
+
     <script>
-        const bread = document.getElementById('bread');
-        const oven = document.getElementById('oven');
-        const scoreDisplay = document.getElementById('score');
-        const moveLeftBtn = document.getElementById('move-left');
-        const moveRightBtn = document.getElementById('move-right');
-        const bakeBreadBtn = document.getElementById('bake-bread');
-        const resetGameBtn = document.getElementById('reset-game');
-
-        let score = 0;
-        let breadPosition = 0;
-        const ovenPosition = 50;
-
-        function updateBreadPosition() {
-            bread.style.transform = `translateX(${breadPosition}px)`;
-        }
-
-        function moveLeft() {
-            if (breadPosition > -50) {
-                breadPosition -= 10;
-                updateBreadPosition();
-            }
-        }
-
-        function moveRight() {
-            if (breadPosition < 50) {
-                breadPosition += 10;
-                updateBreadPosition();
-            }
-        }
-
+        let breadLevel = 0;
+        let decorations = [];
+        const breadCanvas = document.getElementById('breadCanvas');
+        const ctx = breadCanvas.getContext('2d');
+        
         function bakeBread() {
-            if (breadPosition === ovenPosition - 50) {
-                score += 10;
-                scoreDisplay.textContent = score;
-                bread.style.backgroundColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
+            breadLevel++;
+            updateBread();
+            document.getElementById('bakeInfo').textContent = `Bread is at level: ${breadLevel}`;
+        }
+        
+        function addDecoration(type) {
+            if (breadLevel > 0) {
+                decorations.push(type);
+                updateBread();
+                updateInventory();
             }
+        }
+
+        function viewRecipe() {
+            alert('Recipe: Mix flour, water, and yeast. Let rise, then bake.');
+        }
+
+        function updateBread() {
+            ctx.clearRect(0, 0, breadCanvas.width, breadCanvas.height);
+            ctx.fillStyle = "#d2b48c";
+            ctx.fillRect(100, 200 - breadLevel * 10, 200, breadLevel * 10);
+            decorations.forEach((decoration, index) => {
+                ctx.fillStyle = decoration === 'chocolate' ? '#4b2e83' : decoration === 'sprinkles' ? '#e75480' : '#d2691e';
+                ctx.fillRect(100, 200 - breadLevel * 10 + index * 5, 200, 5);
+            });
+        }
+
+        function updateInventory() {
+            document.getElementById('inventory').textContent = `Decorations: ${decorations.join(', ')}`;
         }
 
         function resetGame() {
-            score = 0;
-            scoreDisplay.textContent = score;
-            breadPosition = 0;
-            updateBreadPosition();
-            bread.style.backgroundColor = '#d4a373';
+            breadLevel = 0;
+            decorations = [];
+            updateBread();
+            updateInventory();
+            document.getElementById('bakeInfo').textContent = '';
         }
-
-        moveLeftBtn.addEventListener('click', moveLeft);
-        moveRightBtn.addEventListener('click', moveRight);
-        bakeBreadBtn.addEventListener('click', bakeBread);
-        resetGameBtn.addEventListener('click', resetGame);
     </script>
 </body>
 </html>
+```
