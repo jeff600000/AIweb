@@ -3,81 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Game</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f2e4c9;
+            background-color: #f8f4e3;
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            overflow: hidden;
         }
-        #oven {
-            width: 100px;
-            height: 100px;
-            background-color: #d2691e;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        #oven:hover {
-            background-color: #b35900;
-        }
-        #log {
-            width: 80%;
-            max-width: 500px;
-            height: 150px;
-            overflow-y: auto;
+        #gameCanvas {
+            display: block;
+            margin: 20px auto;
             background-color: #fff;
-            border: 2px solid #ccc;
-            padding: 10px;
-            margin-top: 20px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            border: 1px solid #000;
+        }
+        #controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+        #score {
+            font-size: 1.5em;
+            color: #333;
+        }
+        #level {
+            font-size: 1.5em;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <div id="oven">Bake Bread</div>
-    <div id="log"></div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="controls">
+        <div id="score"></div>
+        <div id="level"></div>
+    </div>
     <script>
-        let breadCount = 0;
-        const log = document.getElementById('log');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-        document.getElementById('oven').addEventListener('click', function() {
-            bakeBread();
-        });
+        let breadX = canvas.width / 2;
+        let breadY = canvas.height - 30;
+        let breadSpeed = 2;
+        let score = 0;
+        let level = 1;
 
-        function bakeBread() {
-            breadCount++;
-            let message = `You baked a loaf of bread! Total: ${breadCount}`;
-            addLogMessage(message);
+        function drawBread() {
+            ctx.beginPath();
+            ctx.rect(breadX, breadY, 50, 20);
+            ctx.fillStyle = "saddlebrown";
+            ctx.fill();
+            ctx.closePath();
+        }
 
-            if (breadCount === 10) {
-                message = "Wow, you have enough bread for a bakery!";
-                addLogMessage(message);
+        function moveBread() {
+            if (breadX + breadSpeed > canvas.width || breadX + breadSpeed < 0) {
+                breadSpeed = -breadSpeed;
             }
-            if (breadCount === 20) {
-                message = "You're a master bread baker!";
-                addLogMessage(message);
-            }
-            if (breadCount === 50) {
-                message = "You're drowning in bread!";
-                addLogMessage(message);
+            breadX += breadSpeed;
+        }
+
+        function updateScore() {
+            score += 1;
+            if (score % 50 === 0) {
+                level += 1;
+                breadSpeed *= 1.1;
             }
         }
 
-        function addLogMessage(message) {
-            const newMessage = document.createElement('div');
-            newMessage.textContent = message;
-            log.appendChild(newMessage);
+        function drawScore() {
+            document.getElementById('score').innerText = 'Score: ' + score;
+            document.getElementById('level').innerText = 'Level: ' + level;
         }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBread();
+            moveBread();
+            updateScore();
+            drawScore();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
     </script>
 </body>
 </html>
