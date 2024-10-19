@@ -3,81 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Game</title>
+    <title>Bread Adventure</title>
     <style>
         body {
-            background-color: #f3eac2;
             font-family: Arial, sans-serif;
+            background-color: #f7eac1;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
-        #game {
-            background-color: #fff3da;
-            border: 5px solid #d9b382;
-            width: 300px;
-            padding: 20px;
-            box-shadow: 0 0 10px #b69568;
+        #gameScreen {
+            width: 500px;
+            height: 500px;
+            border: 10px solid #d4a373;
+            position: relative;
+            background-color: #ffe5b4;
         }
-        #balance {
-            margin: 10px 0;
-            font-size: 1.2em;
-        }
-        .btn {
-            background-color: #d9b382;
-            border: none;
-            padding: 10px;
-            margin: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #c49a6c;
-        }
-        #actions {
-            margin-top: 20px;
+        #bread {
+            width: 50px;
+            height: 50px;
+            background-color: #c4a484;
+            position: absolute;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div id="game">
-        <div id="balance">Bread: 0</div>
-        <button class="btn" onclick="bakeBread()">Bake Bread</button>
-        <button class="btn" onclick="sellBread()">Sell Bread</button>
-        <div id="actions">
-        </div>
+    <div id="gameScreen">
+        <div id="bread"></div>
     </div>
     <script>
-        let breadCount = 0;
-        let breadPrice = 1;
-        
-        function updateBalance() {
-            document.getElementById('balance').textContent = 'Bread: ' + breadCount;
-        }
-        
-        function bakeBread() {
-            breadCount++;
-            addAction('Baked a loaf of bread.');
-            updateBalance();
-        }
-        
-        function sellBread() {
-            if (breadCount > 0) {
-                breadCount--;
-                addAction('Sold a loaf of bread for $' + breadPrice + '.');
-                updateBalance();
-            } else {
-                addAction('No bread to sell.');
+        const bread = document.getElementById('bread');
+        const gameScreen = document.getElementById('gameScreen');
+        let breadPos = { x: 0, y: 0 };
+        let breadSpeed = 5;
+
+        function moveBread(event) {
+            switch (event.key) {
+                case 'ArrowUp':
+                    if (breadPos.y > 0) breadPos.y -= breadSpeed;
+                    break;
+                case 'ArrowDown':
+                    if (breadPos.y < gameScreen.clientHeight - bread.clientHeight) breadPos.y += breadSpeed;
+                    break;
+                case 'ArrowLeft':
+                    if (breadPos.x > 0) breadPos.x -= breadSpeed;
+                    break;
+                case 'ArrowRight':
+                    if (breadPos.x < gameScreen.clientWidth - bread.clientWidth) breadPos.x += breadSpeed;
+                    break;
             }
+            bread.style.left = breadPos.x + 'px';
+            bread.style.top = breadPos.y + 'px';
         }
-        
-        function addAction(action) {
-            let actionsDiv = document.getElementById('actions');
-            let actionElem = document.createElement('div');
-            actionElem.textContent = action;
-            actionsDiv.insertAdjacentElement('afterbegin', actionElem);
+
+        function startGame() {
+            window.addEventListener('keydown', moveBread);
         }
+
+        startGame();
     </script>
 </body>
 </html>
