@@ -3,112 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Compliment Generator</title>
+    <title>Mood Tracker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Random Compliment Generator</h1>
-        <div id="compliment" class="compliment-box">
-            Click the button to receive a compliment!
-        </div>
-        <button onclick="generateCompliment()">Get Compliment</button>
-    </div>
-    <script src="script.js"></script>
+    <header>
+        <h1>Mood Tracker</h1>
+    </header>
+    <main>
+        <section id="mood-entry">
+            <h2>Log Your Mood</h2>
+            <input type="date" id="date" required>
+            <select id="mood" required>
+                <option value="happy">Happy</option>
+                <option value="sad">Sad</option>
+                <option value="neutral">Neutral</option>
+                <option value="anxious">Anxious</option>
+                <option value="excited">Excited</option>
+            </select>
+            <button onclick="addMood()">Add Mood</button>
+        </section>
+        <section id="mood-history">
+            <h2>Your Mood History</h2>
+            <ul id="mood-list"></ul>
+        </section>
+    </main>
+    <footer>
+        <p>Stay aware of your feelings!</p>
+    </footer>
+    <script>
+        const moodList = document.getElementById('mood-list');
+
+        function addMood() {
+            const date = document.getElementById('date').value;
+            const mood = document.getElementById('mood').value;
+
+            if (date && mood) {
+                const newEntry = document.createElement('li');
+                newEntry.textContent = `Date: ${date} — Mood: ${mood}`;
+                moodList.appendChild(newEntry);
+
+                document.getElementById('date').value = '';
+                document.getElementById('mood').value = 'happy';
+            } else {
+                alert('Please enter both date and mood.');
+            }
+        }
+    </script>
 </body>
-</html>
-
 <style>
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f4f8;
-    margin: 0;
-    overflow: hidden;
-}
-
-.container {
-    text-align: center;
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-h1 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.compliment-box {
-    padding: 20px;
-    background-color: #e0f7fa;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    min-height: 60px;
-    font-style: italic;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-button {
-    padding: 10px 20px;
-    background-color: #00796b;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-button:hover {
-    background-color: #004d40;
-    transform: translateY(-2px);
-}
-
-button:active {
-    transform: translateY(-1px);
-}
-</style>
-
-<script>
-const compliments = [
-    "You have a great sense of humor!",
-    "You are a thoughtful and generous person.",
-    "You have a very kind heart.",
-    "You’re a true original!",
-    "Your smile is contagious.",
-    "You are awesome!",
-    "You make the world a better place.",
-    "You're an incredibly thoughtful person.",
-    "You're a fantastic friend!",
-    "You are a ray of sunshine!"
-];
-
-function generateCompliment() {
-    const randomIndex = Math.floor(Math.random() * compliments.length);
-    const complimentBox = document.getElementById("compliment");
-    complimentBox.textContent = compliments[randomIndex];
-    complimentBox.style.backgroundColor = getRandomColor();
-    complimentBox.style.transform = `rotate(${(Math.random() - 0.5) * 10}deg)`;
-}
-
-function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+        color: #333;
+        transition: all 1s;
     }
-    return color;
-}
-</script>
+
+    header {
+        background-color: #6200ea;
+        color: #fff;
+        padding: 1em;
+        text-align: center;
+    }
+
+    main {
+        margin: 20px;
+    }
+
+    #date, #mood, button {
+        font-size: 1em;
+        padding: 10px;
+        margin: 5px 0;
+    }
+
+    button {
+        background-color: #6200ea;
+        border: none;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #3700b3;
+    }
+
+    #mood-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    #mood-list li {
+        background-color: #e0e0e0;
+        padding: 1em;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    footer {
+        padding: 1em;
+        text-align: center;
+        background-color: #6200ea;
+        color: #fff;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+</html>
