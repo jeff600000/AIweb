@@ -3,132 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Match Memory Game</title>
+    <title>Color Match Enigma</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #333;
             font-family: 'Courier New', Courier, monospace;
-            color: #f0f0f0;
-            user-select: none;
+            text-align: center;
+            padding: 50px;
+            background-color: #e0e0e0;
         }
-        #gameBoard {
-            display: grid;
-            grid-template-columns: repeat(4, 100px);
-            grid-gap: 10px;
+        .color-sequence, .user-sequence {
+            display: inline-block;
+            margin: 30px;
+            opacity: 0.8;
         }
-        .card {
-            width: 100px;
-            height: 100px;
-            background-color: #444;
+        .color {
+            width: 60px;
+            height: 60px;
+            margin: 8px;
+            display: inline-block;
             cursor: pointer;
-            border-radius: 8px;
-            transition: transform 0.3s;
-            position: relative;
+            transition: transform 0.3s ease;
         }
-        .card:hover {
+        .color:hover {
             transform: scale(1.1);
         }
-        .matched {
-            background-color: transparent;
-            cursor: default;
+        #result {
+            font-size: 22px;
+            color: #333;
+            margin-top: 25px;
         }
-        .hidden {
-            background-color: #333;
-        }
-        .shadow {
-            position: absolute;
-            height: 100%;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-            border-radius: 8px;
-            display: none;
-        }
-        .card .flipped .shadow {
+        #reset {
             display: block;
+            margin: 30px auto;
+            padding: 12px 25px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #reset:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div id="gameBoard"></div>
+
+    <h1>Color Match Enigma</h1>
+    <p>Unravel the mystery of the color sequence. Venture forth!</p>
+
+    <div class="color-sequence" id="colorSequence"></div>
+    <div class="user-sequence" id="userSequence"></div>
+
+    <div id="result"></div>
+    <button id="reset">Restart the Quest</button>
 
     <script>
-        const colors = ["red", "blue", "green", "yellow", "purple", "cyan", "orange", "pink"];
-        let boardColors = [...colors, ...colors];
-        boardColors = boardColors.sort(() => Math.random() - 0.5);
+        const colors = ["red", "green", "blue", "yellow", "purple", "orange"];
+        const sequenceLength = 4;
+        let currentSequence = [];
+        let userSequence = [];
 
-        const gameBoard = document.getElementById('gameBoard');
-        let firstCard = null, secondCard = null;
+        function generateSequence() {
+            for(let i = 0; i < sequenceLength; i++) {
+                const randomIndex = Math.floor(Math.random() * colors.length);
+                currentSequence.push(colors[randomIndex]);
+            }
+            displaySequence();
+        }
 
-        function createBoard() {
-            boardColors.forEach(color => {
-                const card = document.createElement('div');
-                card.classList.add('card', 'hidden');
-                card.setAttribute('data-color', color);
-                
-                const shadow = document.createElement('div');
-                shadow.classList.add('shadow');
-                card.appendChild(shadow);
-                
-                card.addEventListener('click', handleCardClick);
-                gameBoard.appendChild(card);
+        function displaySequence() {
+            const container = document.getElementById("colorSequence");
+            container.innerHTML = '';
+            currentSequence.forEach(color => {
+                const div = document.createElement("div");
+                div.className = 'color';
+                div.style.backgroundColor = color;
+                container.appendChild(div);
             });
         }
 
-        function handleCardClick(event) {
-            const clickedCard = event.currentTarget;
-            if (clickedCard.classList.contains('matched') || clickedCard === firstCard) return;
-
-            flipCard(clickedCard);
-
-            if (!firstCard) {
-                firstCard = clickedCard;
-            } else {
-                secondCard = clickedCard;
-
-                if (firstCard.getAttribute('data-color') === secondCard.getAttribute('data-color')) {
-                    matchCards(firstCard, secondCard);
-                } else {
-                    unflipCards(firstCard, secondCard);
+        function userClickHandler(color) {
+            if (userSequence.length < sequenceLength) {
+                userSequence.push(color);
+                const container = document.getElementById("userSequence");
+                const div = document.createElement("div");
+                div.className = 'color';
+                div.style.backgroundColor = color;
+                container.appendChild(div);
+                
+                if (userSequence.length === sequenceLength) {
+                    checkResult();
                 }
-                resetSelection();
             }
         }
 
-        function flipCard(card) {
-            card.style.backgroundColor = card.getAttribute('data-color');
-            card.classList.remove('hidden');
-            card.classList.add('flipped');
+        function checkResult() {
+            const resultElement = document.getElementById("result");
+            if (userSequence.toString() === currentSequence.toString()) {
+                resultElement.textContent = "Congratulations, Adventurer! Sequence cracked!";
+            } else {
+                resultElement.textContent = "The strands of fate elude you. Try again!";
+            }
         }
 
-        function matchCards(card1, card2) {
-            card1.classList.add('matched');
-            card1.classList.remove('flipped');
-            card2.classList.add('matched');
-            card2.classList.remove('flipped');
+        document.getElementById("reset").addEventListener("click", () => {
+            currentSequence = [];
+            userSequence = [];
+            document.getElementById("colorSequence").innerHTML = '';
+            document.getElementById("userSequence").innerHTML = '';
+            document.getElementById("result").textContent = '';
+            generateClickablePalette();
+            generateSequence();
+        });
+
+        function generateClickablePalette() {
+            const container = document.getElementById("userSequence");
+            container.innerHTML = '';
+            colors.forEach(color => {
+                const div = document.createElement("div");
+                div.className = 'color';
+                div.style.backgroundColor = color;
+                div.addEventListener("click", () => {
+                    userClickHandler(color);
+                });
+                container.appendChild(div);
+            });
         }
 
-        function unflipCards(card1, card2) {
-            setTimeout(() => {
-                card1.style.backgroundColor = '#444';
-                card1.classList.add('hidden');
-                card1.classList.remove('flipped');
-                card2.style.backgroundColor = '#444';
-                card2.classList.add('hidden');
-                card2.classList.remove('flipped');
-            }, 1000);
-        }
-
-        function resetSelection() {
-            firstCard = null;
-            secondCard = null;
-        }
-
-        createBoard();
+        generateClickablePalette();
+        generateSequence();
     </script>
+
 </body>
 </html>
