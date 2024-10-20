@@ -3,84 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Tracker</title>
+    <title>Mystery Unraveled</title>
     <style>
         body {
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
             text-align: center;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100vh;
+            color: #333;
+        }
+        #puzzleContainer {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: background-color 0.5s ease;
-            background-color: #eeeeee;
+            height: 80vh;
         }
-        #vibe-input {
-            margin: 20px;
-            width: 60%;
-        }
-        #vibe-display {
+        .puzzlePiece {
+            margin: 10px;
             padding: 20px;
-            border-radius: 10px;
-            background-color: #ffcccb;
-            font-size: 1.5em;
-        }
-        .mystery {
-            margin-top: 20px;
-            color: #666;
-            font-size: 0.9em;
+            background-color: #fff;
+            border: 2px solid #ccc;
             cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .puzzlePiece:hover {
+            background-color: #e1e1e1;
+            border-color: #aaa;
+        }
+        #story {
+            border-top: 2px solid #333;
+            padding-top: 20px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-
-    <h1>Vibe Tracker</h1>
-    <input type="range" id="vibe-input" min="1" max="10">
-    <div id="vibe-display">Set your vibe!</div>
-    <div class="mystery" onclick="revealMystery()">What secrets do you hold?</div>
+    <h1>Mystery Unraveled</h1>
+    <div id="puzzleContainer">
+        <div class="puzzlePiece" onclick="choosePiece(1)">Clue 1</div>
+        <div class="puzzlePiece" onclick="choosePiece(2)">Clue 2</div>
+        <div class="puzzlePiece" onclick="choosePiece(3)">Clue 3</div>
+        <div class="puzzlePiece" onclick="choosePiece(4)">Clue 4</div>
+    </div>
+    <div id="story">
+        <h2>The Story:</h2>
+        <p id="storyText">...</p>
+    </div>
 
     <script>
-        const body = document.body;
-        const vibeInput = document.getElementById('vibe-input');
-        const vibeDisplay = document.getElementById('vibe-display');
-        
-        vibeInput.addEventListener('input', function() {
-            const vibeValue = vibeInput.value;
-            vibeDisplay.textContent = `Your vibe is: ${vibeValue}`;
-            changeBackground(vibeValue);
-        });
+        const storyParts = [
+            'In a quiet town, an unexpected event occurred...',
+            'A detective found a mysterious note left in the old library...',
+            'A series of hidden messages led to a secret room...',
+            'The truth behind the mystery revealed an unsuspected twist...'
+        ];
 
-        function changeBackground(vibe) {
-            let color;
-            switch(true) {
-                case (vibe <= 3):
-                    color = '#ff4d4d'; // red for low vibes
-                    break;
-                case (vibe <= 6):
-                    color = '#ffd11a'; // yellow for medium vibes
-                    break;
-                default:
-                    color = '#85e085'; // green for high vibes
+        const chosenPieces = [];
+
+        function choosePiece(index) {
+            if (!chosenPieces.includes(index)) {
+                chosenPieces.push(index);
+                revealStory();
             }
-            body.style.backgroundColor = color;
         }
-        
-        function revealMystery() {
-            const messages = [
-                "Whispers of the digital realm...",
-                "Look within the code...",
-                "The answer lies in simplicity...",
-                "Change alters perception...",
-                "Have you discovered the hidden path?"
-            ];
-            alert(messages[Math.floor(Math.random() * messages.length)]);
+
+        function revealStory() {
+            if (chosenPieces.length === storyParts.length) {
+                document.getElementById('storyText').innerText = storyParts.join(' ');
+            } else {
+                document.getElementById('storyText').innerText = 'Keep uncovering the clues...';
+            }
         }
     </script>
-
 </body>
 </html>
