@@ -3,118 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Card Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Color Enigma</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #1c1c1c;
+            margin: 0;
+            color: #e0e0e0;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        #color-box {
+            width: 150px;
+            height: 150px;
+            margin: 20px;
+            border: 1px solid #333;
+            transition: border-color 0.5s;
+        }
+        .input-container {
+            margin: 10px 0;
+        }
+        .input-container input {
+            width: 50px;
+            padding: 5px;
+            margin-right: 5px;
+            color: #333;
+            border: none;
+            border-radius: 3px;
+        }
+        #result {
+            font-weight: bold;
+            margin: 15px 0;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+        #result.fade {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+        button {
+            background-color: #444;
+            color: #e0e0e0;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.5s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #555;
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>Memory Card Game</h1>
-    <div id="game-board"></div>
-    <script src="script.js"></script>
+    <h1>Mystery Color Game</h1>
+    <div id="color-box"></div>
+    <div class="input-container">
+        <input type="number" id="red" placeholder="R" min="0" max="255">
+        <input type="number" id="green" placeholder="G" min="0" max="255">
+        <input type="number" id="blue" placeholder="B" min="0" max="255">
+    </div>
+    <button onclick="checkGuess()">Submit Guess</button>
+    <div id="result"></div>
+
+    <script>
+        let randomColor = {
+            r: Math.floor(Math.random() * 256),
+            g: Math.floor(Math.random() * 256),
+            b: Math.floor(Math.random() * 256)
+        };
+
+        document.getElementById('color-box').style.backgroundColor = `rgb(${randomColor.r}, ${randomColor.g}, ${randomColor.b})`;
+
+        function checkGuess() {
+            const redGuess = parseInt(document.getElementById('red').value);
+            const greenGuess = parseInt(document.getElementById('green').value);
+            const blueGuess = parseInt(document.getElementById('blue').value);
+
+            const resultElement = document.getElementById('result');
+            const colorBox = document.getElementById('color-box');
+
+            if (redGuess === randomColor.r && greenGuess === randomColor.g && blueGuess === randomColor.b) {
+                resultElement.innerText = "Correct! You decoded the color!";
+                resultElement.style.color = "limegreen";
+                document.body.style.backgroundColor = `rgb(${randomColor.r}, ${randomColor.g}, ${randomColor.b})`;
+                colorBox.style.borderColor = "limegreen";
+            } else {
+                resultElement.innerText = "Inaccurate! Attempt another pass.";
+                resultElement.style.color = "red";
+                resultElement.classList.add("fade");
+                setTimeout(() => {
+                    resultElement.classList.remove("fade");
+                }, 500);
+            }
+        }
+    </script>
 </body>
 </html>
-
-<style>
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
-}
-
-h1 {
-    margin-bottom: 20px;
-}
-
-#game-board {
-    display: grid;
-    grid-template-columns: repeat(4, 100px);
-    grid-gap: 10px;
-}
-
-.card {
-    width: 100px;
-    height: 100px;
-    background-color: white;
-    border: 2px solid #ccc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 24px;
-}
-
-.card.flipped {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.card.matched {
-    background-color: #80E27E;
-    cursor: default;
-}
-</style>
-
-<script>
-const gameBoard = document.getElementById('game-board');
-const cardValues = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-let cardArray = [...cardValues, ...cardValues]; // Duplicate array for pairs
-let selectedCards = [];
-
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
-    }
-}
-
-function createCard(value) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.dataset.value = value;
-    card.addEventListener('click', handleCardClick);
-    return card;
-}
-
-function setupBoard() {
-    shuffle(cardArray);
-    cardArray.forEach(value => {
-        const card = createCard(value);
-        gameBoard.appendChild(card);
-    });
-}
-
-function handleCardClick() {
-    if (selectedCards.length < 2 && !this.classList.contains('flipped') && !this.classList.contains('matched')) {
-        this.classList.add('flipped');
-        this.textContent = this.dataset.value;
-        selectedCards.push(this);
-        
-        if (selectedCards.length === 2) {
-            checkForMatch();
-        }
-    }
-}
-
-function checkForMatch() {
-    const [firstCard, secondCard] = selectedCards;
-
-    if (firstCard.dataset.value === secondCard.dataset.value) {
-        firstCard.classList.add('matched');
-        secondCard.classList.add('matched');
-        selectedCards = [];
-    } else {
-        setTimeout(() => {
-            firstCard.classList.remove('flipped');
-            secondCard.classList.remove('flipped');
-            firstCard.textContent = '';
-            secondCard.textContent = '';
-            selectedCards = [];
-        }, 1000);
-    }
-}
-
-setupBoard();
-</script>
