@@ -3,140 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mood Tracker</title>
+    <title>MoodMixer</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        body, html {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             color: #333;
         }
+        header {
+            background-color: #1db954;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
         .container {
-            width: 90%;
-            max-width: 600px;
-            margin: 20px;
             padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .mood-inputs, .playlist, .mood-board, .history, .suggestions, .gamification {
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        label {
-            font-weight: bold;
+        .mood-slider {
+            width: 100%;
         }
-        select, input[type="date"], textarea {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px;
-            background-color: #0288d1;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
+        .interactive {
             cursor: pointer;
+            transition: transform 0.2s;
         }
-        button:hover {
-            background-color: #0277bd;
+        .interactive:hover {
+            transform: scale(1.05);
         }
-        .moods-log {
-            margin-top: 20px;
-        }
-        .mood-entry {
-            display: flex;
-            justify-content: space-between;
-            background-color: #e0f7fa;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        .remove-button {
-            background-color: #e57373;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .mood-color {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Mood Tracker</h1>
-    <form id="moodForm">
-        <label for="mood">Select Your Mood</label>
-        <select id="mood" required>
-            <option value="happy">Happy 😊</option>
-            <option value="sad">Sad 😢</option>
-            <option value="angry">Angry 😡</option>
-            <option value="anxious">Anxious 😟</option>
-            <option value="excited">Excited 😃</option>
-            <option value="calm">Calm 😌</option>
-        </select>
+    <header>
+        <h1>MoodMixer: Create Your Collaborative Playlist</h1>
+    </header>
 
-        <label for="date">Date</label>
-        <input type="date" id="date" required>
+    <div class="container">
 
-        <label for="note">Add a Note</label>
-        <textarea id="note" rows="3" placeholder="Notes about your day..."></textarea>
+        <div class="mood-inputs interactive">
+            <h2>1. Select Your Mood</h2>
+            <label for="mood-category">Choose a mood:</label>
+            <select id="mood-category">
+                <option>Happy</option>
+                <option>Relaxed</option>
+                <option>Excited</option>
+                <option>Melancholic</option>
+            </select>
+            <br><br>
+            <label for="mood-slider">Mood Intensity:</label>
+            <input type="range" id="mood-slider" class="mood-slider" min="0" max="100" value="50">
+        </div>
 
-        <button type="submit">Add Mood</button>
-    </form>
+        <div class="playlist interactive">
+            <h2>2. Collaborative Playlist</h2>
+            <ul id="playlist">
+                <li>Song 1 <button onclick="toggleVote(this)">Upvote</button></li>
+                <li>Song 2 <button onclick="toggleVote(this)">Upvote</button></li>
+                <li>Song 3 <button onclick="toggleVote(this)">Upvote</button></li>
+            </ul>
+        </div>
 
-    <div class="moods-log" id="moodsLog">
-        <h2>Logged Moods</h2>
+        <div class="mood-board interactive">
+            <h2>3. Interactive Mood Board</h2>
+            <div style="background-color: #ffcc00;" class="mood-color"></div>
+            <div style="background-color: #66ff66;" class="mood-color"></div>
+            <div style="background-color: #3366ff;" class="mood-color"></div>
+        </div>
+
+        <div class="history interactive">
+            <h2>4. Mood History & Analytics</h2>
+            <p>Your mood over time: Happy, Excited</p>
+        </div>
+
+        <div class="suggestions interactive">
+            <h2>5. Thematic Playlist Suggestions</h2>
+            <ul>
+                <li><button onclick="suggestPlaylist()">Chill Night In</button></li>
+                <li><button onclick="suggestPlaylist()">Road Trip Adventure</button></li>
+                <li><button onclick="suggestPlaylist()">Party Time</button></li>
+            </ul>
+        </div>
+
+        <div class="gamification interactive">
+            <h2>6. Gamification and Rewards</h2>
+            <p>Earn badges for participation!</p>
+        </div>
+
     </div>
-</div>
 
-<script>
-    const moodForm = document.getElementById('moodForm');
-    const moodsLog = document.getElementById('moodsLog');
-    const moods = [];
+    <script>
+        function toggleVote(button) {
+            button.textContent = button.textContent === 'Upvote' ? 'Downvote' : 'Upvote';
+        }
 
-    moodForm.onsubmit = function(event) {
-        event.preventDefault();
-
-        const mood = document.getElementById('mood').value;
-        const date = document.getElementById('date').value;
-        const note = document.getElementById('note').value;
-
-        moods.push({ mood, date, note });
-
-        displayMoods();
-        moodForm.reset();
-    };
-
-    function displayMoods() {
-        moodsLog.innerHTML = '<h2>Logged Moods</h2>';
-        moods.forEach((entry, index) => {
-            const moodEntryDiv = document.createElement('div');
-            moodEntryDiv.classList.add('mood-entry');
-            moodEntryDiv.innerHTML = `
-                <div>
-                    <strong>${entry.date} - ${entry.mood}</strong>
-                    <p>${entry.note}</p>
-                </div>
-                <button class="remove-button" onclick="removeMood(${index})">Remove</button>
-            `;
-
-            moodsLog.appendChild(moodEntryDiv);
-        });
-    }
-
-    function removeMood(index) {
-        moods.splice(index, 1);
-        displayMoods();
-    }
-</script>
+        function suggestPlaylist() {
+            alert("Feature coming soon!");
+        }
+    </script>
 
 </body>
 </html>
