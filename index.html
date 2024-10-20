@@ -3,95 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enigma of the 15</title>
+    <title>The Cryptic Shuffle</title>
     <style>
         body {
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #151515;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: #220f29;
+            color: #fff;
         }
-
-        #puzzle-container {
+        .puzzle-container {
             display: grid;
-            grid-template-columns: repeat(4, 80px);
-            grid-template-rows: repeat(4, 80px);
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
             gap: 5px;
-            transform: rotate(1deg);
-            border: 3px solid #42f5e9;
-            box-shadow: 0 0 20px #42f5e9, 0 0 20px #42f5e9 inset;
         }
-
         .tile {
-            width: 80px;
-            height: 80px;
-            background-color: #3c3c3c;
+            width: 100px;
+            height: 100px;
             display: flex;
             justify-content: center;
             align-items: center;
+            background-color: #3e1f47;
+            border: 2px solid #6a4e7d;
             font-size: 24px;
-            color: #ffffff;
-            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform 0.3s;
         }
-
         .tile:hover {
-            background-color: #505050;
             transform: scale(1.1);
         }
-
-        .empty {
-            background-color: transparent;
-            cursor: default;
+        .hidden {
+            visibility: hidden;
         }
     </style>
 </head>
 <body>
-    <div id="puzzle-container" title="Move the tiles and solve the mystery!">
-        <!-- The tiles will be generated dynamically with JavaScript -->
+
+    <div class="puzzle-container" id="puzzle">
+        <div class="tile" data-index="0">1</div>
+        <div class="tile" data-index="1">2</div>
+        <div class="tile" data-index="2">3</div>
+        <div class="tile" data-index="3">4</div>
+        <div class="tile" data-index="4">5</div>
+        <div class="tile" data-index="5">6</div>
+        <div class="tile" data-index="6">7</div>
+        <div class="tile" data-index="7">8</div>
+        <div class="tile hidden" data-index="8"></div>
     </div>
 
     <script>
-        const puzzleContainer = document.getElementById('puzzle-container');
-        let tiles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, null]; // 15-puzzle
+        const tiles = Array.from(document.querySelectorAll('.tile'));
+        let emptyIndex = 8;
 
-        // Shuffle the tiles array at the start
-        tiles = tiles.sort(() => Math.random() - 0.5);
-
-        // Render the shuffled tiles on the grid
-        tiles.forEach((number, index) => {
-            createTile(number, index);
+        tiles.forEach(tile => {
+            tile.addEventListener('click', () => {
+                const tileIndex = parseInt(tile.getAttribute('data-index'));
+                if (isMovable(tileIndex, emptyIndex)) {
+                    moveTile(tileIndex, emptyIndex);
+                }
+            });
         });
 
-        function createTile(number, index) {
-            const tile = document.createElement('div');
-            tile.classList.add('tile');
-            if (number !== null) {
-                tile.textContent = number;
-            } else {
-                tile.classList.add('empty');
-            }
-            tile.addEventListener('click', () => moveTile(index));
-            puzzleContainer.appendChild(tile);
+        function isMovable(tileIndex, emptyIndex) {
+            const rowDiff = Math.abs(Math.floor(tileIndex / 3) - Math.floor(emptyIndex / 3));
+            const colDiff = Math.abs((tileIndex % 3) - (emptyIndex % 3));
+            return (rowDiff + colDiff === 1);
         }
 
-        function moveTile(index) {
-            const emptyIndex = tiles.indexOf(null);
-            if ([index - 1, index + 1, index - 4, index + 4].includes(emptyIndex)) {
-                [tiles[emptyIndex], tiles[index]] = [tiles[index], tiles[emptyIndex]];
-                renderPuzzle();
-            }
-        }
+        function moveTile(fromIndex, toIndex) {
+            [tiles[fromIndex].innerHTML, tiles[toIndex].innerHTML] = [tiles[toIndex].innerHTML, tiles[fromIndex].innerHTML];
+            [tiles[fromIndex].classList, tiles[toIndex].classList] = [tiles[toIndex].classList, tiles[fromIndex].classList];
+            
+            // swap attributes
+            const tempDataIndex = tiles[fromIndex].getAttribute('data-index');
+            tiles[fromIndex].setAttribute('data-index', tiles[toIndex].getAttribute('data-index'));
+            tiles[toIndex].setAttribute('data-index', tempDataIndex);
 
-        function renderPuzzle() {
-            puzzleContainer.innerHTML = '';
-            tiles.forEach((number, index) => {
-                createTile(number, index);
-            });
+            // update emptyIndex
+            emptyIndex = fromIndex;
         }
     </script>
+
 </body>
 </html>
