@@ -3,206 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure</title>
+    <title>BreadQuest</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-        canvas {
-            background: #f9e4b7;
-            display: block;
-        }
-        #hud {
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            font-family: Arial, sans-serif;
-        }
+        body { margin: 0; overflow: hidden; }
+        canvas { background: #faf5e4; display: block; margin: auto; }
+        #gameOverMessage { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2em; background: white; padding: 20px; border: 3px solid #333; border-radius: 10px; }
     </style>
 </head>
 <body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="gameOverMessage">Game Over! <button onclick="restartGame()">Restart</button></div>
+    
+    <script>
+        // Game Setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-<div id="hud">
-    <h3>Bread Adventure</h3>
-    <p>Health: <span id="health">3</span></p>
-    <p>Collected Items: <span id="collectedItems">0</span></p>
-</div>
-<canvas id="gameCanvas"></canvas>
+        const zones = ["Wheat Fields", "Flour Mountains", "Yeast Swamps", "Toasty Deserts", "Bread Castle"];
+        const colors = ["#e7d09e", "#dedede", "#b0d7a3", "#f4c287", "#c49789"];
+        let currentZone = 0;
 
-<script>
-    // Set up the game canvas
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+        // Player Setup
+        const player = {
+            x: 100,
+            y: 100,
+            width: 40,
+            height: 40,
+            speed: 5,
+            dx: 0,
+            dy: 0,
+            jumpPower: 10,
+            isJumping: false,
+            items: [],
+            goldenLoaves: 0,
+        };
 
-    // Game constants
-    const gravity = 0.5;
-    const jumpStrength = -8;
-    const moveSpeed = 5;
-    const playerWidth = 50;
-    const playerHeight = 30;
-    const enemyWidth = 50;
-    const enemyHeight = 30;
-    const itemWidth = 20;
-    const itemHeight = 20;
+        // Control Keys
+        const keys = {
+            right: { pressed: false },
+            left: { pressed: false },
+            up: { pressed: false },
+        };
 
-    // Game variables
-    let player = {
-        x: 100,
-        y: canvas.height - playerHeight,
-        width: playerWidth,
-        height: playerHeight,
-        velocityY: 0,
-        grounded: true,
-        health: 3,
-        collectedItems: 0
-    };
+        // Bread-themed Elements
+        const breadsticks = [];
+        const goldenLoaves = [];
+        const enemies = [];
 
-    let keys = {
-        left: false,
-        right: false,
-        jump: false
-    };
-
-    let enemies = [];
-    let items = [];
-    let frameCount = 0;
-
-    // Create enemies and items
-    function createEnemiesAndItems() {
-        for (let i = 0; i < 5; i++) {
-            const enemy = {
-                x: Math.random() * canvas.width,
-                y: canvas.height - enemyHeight,
-                width: enemyWidth,
-                height: enemyHeight,
-                velocityX: Math.random() > 0.5 ? 2 : -2
-            };
-            enemies.push(enemy);
-
-            const item = {
-                x: Math.random() * canvas.width,
-                y: canvas.height - itemHeight * 3,
-                width: itemWidth,
-                height: itemHeight
-            };
-            items.push(item);
-        }
-    }
-
-    createEnemiesAndItems();
-
-    // Handle keyboard input
-    window.addEventListener('keydown', (e) => {
-        if (e.code === 'ArrowLeft') keys.left = true;
-        if (e.code === 'ArrowRight') keys.right = true;
-        if (e.code === 'Space' && player.grounded) keys.jump = true;
-    });
-
-    window.addEventListener('keyup', (e) => {
-        if (e.code === 'ArrowLeft') keys.left = false;
-        if (e.code === 'ArrowRight') keys.right = false;
-        if (e.code === 'Space') keys.jump = false;
-    });
-
-    function updateGame() {
-        // Update player movement
-        if (keys.left) player.x -= moveSpeed;
-        if (keys.right) player.x += moveSpeed;
-        if (keys.jump) {
-            player.velocityY = jumpStrength;
-            player.grounded = false;
+        class Breadstick {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 20;
+                this.height = 20;
+            }
+            draw() {
+                ctx.fillStyle = "#c39b77";
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
         }
 
-        // Apply gravity
-        player.velocityY += gravity;
-        player.y += player.velocityY;
+        class GoldenLoaf {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 20;
+                this.height = 20;
+            }
+            draw() {
+                ctx.fillStyle = "#ffd700";
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
 
-        // Check ground collision
-        if (player.y + player.height > canvas.height) {
+        class Enemy {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 40;
+                this.height = 40;
+            }
+            draw() {
+                ctx.fillStyle = "#8b4513";
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+
+        // Randomly position items
+        function placeItems() {
+            const maxItems = 5;
+            for (let i = 0; i < maxItems; i++) {
+                breadsticks.push(new Breadstick(Math.random() * canvas.width, Math.random() * canvas.height));
+                goldenLoaves.push(new GoldenLoaf(Math.random() * canvas.width, Math.random() * canvas.height));
+                enemies.push(new Enemy(Math.random() * canvas.width, Math.random() * canvas.height));
+            }
+        }
+
+        // Move Player
+        function movePlayer() {
+            if (keys.right.pressed && player.x < canvas.width - player.width) {
+                player.dx = player.speed;
+            } else if (keys.left.pressed && player.x > 0) {
+                player.dx = -player.speed;
+            } else {
+                player.dx = 0;
+            }
+
+            if (keys.up.pressed && !player.isJumping) {
+                player.isJumping = true;
+                player.dy = -player.jumpPower;
+            }
+
+            player.dy += 1;  // gravity
+            player.x += player.dx;
+            player.y += player.dy;
+
+            if (player.y + player.height > canvas.height) {  // ground collision
+                player.y = canvas.height - player.height;
+                player.isJumping = false;
+                player.dy = 0;
+            }
+
+            if (player.x > canvas.width) {
+                nextZone();
+            }
+        }
+
+        // Next Zone
+        function nextZone() {
+            currentZone++;
+            if (currentZone >= zones.length) {
+                endGame();
+            } else {
+                resetGame();
+            }
+        }
+
+        // Game Over
+        function endGame() {
+            document.getElementById('gameOverMessage').style.display = 'block';
+        }
+
+        // Restart Game
+        function restartGame() {
+            document.getElementById('gameOverMessage').style.display = 'none';
+            currentZone = 0;
+            player.goldenLoaves = 0;
+            resetGame();
+        }
+
+        // Reset Game
+        function resetGame() {
+            player.x = 0;
             player.y = canvas.height - player.height;
-            player.velocityY = 0;
-            player.grounded = true;
+            breadsticks.length = 0;
+            goldenLoaves.length = 0;
+            enemies.length = 0;
+            placeItems();
+            draw();
         }
 
-        // Handle enemy movement
-        enemies.forEach((enemy, index) => {
-            enemy.x += enemy.velocityX;
-            if (enemy.x < 0 || enemy.x + enemy.width > canvas.width) {
-                enemy.velocityX *= -1;
-            }
-            // Check collision with player
-            if (checkCollision(player, enemy)) {
-                player.health -= 1;
-                enemies.splice(index, 1); // Remove collided enemy
-            }
-        });
+        // Draw Player and Items
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = colors[currentZone];
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Handle item collection
-        items.forEach((item, index) => {
-            if (checkCollision(player, item)) {
-                player.collectedItems += 1;
-                items.splice(index, 1); // Remove collected item
-            }
-        });
+            // Draw player
+            ctx.fillStyle = "#ffbf00";
+            ctx.fillRect(player.x, player.y, player.width, player.height);
 
-        // Update HUD
-        document.getElementById('health').textContent = player.health;
-        document.getElementById('collectedItems').textContent = player.collectedItems;
-    }
-
-    function checkCollision(rect1, rect2) {
-        return (
-            rect1.x < rect2.x + rect2.width &&
-            rect1.x + rect1.width > rect2.x &&
-            rect1.y < rect2.y + rect2.height &&
-            rect1.y + rect1.height > rect2.y
-        );
-    }
-
-    function drawGame() {
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw player
-        ctx.fillStyle = 'brown';
-        ctx.fillRect(player.x, player.y, player.width, player.height);
-
-        // Draw enemies
-        ctx.fillStyle = 'green';
-        enemies.forEach(enemy => {
-            ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-        });
-
-        // Draw items
-        ctx.fillStyle = 'yellow';
-        items.forEach(item => {
-            ctx.fillRect(item.x, item.y, item.width, item.height);
-        });
-    }
-
-    function gameLoop() {
-        frameCount++;
-        if (frameCount % 240 === 0) {
-            createEnemiesAndItems(); // Add more enemies and items every few seconds
+            // Draw items
+            breadsticks.forEach(b => b.draw());
+            goldenLoaves.forEach(l => l.draw());
+            enemies.forEach(e => e.draw());
         }
 
-        updateGame();
-        drawGame();
-
-        if (player.health > 0) {
-            requestAnimationFrame(gameLoop);
-        } else {
-            alert('Game Over! Refresh to play again.');
+        // Update Game State
+        function update() {
+            movePlayer();
+            draw();
+            requestAnimationFrame(update);
         }
-    }
 
-    gameLoop();
-</script>
+        // Key Event Listeners
+        window.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowRight':
+                    keys.right.pressed = true;
+                    break;
+                case 'ArrowLeft':
+                    keys.left.pressed = true;
+                    break;
+                case 'ArrowUp':
+                    keys.up.pressed = true;
+                    break;
+            }
+        });
 
+        window.addEventListener('keyup', (e) => {
+            switch (e.key) {
+                case 'ArrowRight':
+                    keys.right.pressed = false;
+                    break;
+                case 'ArrowLeft':
+                    keys.left.pressed = false;
+                    break;
+                case 'ArrowUp':
+                    keys.up.pressed = false;
+                    player.isJumping = false;
+                    break;
+            }
+        });
+
+        // Initialize Game
+        placeItems();
+        update();
+    </script>
 </body>
 </html>
