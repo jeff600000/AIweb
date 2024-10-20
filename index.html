@@ -3,103 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meditation Timer</title>
+    <title>Random Enigma Generator</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, #9eafb4, #627d99);
-            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #1d1e22;
+            color: #cfcfcf;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .enigma-container {
             text-align: center;
-            transition: background 2s;
+            background-color: #2c2f34;
+            padding: 40px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            opacity: 0.9;
         }
-        .timer-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            transition: transform 0.5s;
-        }
-        .timer-container:hover {
-            transform: translate(-50%, -50%) scale(1.05);
-        }
-        h1 {
-            font-size: 48px;
+        .enigma-message {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #ffcc00;
             cursor: pointer;
-            transition: color 0.5s;
+            transition: color 0.3s;
         }
-        h1:hover {
-            color: #ff6f61;
+        .enigma-message:hover {
+            color: #ff6600;
         }
-        button {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        .generate-button {
+            padding: 12px 24px;
             font-size: 16px;
-            transition: background-color 0.5s;
+            color: #1d1e22;
+            background-color: #ffcc00;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
         }
-        button:hover {
-            background-color: #45a049;
+        .generate-button:active {
+            background-color: #ff6600;
+            transform: translateY(4px);
+        }
+        .enigma-history {
+            margin-top: 20px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .history-item {
+            font-size: 14px;
+            color: #aaaaaa;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .history-item:hover {
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
-    <div class="timer-container" id="mainContainer">
-        <h1 id="timer" onclick="toggleDarkMode()">5:00</h1>
-        <button onclick="startTimer()">Start</button>
-        <button onclick="resetTimer()">Reset</button>
+    <div class="enigma-container">
+        <div class="enigma-message" id="enigma" onclick="copyToClipboard()">Click here to unveil the enigma...</div>
+        <button class="generate-button" onclick="generateEnigma()">Seek the Enigma</button>
+        <div class="enigma-history" id="history"></div>
     </div>
 
     <script>
-        let timer;
-        let countdown;
-        let isRunning = false;
-        const defaultTime = 300;
-        let timeRemaining = defaultTime;
+        const enigmas = [
+            "The reflection in the water holds the secrets of time.",
+            "To find the light, one must first embrace the shadows.",
+            "When the clock strikes midnight, ask yourself who you are.",
+            "The first step is to see what you do not see.",
+            "Whisper to the wind and hear the echo of truth.",
+            "Your shadow knows the path where the sunlight fears to tread.",
+            "Seek the silence in the melody to understand the noise.",
+            "Beyond the horizon lies the answer you seek, but never ask.",
+            "Through the mist, a whisper beckons with a forgotten truth.",
+            "The road not taken hides mysteries only wanderers find."
+        ];
 
-        function displayTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            document.getElementById('timer').textContent = `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        const enigmaHistory = [];
+
+        function generateEnigma() {
+            const randomIndex = Math.floor(Math.random() * enigmas.length);
+            const chosenEnigma = enigmas[randomIndex];
+            document.getElementById('enigma').innerText = chosenEnigma;
+            enigmaHistory.push(chosenEnigma);
+            updateHistory();
         }
 
-        function startTimer() {
-            if (isRunning) return;
-            isRunning = true;
-            timer = timeRemaining;
-
-            countdown = setInterval(() => {
-                timer--;
-                displayTime(timer);
-
-                if (timer <= 0) {
-                    clearInterval(countdown);
-                    alert('Meditation session completed!');
-                    isRunning = false;
-                }
-            }, 1000);
+        function updateHistory() {
+            const historyElement = document.getElementById('history');
+            historyElement.innerHTML = '';
+            enigmaHistory.slice(-5).reverse().forEach((enigma, index) => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerText = enigma;
+                item.onclick = () => alert(`Reflection ${enigmaHistory.length - index}: "${enigma}"`);
+                historyElement.appendChild(item);
+            });
         }
-
-        function resetTimer() {
-            clearInterval(countdown);
-            isRunning = false;
-            timeRemaining = defaultTime;
-            displayTime(timeRemaining);
-        }
-
-        function toggleDarkMode() {
-            document.body.style.background = document.body.style.background === 'black' ? 'linear-gradient(to bottom, #9eafb4, #627d99)' : 'black';
-        }
-
-        window.onload = function() {
-            displayTime(timeRemaining);
+        
+        function copyToClipboard() {
+            const enigmaText = document.getElementById('enigma').innerText;
+            navigator.clipboard.writeText(enigmaText).then(() => {
+                alert('Enigma copied to clipboard!');
+            }, (err) => {
+                console.error('Failed to copy!', err);
+            });
         }
     </script>
 </body>
