@@ -1,117 +1,224 @@
-<!-- I need to put this here, dont ask why --><!DOCTYPE html>
+<!-- I need to put this here, dont ask why -->**1. Homepage (index.html):**
+
+```html
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mythical Companions Adoption Center</title>
+    <title>Fluffy the Traveling Cat</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f8ff;
+            color: #333;
             margin: 0;
             padding: 0;
         }
         header {
-            background-color: #8e44ad;
-            color: #ffffff;
-            padding: 20px 0;
+            background-color: #ff69b4;
+            padding: 15px;
             text-align: center;
+            color: white;
         }
         nav {
             display: flex;
             justify-content: center;
-            background-color: #633974;
-            padding: 10px 0;
+            background-color: #ffebcd;
+            padding: 10px;
         }
         nav a {
-            color: #ffffff;
-            text-decoration: none;
             margin: 0 15px;
+            text-decoration: none;
+            color: #333;
             font-weight: bold;
         }
-        .container {
-            padding: 20px;
+        h1 {
             text-align: center;
+            margin-top: 50px;
         }
-        .card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin: 10px;
-            padding: 20px;
-            display: inline-block;
-            width: calc(33% - 60px);
-            vertical-align: top;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: scale(1.05);
-        }
-        .card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        .card h3 {
-            margin: 10px 0;
-        }
-        .footer {
-            background-color: #8e44ad;
-            color: white;
-            padding: 10px;
+        p {
             text-align: center;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+            font-size: 18px;
+            max-width: 600px;
+            margin: 20px auto;
         }
     </style>
-    <script>
-        function adoptCreature(creatureName) {
-            alert("Congratulations! You've decided to adopt a " + creatureName + ". Our team will contact you shortly for the adoption process.");
-        }
-    </script>
 </head>
 <body>
-
-<header>
-    <h1>Mythical Companions Adoption Center</h1>
-    <p>Bringing Magic into Your Homes</p>
-</header>
-
-<nav>
-    <a href="#" onclick="alert('Welcome to the Home page!')">Home</a>
-    <a href="#" onclick="alert('Learn more About Us!')">About Us</a>
-    <a href="#" onclick="alert('Find a creature to Adopt!')">Adopt</a>
-    <a href="#" onclick="alert('Get in touch with us via Contact!')">Contact</a>
-</nav>
-
-<div class="container">
-    <h2>Available Mythical Creatures for Adoption</h2>
-    <div class="card" onclick="adoptCreature('Fire Dragon')">
-        <img src="https://via.placeholder.com/300x200?text=Dragon" alt="Dragon">
-        <h3>Fire Dragon</h3>
-        <p>Age: 102 years</p>
-        <p>Likes: Soaring above the clouds, gold</p>
-    </div>
-    <div class="card" onclick="adoptCreature('Phoenix')">
-        <img src="https://via.placeholder.com/300x200?text=Phoenix" alt="Phoenix">
-        <h3>Phoenix</h3>
-        <p>Age: 500 years</p>
-        <p>Likes: Ash baths, rebirth ceremonies</p>
-    </div>
-    <div class="card" onclick="adoptCreature('Unicorn')">
-        <img src="https://via.placeholder.com/300x200?text=Unicorn" alt="Unicorn">
-        <h3>Unicorn</h3>
-        <p>Age: 70 years</p>
-        <p>Likes: Rainbows, enchanted forests</p>
-    </div>
-</div>
-
-<div class="footer">
-    <p>&copy; 2023 Mythical Companions Adoption Center. All Rights Reserved.</p>
-</div>
-
+    <header>
+        <h1>Fluffy the Traveling Cat</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+    <h1>Welcome to Fluffy's Adventures!</h1>
+    <p>
+        Join Fluffy as she explores the world, one paw at a time. Follow her journey through bustling cities, serene landscapes, and magical places!
+    </p>
 </body>
 </html>
+```
+
+**2. Gallery Page (gallery.html):**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluffy's Gallery</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #ff69b4;
+            padding: 15px;
+            text-align: center;
+            color: white;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #ffebcd;
+            padding: 10px;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px;
+        }
+        .gallery img {
+            margin: 10px;
+            width: 250px;
+            height: 300px;
+            object-fit: cover;
+            border: 5px solid #ff69b4;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Fluffy's Gallery</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+    <h1>Fluffy's Travel Photos</h1>
+    <div class="gallery">
+        <img src="images/paris.jpg" alt="Fluffy in Paris">
+        <img src="images/nyc.jpg" alt="Fluffy in New York City">
+        <img src="images/tokyo.jpg" alt="Fluffy in Tokyo">
+        <img src="images/sydney.jpg" alt="Fluffy in Sydney">
+        <img src="images/cairo.jpg" alt="Fluffy in Cairo">
+    </div>
+</body>
+</html>
+```
+
+**3. Contact Page (contact.html):**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Fluffy</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #ff69b4;
+            padding: 15px;
+            text-align: center;
+            color: white;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #ffebcd;
+            padding: 10px;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .contact-form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .contact-form button {
+            background-color: #ff69b4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Contact Fluffy</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+    <h1>Send Fluffy a Message</h1>
+    <div class="contact-form">
+        <form action="#" method="post">
+            <input type="text" name="name" required placeholder="Your Name">
+            <input type="email" name="email" required placeholder="Your Email">
+            <textarea name="message" rows="5" required placeholder="Your Message"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</body>
+</html>
+```
