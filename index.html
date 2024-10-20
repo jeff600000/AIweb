@@ -3,95 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Jumble Puzzle</title>
+    <title>Color Match Memory Game</title>
     <style>
         body {
-            font-family: 'Courier New', Courier, monospace;
-            color: #333;
-            background-color: #282c34;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            background-color: #333;
+            font-family: 'Courier New', Courier, monospace;
+            color: #f0f0f0;
+            user-select: none;
         }
-        .container {
-            text-align: center;
-            background: linear-gradient(145deg, #ffffff, #e6e6e6);
-            border-radius: 15px;
-            box-shadow: 9px 9px 18px #bebebe, -9px -9px 18px #ffffff;
-            padding: 30px;
+        #gameBoard {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-gap: 10px;
         }
-        .jumble-word {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            letter-spacing: 5px;
-        }
-        .input-box {
-            width: 80%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: none;
-            outline: none;
-            box-shadow: 4px 4px 8px #f0f0f0, -4px -4px 8px #ffffff;
-        }
-        .button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            color: white;
-            background-color: #3b5998;
-            border: none;
-            border-radius: 5px;
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #444;
             cursor: pointer;
-            transition: background-color 0.2s;
+            border-radius: 8px;
+            transition: transform 0.3s;
+            position: relative;
         }
-        .button:hover {
-            background-color: #4e71ba;
+        .card:hover {
+            transform: scale(1.1);
         }
-        .result {
-            font-size: 1.2rem;
-            margin-top: 10px;
+        .matched {
+            background-color: transparent;
+            cursor: default;
         }
-        .error {
-            color: #ff4c4c;
+        .hidden {
+            background-color: #333;
         }
-        .success {
-            color: #28a745;
+        .shadow {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            border-radius: 8px;
+            display: none;
+        }
+        .card .flipped .shadow {
+            display: block;
         }
     </style>
 </head>
 <body>
+    <div id="gameBoard"></div>
 
-<div class="container">
-    <h1>Word Jumble Puzzle</h1>
-    <div class="jumble-word" id="jumbleWord"></div>
-    <input type="text" id="userGuess" class="input-box" placeholder="Guess the word...">
-    <button class="button" onclick="checkAnswer()">Check</button>
-    <p class="result" id="result"></p>
-</div>
+    <script>
+        const colors = ["red", "blue", "green", "yellow", "purple", "cyan", "orange", "pink"];
+        let boardColors = [...colors, ...colors];
+        boardColors = boardColors.sort(() => Math.random() - 0.5);
 
-<script>
-    const words = ['javascript', 'developer', 'puzzle', 'challenge', 'interface', 'browser'];
-    const selectedWord = words[Math.floor(Math.random() * words.length)];
-    const shuffledWord = selectedWord.split('').sort(() => 0.5 - Math.random()).join('');
+        const gameBoard = document.getElementById('gameBoard');
+        let firstCard = null, secondCard = null;
 
-    document.getElementById('jumbleWord').textContent = shuffledWord;
-
-    function checkAnswer() {
-        const userGuess = document.getElementById('userGuess').value.toLowerCase();
-        const resultDiv = document.getElementById('result');
-
-        if (userGuess === selectedWord) {
-            resultDiv.textContent = 'Congratulations! You got it!';
-            resultDiv.className = 'result success';
-        } else {
-            resultDiv.textContent = 'Oops! Try again!';
-            resultDiv.className = 'result error';
+        function createBoard() {
+            boardColors.forEach(color => {
+                const card = document.createElement('div');
+                card.classList.add('card', 'hidden');
+                card.setAttribute('data-color', color);
+                
+                const shadow = document.createElement('div');
+                shadow.classList.add('shadow');
+                card.appendChild(shadow);
+                
+                card.addEventListener('click', handleCardClick);
+                gameBoard.appendChild(card);
+            });
         }
-    }
-</script>
 
+        function handleCardClick(event) {
+            const clickedCard = event.currentTarget;
+            if (clickedCard.classList.contains('matched') || clickedCard === firstCard) return;
+
+            flipCard(clickedCard);
+
+            if (!firstCard) {
+                firstCard = clickedCard;
+            } else {
+                secondCard = clickedCard;
+
+                if (firstCard.getAttribute('data-color') === secondCard.getAttribute('data-color')) {
+                    matchCards(firstCard, secondCard);
+                } else {
+                    unflipCards(firstCard, secondCard);
+                }
+                resetSelection();
+            }
+        }
+
+        function flipCard(card) {
+            card.style.backgroundColor = card.getAttribute('data-color');
+            card.classList.remove('hidden');
+            card.classList.add('flipped');
+        }
+
+        function matchCards(card1, card2) {
+            card1.classList.add('matched');
+            card1.classList.remove('flipped');
+            card2.classList.add('matched');
+            card2.classList.remove('flipped');
+        }
+
+        function unflipCards(card1, card2) {
+            setTimeout(() => {
+                card1.style.backgroundColor = '#444';
+                card1.classList.add('hidden');
+                card1.classList.remove('flipped');
+                card2.style.backgroundColor = '#444';
+                card2.classList.add('hidden');
+                card2.classList.remove('flipped');
+            }, 1000);
+        }
+
+        function resetSelection() {
+            firstCard = null;
+            secondCard = null;
+        }
+
+        createBoard();
+    </script>
 </body>
 </html>
