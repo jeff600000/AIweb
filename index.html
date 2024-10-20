@@ -3,170 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoCharge Landing Page</title>
+    <title>Simple Web Layout</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            color: #333;
         }
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: #f4f4f4;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
         }
-        header .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c5f2d;
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
         }
         nav a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #555;
-        }
-        .hero {
-            text-align: center;
-            background-image: url('ecocharge-background.jpg');
-            background-size: cover;
             color: white;
-            padding: 100px 20px;
-        }
-        .hero h1 {
-            font-size: 48px;
-        }
-        .hero p {
-            font-size: 24px;
-            margin-bottom: 40px;
-        }
-        .cta-button {
-            background-color: #2c5f2d;
-            color: white;
-            padding: 10px 20px;
+            padding: 14px 20px;
             text-decoration: none;
-            font-size: 18px;
-            border-radius: 5px;
-        }
-        .features, .pricing, .about, .contact, .footer {
-            padding: 60px 20px;
             text-align: center;
         }
-        .features .feature {
-            display: inline-block;
-            width: 30%;
-            padding: 20px;
-            box-sizing: border-box;
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
         }
-        .pricing .package {
-            display: inline-block;
-            width: 30%;
-            padding: 20px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin: 0 10px;
+        .content {
+            display: flex;
+            margin: 20px;
         }
-        .about, .contact {
+        .sidebar {
+            width: 20%;
             background-color: #f4f4f4;
+            padding: 15px;
+        }
+        .main-content {
+            width: 80%;
+            padding: 15px;
         }
         footer {
             background-color: #333;
             color: white;
+            text-align: center;
             padding: 10px 0;
-        }
-        .social {
-            margin-top: 10px;
-        }
-        .social img {
-            width: 32px;
-            margin: 0 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">EcoCharge</div>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">Features</a>
-            <a href="#">Pricing</a>
-            <a href="#">About Us</a>
-            <a href="#">Contact</a>
-        </nav>
+        <h1>Website Header</h1>
     </header>
-    
-    <section class="hero">
-        <h1>Stay Powered, Stay Green.</h1>
-        <p>Harness the power of the sun with EcoCharge – Your portable energy solution.</p>
-        <a href="#" class="cta-button">Shop Now</a>
-    </section>
-
-    <section class="features">
-        <h2>Features</h2>
-        <div class="feature">
-            <h3>Portable Design</h3>
-            <p>Compact and lightweight for on-the-go energy needs.</p>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+        <a href="#about">About</a>
+    </nav>
+    <div class="content">
+        <div class="sidebar">
+            <h2>Sidebar</h2>
+            <p>Some content here...</p>
         </div>
-        <div class="feature">
-            <h3>Fast Charging</h3>
-            <p>Efficient solar panels charge your devices quickly.</p>
+        <div class="main-content">
+            <h2>Main Content</h2>
+            <p>This is the main content area.</p>
         </div>
-        <div class="feature">
-            <h3>Eco-Friendly</h3>
-            <p>Reduce your carbon footprint with renewable energy.</p>
-        </div>
-    </section>
-
-    <section class="pricing">
-        <h2>Pricing</h2>
-        <div class="package">
-            <h3>Basic Package</h3>
-            <p>EcoCharge device with a 1-year warranty.</p>
-            <a href="#" class="cta-button">Buy Now</a>
-        </div>
-        <div class="package">
-            <h3>Family Pack</h3>
-            <p>Three devices for family outings.</p>
-            <a href="#" class="cta-button">Buy Now</a>
-        </div>
-        <div class="package">
-            <h3>Pro Package</h3>
-            <p>Includes carrying case and a 2-year warranty.</p>
-            <a href="#" class="cta-button">Buy Now</a>
-        </div>
-    </section>
-
-    <section class="about">
-        <h2>About Us</h2>
-        <p>Our mission is to provide sustainable and innovative solutions for portable energy needs. Join us in making a difference.</p>
-    </section>
-
-    <section class="contact">
-        <h2>Contact Us</h2>
-        <form action="#">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <textarea name="message" placeholder="Your Message" required></textarea>
-            <button type="submit" class="cta-button">Send Message</button>
-        </form>
-        <div class="social">
-            <a href="#"><img src="facebook-icon.png" alt="Facebook"></a>
-            <a href="#"><img src="twitter-icon.png" alt="Twitter"></a>
-            <a href="#"><img src="instagram-icon.png" alt="Instagram"></a>
-        </div>
-    </section>
-
+    </div>
     <footer>
-        <p>&copy; 2023 EcoCharge. All rights reserved.</p>
-        <a href="#" class="footer-link">Terms of Service</a> 
-        <a href="#" class="footer-link">Privacy Policy</a>
-        <form action="#" class="newsletter-signup">
-            <input type="email" name="email" placeholder="Subscribe for updates">
-            <button type="submit" class="cta-button">Subscribe</button>
-        </form>
+        <p>Footer Information</p>
     </footer>
 </body>
 </html>
