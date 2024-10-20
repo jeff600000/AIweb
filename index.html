@@ -3,104 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Time Capsule</title>
+    <title>Time Weaver</title>
     <style>
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #1e1e1e;
-            color: #aeaeae;
-            margin: 0;
-            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            height: 100vh;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
         }
-        header {
-            background-color: #333;
-            color: white;
-            width: 100%;
+        .timer-box {
             text-align: center;
-            padding: 1rem 0;
-            letter-spacing: 2px;
+            padding: 40px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 12px;
+            background-color: #2a2a2a;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         }
-        header:hover {
-            background-color: #555;
-            cursor: pointer;
+        #display {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
         }
-        form {
-            max-width: 600px;
-            background-color: rgba(0,0,0,0.8);
-            padding: 2rem;
-            margin-top: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-        }
-        input[type="text"],
-        textarea,
-        input[type="datetime-local"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            border: 1px solid #555;
-            background-color: #222;
-            color: #ccc;
+        input[type="number"] {
+            width: 60px;
+            text-align: center;
+            margin-right: 10px;
         }
         button {
-            background-color: #888;
-            color: #1e1e1e;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
+            padding-top: 10px;
+            margin-top: 20px;
+            background-color: transparent;
+            border: 2px solid #00ccff;
+            color: #00ccff;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
+            transition: all 0.3s;
         }
         button:hover {
-            background-color: #aaa;
+            background-color: #00ccff;
+            color: #1a1a1a;
         }
     </style>
 </head>
 <body>
-    <header onclick="toggleGreetings()">
-        <h1>Whispers from the Past</h1>
-        <p id="greeting" style="display:none;">Remember to Come Back to Your Memories</p>
-    </header>
-    
-    <form id="time-capsule-form">
-        <label for="name">Your Name:</label>
-        <input type="text" id="name" name="name" required>
-        
-        <label for="message">Message for Future Self:</label>
-        <textarea id="message" name="message" rows="5" required></textarea>
-        
-        <label for="open-date">When Should This Be Opened?</label>
-        <input type="datetime-local" id="open-date" name="open-date" required>
-        
-        <button type="submit">Store Your Whisper</button>
-    </form>
 
-    <script>
-        function toggleGreetings() {
-            const greeting = document.getElementById('greeting');
-            greeting.style.display = greeting.style.display === 'none' ? 'block' : 'none';
-        }
+<div class="timer-box">
+    <h1>Time Weaver</h1>
+    <div>
+        <input type="number" id="input-minutes" placeholder="Min" min="0">
+        <input type="number" id="input-seconds" placeholder="Sec" min="0" max="59">
+    </div>
+    <button onclick="invokeTimer()">Cast Time</button>
+    <div id="display">00:00</div>
+</div>
 
-        document.getElementById('time-capsule-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const message = document.getElementById('message').value;
-            const openDate = new Date(document.getElementById('open-date').value);
-            
-            const entry = {
-                name: name,
-                message: message,
-                openDate: openDate.getTime()
-            };
+<script>
+    function invokeTimer() {
+        const displayElement = document.getElementById('display');
+        let minutes = parseInt(document.getElementById('input-minutes').value) || 0;
+        let seconds = parseInt(document.getElementById('input-seconds').value) || 0;
+        let totalTime = minutes * 60 + seconds;
 
-            localStorage.setItem(`timeCapsule_${Date.now()}`, JSON.stringify(entry));
-            alert('Your whisper is stored for the ages!');
-            e.target.reset();
-        });
-    </script>
+        displayElement.textContent = weaveTime(totalTime);
+
+        const interval = setInterval(() => {
+            if (--totalTime <= 0) {
+                clearInterval(interval);
+                displayElement.textContent = "Time Escaped!";
+                alert('Time Warp Complete!');
+            } else {
+                displayElement.textContent = weaveTime(totalTime);
+            }
+        }, 1000);
+    }
+
+    function weaveTime(total) {
+        const min = Math.floor(total / 60);
+        const sec = total % 60;
+        return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+</script>
+
 </body>
 </html>
