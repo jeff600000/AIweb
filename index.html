@@ -3,199 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArtBuddies – A Collaborative Digital Art Experience</title>
+    <title>Travel World - A Virtual Travel Experience</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
+            background: #f0f0f0;
             color: #333;
         }
         header {
-            background-color: #6d83f2;
-            color: #fff;
-            padding: 10px;
+            background-color: #0077cc;
+            padding: 1rem;
             text-align: center;
-        }
-        .nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: #f7f7f7;
-            padding: 10px;
-        }
-        .nav a {
-            text-decoration: none;
-            color: #333;
-            padding: 10px 20px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .nav a:hover {
-            background-color: #ddd;
-        }
-        main {
-            padding: 20px;
-            max-width: 960px;
-            margin: 0 auto;
-        }
-        section {
-            margin-bottom: 40px;
-        }
-        h2 {
-            color: #6d83f2;
-        }
-        canvas {
-            border: 1px solid #ccc;
-            display: block;
-            margin: 20px 0;
-            cursor: crosshair;
-        }
-        .toolbar {
-            margin: 20px 0;
-        }
-        .button, .button-disabled {
-            padding: 10px 15px;
-            margin-right: 5px;
-            border: 1px solid #6d83f2;
-            border-radius: 5px;
-            background-color: #6d83f2;
             color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
-        .button-disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            border: 1px solid #aaa;
+        #map {
+            width: 100%;
+            height: 80vh;
+            background-color: #dfe3e8;
         }
-        .button:hover {
-            background-color: #5a72cc;
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 20px;
+            margin: auto;
+            width: 80%;
+        }
+        .feature {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #003366;
+            color: white;
+            margin-top: 20px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r123/three.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let mapInitialized = false;
+            const mapElement = document.getElementById('map');
+            mapElement.addEventListener('click', () => {
+                if (!mapInitialized) {
+                    initializeMap();
+                    mapInitialized = true;
+                }
+            });
+
+            function initializeMap() {
+                // Placeholder 3D map implementation
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                document.getElementById('map').appendChild(renderer.domElement);
+
+                const geometry = new THREE.SphereGeometry(5, 32, 32);
+                const material = new THREE.MeshBasicMaterial({ color: 0x0077cc });
+                const globe = new THREE.Mesh(geometry, material);
+                scene.add(globe);
+
+                camera.position.z = 10;
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    globe.rotation.y += 0.01;
+                    renderer.render(scene, camera);
+                }
+                animate();
+            }
+
+            document.querySelectorAll('.feature').forEach(el => {
+                el.addEventListener('click', () => {
+                    alert('Feature coming soon!');
+                });
+            });
+        });
+    </script>
 </head>
 <body>
+    <header>
+        <h1>Travel World</h1>
+        <p>Your gateway to experiencing the world virtually</p>
+    </header>
 
-<header>
-    <h1>ArtBuddies: A Collaborative Digital Art Experience</h1>
-</header>
+    <section id="map">
+        <p style="text-align:center; padding-top:20px;">Click to explore the interactive 3D map.</p>
+    </section>
 
-<nav class="nav">
-    <a href="#digital-canvas">Digital Canvas</a>
-    <a href="#collaboration">Collaboration Mode</a>
-    <a href="#gallery">Community Gallery</a>
-    <a href="#tutorials">Tutorials</a>
-    <a href="#profile">Profile</a>
-    <a href="#store">Art Store</a>
-</nav>
-
-<main>
-
-    <section id="digital-canvas">
-        <h2>Digital Canvas</h2>
-        <canvas id="canvas" width="500" height="500"></canvas>
-        <div class="toolbar">
-            <button class="button" id="clearCanvas">Clear Canvas</button>
-            <button class="button" id="saveImage">Save Image</button>
+    <section class="features">
+        <div class="feature" data-feature="vr">
+            <h2>Virtual Reality Experiences</h2>
+            <p>Explore famous landmarks with VR technology.</p>
+        </div>
+        <div class="feature" data-feature="culture">
+            <h2>Cultural Immersions</h2>
+            <p>Experience local music, cuisine, and festivals.</p>
+        </div>
+        <div class="feature" data-feature="challenges">
+            <h2>Traveler's Challenges</h2>
+            <p>Take quizzes and earn badges by learning about different regions.</p>
+        </div>
+        <div class="feature" data-feature="live">
+            <h2>Live Interaction Events</h2>
+            <p>Join live-streamed tours with real-time guides.</p>
+        </div>
+        <div class="feature" data-feature="profile">
+            <h2>User Profiles</h2>
+            <p>Create a profile to track your travels and engage with the community.</p>
+        </div>
+        <div class="feature" data-feature="itinerary">
+            <h2>Personalized Itinerary</h2>
+            <p>Plan your virtual travel and receive personalized recommendations.</p>
         </div>
     </section>
 
-    <section id="collaboration">
-        <h2>Collaboration Mode</h2>
-        <p>Collaborate in real-time with friends or new art partners.</p>
-        <button class="button" id="startCollaboration">Start Collaboration</button>
-    </section>
-
-    <section id="gallery">
-        <h2>Community Gallery</h2>
-        <div>Themed challenges and contests to encourage user participation and creativity.</div>
-        <button class="button" id="submitArt">Submit Your Art</button>
-    </section>
-
-    <section id="tutorials">
-        <h2>Tutorials and Learning Hub</h2>
-        <div>A library of video tutorials for various art techniques.</div>
-        <button class="button" id="exploreTutorials">Explore Tutorials</button>
-    </section>
-
-    <section id="profile">
-        <h2>Customizable Profile</h2>
-        <div>Personal portfolio page to display your best pieces and artistic journey.</div>
-        <button class="button" id="editProfile">Edit Profile</button>
-    </section>
-
-    <section id="store">
-        <h2>Integrated Art Store</h2>
-        <div>Marketplace for buying and selling digital art, prints, and art supplies.</div>
-        <button id="visitStore" class="button">Visit Store</button>
-    </section>
-
-</main>
-
-<script>
-    document.querySelector("#clearCanvas").addEventListener("click", function() {
-        const canvas = document.querySelector("#canvas");
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, canvas.width, canvas.height);
-    });
-
-    document.querySelector("#startCollaboration").addEventListener("click", function() {
-        window.open("https://example.com/collaborate");
-    });
-
-    document.querySelector("#submitArt").addEventListener("click", function() {
-        window.open("https://example.com/gallery");
-    });
-
-    document.querySelector("#exploreTutorials").addEventListener("click", function() {
-        window.open("https://example.com/tutorials");
-    });
-
-    document.querySelector("#editProfile").addEventListener("click", function() {
-        window.open("https://example.com/profile");
-    });
-
-    document.querySelector("#visitStore").addEventListener("click", function() {
-        window.open("https://example.com/store");
-    });
-
-    document.querySelector('#saveImage').addEventListener('click', function() {
-        const canvas = document.querySelector('#canvas');
-        const link = document.createElement('a');
-        link.download = 'artbuddies-artwork.png';
-        link.href = canvas.toDataURL('image/png').replace("image/png", "image/octet-stream");
-        link.click();
-    });
-
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.addEventListener("mousedown", startDrawing);
-    canvas.addEventListener("mousemove", draw);
-    canvas.addEventListener("mouseup", stopDrawing);
-    canvas.addEventListener("mouseout", stopDrawing);
-
-    let isDrawing = false;
-
-    function startDrawing(e) {
-        isDrawing = true;
-        ctx.beginPath();
-        draw(e);
-    }
-
-    function draw(e) {
-        if (!isDrawing) return;
-        ctx.lineWidth = 2;
-        ctx.lineCap = "round";
-        ctx.strokeStyle = "#333";
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-    }
-
-    function stopDrawing() {
-        isDrawing = false;
-        ctx.beginPath();
-    }
-</script>
-
+    <footer>
+        <p>&copy; 2023 Travel World. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>
