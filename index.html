@@ -3,160 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Pals Adventure</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Galactic Adventure Park</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            background-color: #f5f7fa;
         }
         header {
-            background-color: #6ebf61;
+            background-color: #2d2d72;
             color: white;
+            padding: 20px 0;
             text-align: center;
-            padding: 20px;
         }
         nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: #4e8b49;
-            padding: 10px;
+            display: block;
+            background-color: #4141a1;
+            overflow: hidden;
         }
         nav a {
+            float: left;
+            display: block;
             color: white;
+            text-align: center;
+            padding: 14px 16px;
             text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
         }
-        .hero {
-            text-align: center;
-            padding: 50px 20px;
-            background-image: url('hero-bg.jpg');
-            background-size: cover;
-            color: white;
+        nav a:hover {
+            background-color: #5757d1;
         }
-        .main-content {
+        .content {
             padding: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
         }
-        .plant-card {
-            background-color: #fff;
-            width: 300px;
-            margin: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
-            text-align: center;
-            transition: transform 0.3s;
-            cursor: pointer;
+        .attractions, .tickets {
+            margin-top: 20px;
         }
-        .plant-card:hover {
-            transform: translateY(-5px);
-        }
-        .plant-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .footer {
-            background-color: #4e8b49;
+        footer {
+            background-color: #2d2d72;
             color: white;
             text-align: center;
-            padding: 15px 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-        /* Interactive Popup Styles */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 80%;
-            max-width: 500px;
-            z-index: 1000;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            padding: 10px 0;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Plant Pals Adventure</h1>
+        <h1>Welcome to Galactic Adventure Park!</h1>
+        <p>Dive into a universe of excitement and wonder.</p>
     </header>
     <nav>
-        <a href="#" onclick="showPopup('about')">About</a>
-        <a href="#" onclick="showPopup('garden')">Your Garden</a>
-        <a href="#" onclick="showPopup('explore')">Explore Plants</a>
-        <a href="#" onclick="showPopup('contact')">Contact</a>
+        <a href="#home" onclick="document.getElementById('home').scrollIntoView(); return false;">Home</a>
+        <a href="#attractions" onclick="document.getElementById('attractions').scrollIntoView(); return false;">Attractions</a>
+        <a href="#tickets" onclick="document.getElementById('tickets').scrollIntoView(); return false;">Tickets</a>
+        <a href="#story" onclick="document.getElementById('story').scrollIntoView(); return false;">Our Story</a>
+        <a href="#contact" onclick="document.getElementById('contact').scrollIntoView(); return false;">Contact</a>
     </nav>
-    <div class="hero">
-        <h1>Welcome to Plant Pals Adventure!</h1>
-        <p>Discover, learn, and grow your virtual garden with the most amazing plant pals.</p>
+    <div class="content">
+        <section id="home">
+            <h2>About Galactic Adventure Park</h2>
+            <p>Galactic Adventure Park is an interstellar amusement park located in the heart of a magical galaxy. Experience out-of-this-world rides, cosmic cuisine, and stellar entertainment!</p>
+        </section>
+        <section id="attractions" class="attractions">
+            <h2>Our Attractions</h2>
+            <ul>
+                <li><strong>Star Cruiser Coaster:</strong> A high-speed roller coaster that takes you through asteroid fields and space vortexes.</li>
+                <li><strong>Zero Gravity Zone:</strong> Experience weightlessness and float like an astronaut.</li>
+                <li><strong>Lunar Lagoon:</strong> Dive into a moonlit pool and explore glowing underwater caves.</li>
+            </ul>
+        </section>
+        <section id="tickets" class="tickets">
+            <h2>Ticket Information</h2>
+            <p>Join our cosmic adventure today! Here’s what we offer:</p>
+            <ul>
+                <li><strong>Day Pass:</strong> $50 for a full day of fun and exploration.</li>
+                <li><strong>Season Pass:</strong> $200 for unlimited access throughout the season.</li>
+                <li><button onclick="alert('More ticket options coming soon!')">More Options</button></li>
+            </ul>
+        </section>
+        <section id="story">
+            <h2>Our Story</h2>
+            <p>Galactic Adventure Park was founded by Captain Nova, a space explorer who stumbled upon the delightful wonders of an uncharted galaxy. Determined to share the magic, Captain Nova embarked on a mission to create the ultimate amusement park. Today, Galactic Adventure Park stands as a testament to joy, exploration, and cosmic dreams!</p>
+        </section>
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <p>For inquiries or bookings, reach out at <a href="mailto:info@galacticadventure.com">info@galacticadventure.com</a></p>
+        </section>
     </div>
-    <div class="main-content">
-        <div class="plant-card" onclick="showPopup('Aloe Vera')">
-            <img src="aloe-vera.jpg" alt="Aloe Vera">
-            <h2>Aloe Vera</h2>
-            <p>A succulent plant known for its resilient nature and soothing gel.</p>
-        </div>
-        <div class="plant-card" onclick="showPopup('Bamboo')">
-            <img src="bamboo.jpg" alt="Bamboo">
-            <h2>Bamboo</h2>
-            <p>A fast-growing plant that symbolizes strength and flexibility.</p>
-        </div>
-        <div class="plant-card" onclick="showPopup('Cactus')">
-            <img src="cactus.jpg" alt="Cactus">
-            <h2>Cactus</h2>
-            <p>A desert plant known for its unique adaptations and spiky appearance.</p>
-        </div>
-        <div class="plant-card" onclick="showPopup('Fern')">
-            <img src="fern.jpg" alt="Fern">
-            <h2>Fern</h2>
-            <p>An ancient group of plants with lush, feathery foliage.</p>
-        </div>
-    </div>
-    <div class="footer">
-        <p>&copy; 2023 Plant Pals Adventure. All Rights Reserved.</p>
-    </div>
-
-    <!-- Popup and Overlay -->
-    <div class="overlay" id="overlay" onclick="hidePopup()"></div>
-    <div class="popup" id="popup">
-        <p id="popup-content">Placeholder</p>
-    </div>
-
-    <script>
-        function showPopup(content) {
-            document.getElementById('popup-content').textContent = content;
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('popup').style.display = 'block';
-        }
-
-        function hidePopup() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('popup').style.display = 'none';
-        }
-    </script>
-
+    <footer>
+        <p>© 2023 Galactic Adventure Park. All rights reserved.</p>
+    </footer>
 </body>
 </html>
