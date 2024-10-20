@@ -3,80 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Web Layout</title>
+    <title>Inspiration Dashboard</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Lato', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
             margin: 0;
             padding: 0;
         }
         header {
-            background-color: #4CAF50;
-            color: white;
+            background-color: #fff;
+            padding: 10px 20px;
             text-align: center;
-            padding: 1em 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #333;
+        header h1 {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
         }
-        nav a {
-            color: white;
-            padding: 14px 20px;
-            text-decoration: none;
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .module {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        .module:hover {
+            transform: scale(1.02);
+        }
+        .quote {
+            font-size: 1.2em;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        .button {
+            background-color: #ffa500;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             text-align: center;
         }
-        nav a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-        .content {
-            display: flex;
-            margin: 20px;
-        }
-        .sidebar {
-            width: 20%;
-            background-color: #f4f4f4;
-            padding: 15px;
-        }
-        .main-content {
-            width: 80%;
-            padding: 15px;
-        }
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
+        .button:hover {
+            background-color: #ff8c00;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Website Header</h1>
-    </header>
-    <nav>
-        <a href="#home">Home</a>
-        <a href="#services">Services</a>
-        <a href="#contact">Contact</a>
-        <a href="#about">About</a>
-    </nav>
-    <div class="content">
-        <div class="sidebar">
-            <h2>Sidebar</h2>
-            <p>Some content here...</p>
-        </div>
-        <div class="main-content">
-            <h2>Main Content</h2>
-            <p>This is the main content area.</p>
-        </div>
+
+<header>
+    <h1>Inspiration Dashboard</h1>
+</header>
+
+<main class="dashboard">
+    <div class="module" id="daily-quote">
+        <h2>Daily Motivational Quote</h2>
+        <p class="quote">"The only way to do great work is to love what you do." - Steve Jobs</p>
+        <button class="button">Save Quote</button>
+        <button class="button">Share</button>
     </div>
-    <footer>
-        <p>Footer Information</p>
-    </footer>
+    <div class="module" id="goal-visualization">
+        <h2>Goal Visualization</h2>
+        <p>Add your goals and track your progress.</p>
+        <button class="button">Add Goal</button>
+    </div>
+    <div class="module" id="inspirational-stories">
+        <h2>Inspirational Stories</h2>
+        <p>Read about individuals who achieved great things.</p>
+        <button class="button">Explore Stories</button>
+    </div>
+    <div class="module" id="creative-challenges">
+        <h2>Creative Challenges</h2>
+        <p>Engage in weekly challenges to boost creativity.</p>
+        <button class="button">Join Challenge</button>
+    </div>
+    <div class="module" id="mindfulness-wellbeing">
+        <h2>Mindfulness and Well-being</h2>
+        <p>Access resources for mental health and relaxation.</p>
+        <button class="button">Start Relaxation</button>
+    </div>
+    <div class="module" id="customizable-feed">
+        <h2>Customizable Inspiration Feed</h2>
+        <p>Personalize your dashboard with content that inspires you.</p>
+        <button class="button">Customize</button>
+    </div>
+</main>
+
 </body>
 </html>
