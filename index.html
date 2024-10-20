@@ -3,166 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure</title>
+    <title>Bread Quest</title>
     <style>
         body {
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
             margin: 0;
             overflow: hidden;
+            background-color: #f4e7da;
         }
         canvas {
-            background-color: #f5deb3; /* Wheat background */
             display: block;
-            margin: auto;
+            margin: 0 auto;
+            background-color: #ffebb7;
+            border: 2px solid #c9aa74;
         }
-        #gameCanvas {
-            border: 2px solid #8b4513; /* Brown border */
+        #stats {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
+    <div id="stats">
+        <div>🍞 Toppings: <span id="toppings-count">0</span></div>
+        <div>💛 Score: <span id="player-score">0</span></div>
+    </div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
-
+    <audio loop id="bg-music" src="placeholder_music_path"></audio>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const toppingsCounter = document.getElementById('toppings-count');
+        const scoreCounter = document.getElementById('player-score');
+        const bgMusic = document.getElementById('bg-music');
 
-        const gridCellSize = 50;
-        const mapWidth = Math.floor(canvas.width / gridCellSize);
-        const mapHeight = Math.floor(canvas.height / gridCellSize);
-
-        let player = {
-            x: gridCellSize,
-            y: gridCellSize,
-            size: 30,
-            speed: 5,
-        };
-
-        let enemies = [
-            { x: 300, y: 300, size: 30, speed: 2 },
-            { x: 500, y: 100, size: 30, speed: 3 },
-        ];
-
-        let powerUps = [
-            { x: 200, y: 150, collected: false },
-            { x: 600, y: 450, collected: false }
-        ];
-
-        const typesOfTerrain = ['Toasty Plains', 'Buttery River', 'Jam-filled Forest'];
-        
-        let map = [];
-        for (let i = 0; i < mapHeight; i++) {
-            let row = [];
-            for (let j = 0; j < mapWidth; j++) {
-                let randomTerrain = Math.floor(Math.random() * typesOfTerrain.length);
-                row.push(typesOfTerrain[randomTerrain]);
-            }
-            map.push(row);
-        }
-
+        // Game variables
+        const gridSize = 40;
+        let player = { x: 0, y: 0, score: 0, toppings: 0 };
+        let enemies = [];
+        let toppings = [];
         let keys = {};
 
-        document.addEventListener('keydown', function(event) {
-            keys[event.key] = true;
-        });
+        // Sample areas (Rye Ridge, Sourdough Summit, Baguette Bridge)
+        const gameMap = [
+            ['_', '_', '🍞', '_', '_', '🥖'],
+            ['_', '🥖', '_', '🍞', '🥖', '_'],
+            ['_', '_', '🥖', '_', '_', '🍞'],
+            ['🍞', '_', '_', '🥖', '_', '_'],
+            ['_', '🥖', '_', '_', '🍞', '_']
+        ];
 
-        document.addEventListener('keyup', function(event) {
-            keys[event.key] = false;
-        });
-
-        function drawGrid() {
-            ctx.strokeStyle = '#8b4513';
-            for (let i = 0; i < mapHeight; i++) {
-                for (let j = 0; j < mapWidth; j++) {
-                    ctx.strokeRect(j * gridCellSize, i * gridCellSize, gridCellSize, gridCellSize);
-                }
-            }
+        // Initialize enemies
+        function initEnemies() {
+            enemies.push({ type: 'fork', x: 80, y: 120 });
+            enemies.push({ type: 'knife', x: 200, y: 300 });
+            enemies.push({ type: 'toaster', x: 400, y: 400 });
         }
 
-        function handlePlayerMovement() {
-            if (keys['ArrowUp']) player.y -= player.speed;
-            if (keys['ArrowDown']) player.y += player.speed;
-            if (keys['ArrowLeft']) player.x -= player.speed;
-            if (keys['ArrowRight']) player.x += player.speed;
-            preventOffScreenMovement(player);
+        // Initialize toppings
+        function initToppings() {
+            gameMap.forEach((row, y) => {
+                row.forEach((cell, x) => {
+                    if (cell === '🥖') {
+                        toppings.push({ x: x * gridSize, y: y * gridSize });
+                    }
+                });
+            });
         }
 
-        function preventOffScreenMovement(obj) {
-            obj.x = Math.max(0, Math.min(canvas.width - obj.size, obj.x));
-            obj.y = Math.max(0, Math.min(canvas.height - obj.size, obj.y));
+        function drawMap() {
+            gameMap.forEach((row, y) => {
+                row.forEach((cell, x) => {
+                    if (cell === '_') {
+                        ctx.fillStyle = '#d4c3aa'; // path color
+                    } else {
+                        ctx.fillStyle = '#f5e0c3'; // loaf color
+                    }
+                    ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
+                });
+            });
         }
 
         function drawPlayer() {
-            ctx.fillStyle = '#d2691e'; // Chocolate color
-            ctx.fillRect(player.x, player.y, player.size, player.size);
+            ctx.fillStyle = '#c29b6d'; // slice of bread color
+            ctx.fillRect(player.x, player.y, gridSize, gridSize);
+            ctx.fillText('🍞', player.x + 5, player.y + 30); // bread emoji
         }
 
-        function drawEnemies() {
-            ctx.fillStyle = '#006400'; // Dark green color
+        function drawEnemiesAndToppings() {
+            ctx.font = '24px Arial';
+            
             enemies.forEach(enemy => {
-                ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
-                moveEnemy(enemy);
+                if (enemy.type === 'fork') {
+                    ctx.fillText('🍴', enemy.x + 5, enemy.y + 30);
+                } else if (enemy.type === 'knife') {
+                    ctx.fillText('🔪', enemy.x + 5, enemy.y + 30);
+                } else if (enemy.type === 'toaster') {
+                    ctx.fillText('🔌', enemy.x + 5, enemy.y + 30);
+                }
+            });
+
+            toppings.forEach(topping => {
+                ctx.fillText('🥖', topping.x + 5, topping.y + 30);
             });
         }
 
-        function moveEnemy(enemy) {
-            let direction = Math.floor(Math.random() * 4);
-            if (direction === 0) enemy.y -= enemy.speed;
-            else if (direction === 1) enemy.y += enemy.speed;
-            else if (direction === 2) enemy.x -= enemy.speed;
-            else if (direction === 3) enemy.x += enemy.speed;
-            preventOffScreenMovement(enemy);
-        }
+        function update() {
+            // Player Movement
+            if (keys['ArrowUp'] && player.y > 0) player.y -= gridSize;
+            if (keys['ArrowDown'] && player.y < canvas.height - gridSize) player.y += gridSize;
+            if (keys['ArrowLeft'] && player.x > 0) player.x -= gridSize;
+            if (keys['ArrowRight'] && player.x < canvas.width - gridSize) player.x += gridSize;
 
-        function drawPowerUps() {
-            ctx.fillStyle = '#ffd700'; // Gold color
-            powerUps.forEach(powerUp => {
-                if (!powerUp.collected) {
-                    ctx.beginPath();
-                    ctx.arc(powerUp.x, powerUp.y, 10, 0, 2 * Math.PI);
-                    ctx.fill();
-                    collectPowerUp(powerUp);
+            // Collecting toppings
+            toppings = toppings.filter(topping => {
+                if (player.x === topping.x && player.y === topping.y) {
+                    player.toppings++;
+                    player.score += 10;
+                    toppingsCounter.textContent = player.toppings;
+                    scoreCounter.textContent = player.score;
+                    return false;
+                }
+                return true;
+            });
+
+            // Enemy interactions can be expanded based on specific attributes
+            enemies.forEach(enemy => {
+                if (player.x === enemy.x && player.y === enemy.y) {
+                    player.score -= 5;
+                    scoreCounter.textContent = player.score;
                 }
             });
         }
 
-        function collectPowerUp(powerUp) {
-            if (!powerUp.collected && checkCollision(player, powerUp)) {
-                powerUp.collected = true;
-                player.speed += 1; // Increase player speed
-            }
-        }
-
-        function checkCollision(obj1, obj2) {
-            return obj1.x < obj2.x + obj2.size &&
-                   obj1.x + obj1.size > obj2.x &&
-                   obj1.y < obj2.y + obj2.size &&
-                   obj1.y + obj1.size > obj2.y;
-        }
-
-        function update() {
-            handlePlayerMovement();
-            if (performance.now() % 100 < 50) handleEnemyAI();
-        }
-
-        function handleEnemyAI() {
-            enemies.forEach(moveEnemy);
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawGrid();
-            drawPlayer();
-            drawEnemies();
-            drawPowerUps();
-        }
-
         function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMap();
+            drawPlayer();
+            drawEnemiesAndToppings();
             update();
-            draw();
             requestAnimationFrame(gameLoop);
         }
 
-        gameLoop();
+        function startGame() {
+            initEnemies();
+            initToppings();
+            bgMusic.volume = 0.2;
+            bgMusic.play();
+            gameLoop();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        startGame();
+
     </script>
 </body>
 </html>
