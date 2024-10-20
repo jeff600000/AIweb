@@ -3,88 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Riddle Game</title>
+    <title>Mythical Companions Adoption Center</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
             margin: 0;
-            flex-direction: column;
+            padding: 0;
         }
-
-        .riddle-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+        header {
+            background-color: #8e44ad;
+            color: #ffffff;
+            padding: 20px 0;
             text-align: center;
         }
-
-        .riddle {
-            font-size: 20px;
-            margin-bottom: 20px;
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #633974;
+            padding: 10px 0;
         }
-
-        .response {
-            margin-top: 15px;
-            font-size: 18px;
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
         }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+            padding: 20px;
+            display: inline-block;
+            width: calc(33% - 60px);
+            vertical-align: top;
             cursor: pointer;
-            font-size: 16px;
+            transition: transform 0.3s;
         }
-
-        button:hover {
-            background-color: #45a049;
+        .card:hover {
+            transform: scale(1.05);
         }
-
-        input {
-            padding: 8px;
-            width: calc(100% - 20px);
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
             border-radius: 4px;
+        }
+        .card h3 {
+            margin: 10px 0;
+        }
+        .footer {
+            background-color: #8e44ad;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
     </style>
+    <script>
+        function adoptCreature(creatureName) {
+            alert("Congratulations! You've decided to adopt a " + creatureName + ". Our team will contact you shortly for the adoption process.");
+        }
+    </script>
 </head>
 <body>
 
-    <div class="riddle-container">
-        <div class="riddle">
-            <p>I speak without a mouth and hear without ears. I have no body, but I come alive with the wind. What am I?</p>
-        </div>
-        <input type="text" id="userAnswer" placeholder="Your answer here">
-        <button onclick="checkAnswer()">Submit Answer</button>
-        <div class="response" id="responseMessage"></div>
+<header>
+    <h1>Mythical Companions Adoption Center</h1>
+    <p>Bringing Magic into Your Homes</p>
+</header>
+
+<nav>
+    <a href="#" onclick="alert('Welcome to the Home page!')">Home</a>
+    <a href="#" onclick="alert('Learn more About Us!')">About Us</a>
+    <a href="#" onclick="alert('Find a creature to Adopt!')">Adopt</a>
+    <a href="#" onclick="alert('Get in touch with us via Contact!')">Contact</a>
+</nav>
+
+<div class="container">
+    <h2>Available Mythical Creatures for Adoption</h2>
+    <div class="card" onclick="adoptCreature('Fire Dragon')">
+        <img src="https://via.placeholder.com/300x200?text=Dragon" alt="Dragon">
+        <h3>Fire Dragon</h3>
+        <p>Age: 102 years</p>
+        <p>Likes: Soaring above the clouds, gold</p>
     </div>
+    <div class="card" onclick="adoptCreature('Phoenix')">
+        <img src="https://via.placeholder.com/300x200?text=Phoenix" alt="Phoenix">
+        <h3>Phoenix</h3>
+        <p>Age: 500 years</p>
+        <p>Likes: Ash baths, rebirth ceremonies</p>
+    </div>
+    <div class="card" onclick="adoptCreature('Unicorn')">
+        <img src="https://via.placeholder.com/300x200?text=Unicorn" alt="Unicorn">
+        <h3>Unicorn</h3>
+        <p>Age: 70 years</p>
+        <p>Likes: Rainbows, enchanted forests</p>
+    </div>
+</div>
 
-    <script>
-        const correctAnswer = "echo";
-
-        function checkAnswer() {
-            const userAnswer = document.getElementById('userAnswer').value.trim().toLowerCase();
-            const responseMessage = document.getElementById('responseMessage');
-
-            if (userAnswer === correctAnswer) {
-                responseMessage.innerText = "Correct! 🎉 Well done!";
-                responseMessage.style.color = "#28a745";
-            } else {
-                responseMessage.innerText = "Try again! 😅";
-                responseMessage.style.color = "#dc3545";
-            }
-        }
-    </script>
+<div class="footer">
+    <p>&copy; 2023 Mythical Companions Adoption Center. All Rights Reserved.</p>
+</div>
 
 </body>
 </html>
