@@ -3,184 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BreadQuest</title>
+    <title>EcoCharge Landing Page</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background-color: #f9f1c8; }
-        #gameCanvas { display: block; margin: 0 auto; background-color: #ffe7a3; }
-        .button { background-color: #ffcc66; border: none; color: white; padding: 10px 20px; margin-top: 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; }
-        #controls { text-align: center; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5f2d;
+        }
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #555;
+        }
+        .hero {
+            text-align: center;
+            background-image: url('ecocharge-background.jpg');
+            background-size: cover;
+            color: white;
+            padding: 100px 20px;
+        }
+        .hero h1 {
+            font-size: 48px;
+        }
+        .hero p {
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+        .cta-button {
+            background-color: #2c5f2d;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        .features, .pricing, .about, .contact, .footer {
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .features .feature {
+            display: inline-block;
+            width: 30%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .pricing .package {
+            display: inline-block;
+            width: 30%;
+            padding: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .about, .contact {
+            background-color: #f4f4f4;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+        }
+        .social {
+            margin-top: 10px;
+        }
+        .social img {
+            width: 32px;
+            margin: 0 10px;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <div class="logo">EcoCharge</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <h1>Stay Powered, Stay Green.</h1>
+        <p>Harness the power of the sun with EcoCharge – Your portable energy solution.</p>
+        <a href="#" class="cta-button">Shop Now</a>
+    </section>
 
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div id="controls">
-        <button class="button" onclick="startGame()">Start Game</button>
-    </div>
+    <section class="features">
+        <h2>Features</h2>
+        <div class="feature">
+            <h3>Portable Design</h3>
+            <p>Compact and lightweight for on-the-go energy needs.</p>
+        </div>
+        <div class="feature">
+            <h3>Fast Charging</h3>
+            <p>Efficient solar panels charge your devices quickly.</p>
+        </div>
+        <div class="feature">
+            <h3>Eco-Friendly</h3>
+            <p>Reduce your carbon footprint with renewable energy.</p>
+        </div>
+    </section>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+    <section class="pricing">
+        <h2>Pricing</h2>
+        <div class="package">
+            <h3>Basic Package</h3>
+            <p>EcoCharge device with a 1-year warranty.</p>
+            <a href="#" class="cta-button">Buy Now</a>
+        </div>
+        <div class="package">
+            <h3>Family Pack</h3>
+            <p>Three devices for family outings.</p>
+            <a href="#" class="cta-button">Buy Now</a>
+        </div>
+        <div class="package">
+            <h3>Pro Package</h3>
+            <p>Includes carrying case and a 2-year warranty.</p>
+            <a href="#" class="cta-button">Buy Now</a>
+        </div>
+    </section>
 
-        let player, enemies, items, map, score, timer;
-        let gameRunning = false;
+    <section class="about">
+        <h2>About Us</h2>
+        <p>Our mission is to provide sustainable and innovative solutions for portable energy needs. Join us in making a difference.</p>
+    </section>
 
-        function initializeGame() {
-            player = {
-                x: 400, y: 300, width: 20, height: 20, speed: 5, abilities: {}
-            };
-            enemies = [];
-            items = [];
-            map = generateMap();
-            score = 0;
-            timer = 100;  // countdown timer in seconds
+    <section class="contact">
+        <h2>Contact Us</h2>
+        <form action="#">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <button type="submit" class="cta-button">Send Message</button>
+        </form>
+        <div class="social">
+            <a href="#"><img src="facebook-icon.png" alt="Facebook"></a>
+            <a href="#"><img src="twitter-icon.png" alt="Twitter"></a>
+            <a href="#"><img src="instagram-icon.png" alt="Instagram"></a>
+        </div>
+    </section>
 
-            spawnInitialItems();
-            spawnInitialEnemies();
-        }
-
-        function generateMap() {
-            return [
-                ["Bakery", "Wheat Field"],
-                ["Yeast River", "Cheese Mountain"]
-            ];
-        }
-
-        function spawnInitialItems() {
-            items.push({ type: 'baguette', x: 100, y: 100 });
-            items.push({ type: 'croissant', x: 200, y: 200 });
-        }
-
-        function spawnInitialEnemies() {
-            enemies.push({ type: 'Moldy Mildew', x: 300, y: 300, speed: 1 });
-        }
-
-        function startGame() {
-            if (!gameRunning) {
-                initializeGame();
-                gameRunning = true;
-                requestAnimationFrame(update);
-            }
-        }
-
-        function update() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawWorld();
-            updatePlayer();
-            drawPlayer();
-            updateEnemies();
-            drawEnemies();
-            updateItems();
-            drawItems();
-            handleCollisions();
-            updateTimer();
-            if (gameRunning) {
-                requestAnimationFrame(update);
-            }
-        }
-
-        function drawWorld() {
-            // Draw different sections of the map (e.g., Bakery, Wheat Field, etc.)
-            ctx.fillStyle = '#e0cd9b';  // use different colors for different sections
-            ctx.fillRect(0, 0, canvas.width / 2, canvas.height / 2);  // representing Bakery
-            ctx.fillRect(canvas.width / 2, 0, canvas.width / 2, canvas.height / 2);  // Wheat Field
-            ctx.fillRect(0, canvas.height / 2, canvas.width / 2, canvas.height / 2);  // Yeast River
-            ctx.fillRect(canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2);  // Cheese Mountain
-        }
-
-        function updatePlayer() {
-            if (keys['ArrowUp']) player.y -= player.speed;
-            if (keys['ArrowDown']) player.y += player.speed;
-            if (keys['ArrowLeft']) player.x -= player.speed;
-            if (keys['ArrowRight']) player.x += player.speed;
-        }
-
-        function drawPlayer() {
-            ctx.fillStyle = 'brown';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
-
-        function updateEnemies() {
-            for (let enemy of enemies) {
-                // Implement enemy behavior
-                if (enemy.type === 'Moldy Mildew') {
-                    enemy.x += enemy.speed;
-                }
-            }
-        }
-
-        function drawEnemies() {
-            for (let enemy of enemies) {
-                ctx.fillStyle = 'green';
-                ctx.fillRect(enemy.x, enemy.y, 20, 20);
-            }
-        }
-
-        function updateItems() {
-            // Items may have movement or spawn/despawn mechanisms
-        }
-
-        function drawItems() {
-            for (let item of items) {
-                let color;
-                if (item.type === 'baguette') color = 'goldenrod';
-                if (item.type === 'croissant') color = 'darkgoldenrod';
-
-                ctx.fillStyle = color;
-                ctx.fillRect(item.x, item.y, 15, 15);
-            }
-        }
-
-        function handleCollisions() {
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                if (player.x < item.x + 15 && player.x + player.width > item.x &&
-                    player.y < item.y + 15 && player.y + player.height > item.y) {
-                    collectItem(item);
-                    items.splice(i, 1);
-                    i--;
-                }
-            }
-            // Handle enemy collisions
-        }
-
-        function collectItem(item) {
-            switch (item.type) {
-                case 'baguette':
-                    score += 10;
-                    break;
-                case 'croissant':
-                    player.abilities.shield = true;
-                    break;
-            }
-        }
-
-        function updateTimer() {
-            timer -= 0.01;  // Decrement timer
-            if (timer <= 0) {
-                endGame();
-            }
-            ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
-            ctx.fillText('Time: ' + timer.toFixed(2), 700, 30);
-            ctx.fillText('Score: ' + score, 700, 60);
-        }
-
-        function endGame() {
-            gameRunning = false;
-            alert('Game Over! Your score: ' + score);
-        }
-
-        let keys = {};
-
-        window.addEventListener('keydown', function(e) {
-            keys[e.key] = true;
-        });
-
-        window.addEventListener('keyup', function(e) {
-            keys[e.key] = false;
-        });
-
-    </script>
+    <footer>
+        <p>&copy; 2023 EcoCharge. All rights reserved.</p>
+        <a href="#" class="footer-link">Terms of Service</a> 
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <form action="#" class="newsletter-signup">
+            <input type="email" name="email" placeholder="Subscribe for updates">
+            <button type="submit" class="cta-button">Subscribe</button>
+        </form>
+    </footer>
 </body>
 </html>
