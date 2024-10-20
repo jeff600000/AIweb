@@ -3,117 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodMixer</title>
+    <title>Pomodoro Pal</title>
     <style>
-        body, html {
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: #f0f4f8;
         }
         header {
-            background-color: #1db954;
+            background-color: #4CAF50;
             color: white;
-            padding: 10px;
             text-align: center;
+            padding: 10px;
         }
         .container {
             padding: 20px;
         }
-        .mood-inputs, .playlist, .mood-board, .history, .suggestions, .gamification {
-            margin-bottom: 20px;
+        .timer, .tasks, .garden, .community {
+            margin-bottom: 30px;
+            padding: 20px;
             background-color: white;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .mood-slider {
-            width: 100%;
-        }
-        .interactive {
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .interactive:hover {
-            transform: scale(1.05);
-        }
-        .mood-color {
+        .plant {
             display: inline-block;
-            width: 25px;
-            height: 25px;
-            border-radius: 5px;
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            background-color: #A5D6A7;
+            border-radius: 50%;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #66bb6a;
+        }
+        #plantList div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>MoodMixer: Create Your Collaborative Playlist</h1>
-    </header>
+<header>
+    <h1>Pomodoro Pal</h1>
+</header>
 
-    <div class="container">
+<div class="container">
 
-        <div class="mood-inputs interactive">
-            <h2>1. Select Your Mood</h2>
-            <label for="mood-category">Choose a mood:</label>
-            <select id="mood-category">
-                <option>Happy</option>
-                <option>Relaxed</option>
-                <option>Excited</option>
-                <option>Melancholic</option>
-            </select>
-            <br><br>
-            <label for="mood-slider">Mood Intensity:</label>
-            <input type="range" id="mood-slider" class="mood-slider" min="0" max="100" value="50">
+    <div class="timer">
+        <h2>Pomodoro Timer</h2>
+        <div>
+            <span id="time-display">25:00</span>
         </div>
-
-        <div class="playlist interactive">
-            <h2>2. Collaborative Playlist</h2>
-            <ul id="playlist">
-                <li>Song 1 <button onclick="toggleVote(this)">Upvote</button></li>
-                <li>Song 2 <button onclick="toggleVote(this)">Upvote</button></li>
-                <li>Song 3 <button onclick="toggleVote(this)">Upvote</button></li>
-            </ul>
+        <div>
+            <button onclick="startTimer()">Start</button>
+            <button onclick="resetTimer()">Reset</button>
+            <button onclick="skipBreak()">Skip Break</button>
         </div>
-
-        <div class="mood-board interactive">
-            <h2>3. Interactive Mood Board</h2>
-            <div style="background-color: #ffcc00;" class="mood-color"></div>
-            <div style="background-color: #66ff66;" class="mood-color"></div>
-            <div style="background-color: #3366ff;" class="mood-color"></div>
-        </div>
-
-        <div class="history interactive">
-            <h2>4. Mood History & Analytics</h2>
-            <p>Your mood over time: Happy, Excited</p>
-        </div>
-
-        <div class="suggestions interactive">
-            <h2>5. Thematic Playlist Suggestions</h2>
-            <ul>
-                <li><button onclick="suggestPlaylist()">Chill Night In</button></li>
-                <li><button onclick="suggestPlaylist()">Road Trip Adventure</button></li>
-                <li><button onclick="suggestPlaylist()">Party Time</button></li>
-            </ul>
-        </div>
-
-        <div class="gamification interactive">
-            <h2>6. Gamification and Rewards</h2>
-            <p>Earn badges for participation!</p>
-        </div>
-
     </div>
 
-    <script>
-        function toggleVote(button) {
-            button.textContent = button.textContent === 'Upvote' ? 'Downvote' : 'Upvote';
-        }
+    <div class="tasks">
+        <h2>Task List</h2>
+        <div>
+            <input type="text" id="newTask" placeholder="New Task">
+            <button onclick="addTask()">Add Task</button>
+        </div>
+        <ul id="taskList"></ul>
+    </div>
 
-        function suggestPlaylist() {
-            alert("Feature coming soon!");
+    <div class="garden">
+        <h2>Your Virtual Garden</h2>
+        <div id="garden">
+            <!-- Plants will be displayed here -->
+        </div>
+    </div>
+
+    <div class="community">
+        <h2>Community & Challenges</h2>
+        <button onclick="visitFriend()">Visit Friend's Garden</button>
+    </div>
+
+</div>
+
+<script>
+    let timer;
+    let timeLeft = 1500;
+    let isWorkingSession = true;
+    let taskList = [];
+    let plants = [];
+
+    function startTimer() {
+        if (!timer) {
+            timer = setInterval(decreaseTime, 1000);
         }
-    </script>
+    }
+
+    function decreaseTime() {
+        if (timeLeft > 0) {
+            timeLeft--;
+            displayTime(timeLeft);
+        } else {
+            clearInterval(timer);
+            timer = null;
+
+            if (isWorkingSession) {
+                gainPoint();
+                isWorkingSession = false;
+                timeLeft = 300;
+            } else {
+                isWorkingSession = true;
+                timeLeft = 1500;
+            }
+        }
+    }
+
+    function displayTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        document.getElementById('time-display').innerText = `${pad(minutes)}:${pad(secs)}`;
+    }
+
+    function pad(num) {
+        return num < 10 ? '0' + num : num;
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        timer = null;
+        timeLeft = isWorkingSession ? 1500 : 300;
+        displayTime(timeLeft);
+    }
+
+    function skipBreak() {
+        if (!isWorkingSession) {
+            isWorkingSession = true;
+            resetTimer();
+        }
+    }
+
+    function addTask() {
+        const task = document.getElementById('newTask').value;
+        if (task) {
+            taskList.push(task);
+            document.getElementById('newTask').value = '';
+            renderTaskList();
+        }
+    }
+
+    function renderTaskList() {
+        const listElement = document.getElementById('taskList');
+        listElement.innerHTML = '';
+
+        taskList.forEach((task, index) => {
+            const li = document.createElement('li');
+            li.textContent = task;
+            listElement.appendChild(li);
+        });
+    }
+
+    function gainPoint() {
+        plants.push({});
+        renderGarden();
+    }
+
+    function renderGarden() {
+        const garden = document.getElementById('garden');
+        garden.innerHTML = plants.map(() => `<div class="plant"></div>`).join('');
+    }
+
+    function visitFriend() {
+        alert("Feature coming soon!");
+    }
+
+    displayTime(timeLeft);
+</script>
 
 </body>
 </html>
