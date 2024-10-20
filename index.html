@@ -1,196 +1,85 @@
 <!-- I need to put this here, dont ask why --><!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Pal</title>
+    <title>AdvenTour - Your Virtual Travel Partner</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f4f8;
-        }
-        header {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
-            padding: 10px;
-        }
-        .container {
-            padding: 20px;
-        }
-        .timer, .tasks, .garden, .community {
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .plant {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            margin: 5px;
-            background-color: #A5D6A7;
-            border-radius: 50%;
-        }
-        button {
-            padding: 10px;
-            margin: 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #66bb6a;
-        }
-        #plantList div {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+        /* Styles here */
     </style>
+    <script>
+        // Javascript here, no use of alert()
+    </script>
 </head>
 <body>
+    <header>
+        <h1>AdvenTour</h1>
+        <nav>
+            <ul>
+                <li>Home</li>
+                <li>Interactive World Map</li>
+                <li>Virtual Tours</li>
+                <li>Create Your Adventure</li>
+                <li>Social Features</li>
+                <li>Learning Modules</li>
+                <li>Accessibility</li>
+                <li>Personalized Recommendations</li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <!-- Section for Interactive World Map -->
+        <section>
+            <h2>Interactive World Map</h2>
+            <div id="map">
+                <!-- Map here -->
+            </div>
+        </section>
 
-<header>
-    <h1>Pomodoro Pal</h1>
-</header>
+        <!-- Section for Virtual Tours -->
+        <section>
+            <h2>Virtual Tours</h2>
+            <div id="tours">
+                <!-- Tours here -->
+            </div>
+        </section>
 
-<div class="container">
+        <!-- Section for Create Your Adventure -->
+        <section>
+            <h2>Create Your Adventure</h2>
+            <div id="adventure">
+                <!-- Adventure creation here -->
+            </div>
+        </section>
 
-    <div class="timer">
-        <h2>Pomodoro Timer</h2>
-        <div>
-            <span id="time-display">25:00</span>
-        </div>
-        <div>
-            <button onclick="startTimer()">Start</button>
-            <button onclick="resetTimer()">Reset</button>
-            <button onclick="skipBreak()">Skip Break</button>
-        </div>
-    </div>
+        <!-- Section for Social Features -->
+        <section>
+            <h2>Social Features</h2>
+            <div id="social">
+                <!-- Social features here -->
+            </div>
+        </section>
 
-    <div class="tasks">
-        <h2>Task List</h2>
-        <div>
-            <input type="text" id="newTask" placeholder="New Task">
-            <button onclick="addTask()">Add Task</button>
-        </div>
-        <ul id="taskList"></ul>
-    </div>
+        <!-- Section for Learning Modules -->
+        <section>
+            <h2>Learning Modules</h2>
+            <div id="learning">
+                <!-- Learning modules here -->
+            </div>
+        </section>
 
-    <div class="garden">
-        <h2>Your Virtual Garden</h2>
-        <div id="garden">
-            <!-- Plants will be displayed here -->
-        </div>
-    </div>
+        <!-- Section for Personalized Recommendations -->
+        <section>
+            <h2>Personalized Recommendations</h2>
+            <div id="recommendations">
+                <!-- Personalized recommendations here -->
+            </div>
+        </section>
+        
+        <!-- Other sections for Weather, Booking, and Multi-language can be added similarly -->
+    </main>
 
-    <div class="community">
-        <h2>Community & Challenges</h2>
-        <button onclick="visitFriend()">Visit Friend's Garden</button>
-    </div>
-
-</div>
-
-<script>
-    let timer;
-    let timeLeft = 1500;
-    let isWorkingSession = true;
-    let taskList = [];
-    let plants = [];
-
-    function startTimer() {
-        if (!timer) {
-            timer = setInterval(decreaseTime, 1000);
-        }
-    }
-
-    function decreaseTime() {
-        if (timeLeft > 0) {
-            timeLeft--;
-            displayTime(timeLeft);
-        } else {
-            clearInterval(timer);
-            timer = null;
-
-            if (isWorkingSession) {
-                gainPoint();
-                isWorkingSession = false;
-                timeLeft = 300;
-            } else {
-                isWorkingSession = true;
-                timeLeft = 1500;
-            }
-        }
-    }
-
-    function displayTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        document.getElementById('time-display').innerText = `${pad(minutes)}:${pad(secs)}`;
-    }
-
-    function pad(num) {
-        return num < 10 ? '0' + num : num;
-    }
-
-    function resetTimer() {
-        clearInterval(timer);
-        timer = null;
-        timeLeft = isWorkingSession ? 1500 : 300;
-        displayTime(timeLeft);
-    }
-
-    function skipBreak() {
-        if (!isWorkingSession) {
-            isWorkingSession = true;
-            resetTimer();
-        }
-    }
-
-    function addTask() {
-        const task = document.getElementById('newTask').value;
-        if (task) {
-            taskList.push(task);
-            document.getElementById('newTask').value = '';
-            renderTaskList();
-        }
-    }
-
-    function renderTaskList() {
-        const listElement = document.getElementById('taskList');
-        listElement.innerHTML = '';
-
-        taskList.forEach((task, index) => {
-            const li = document.createElement('li');
-            li.textContent = task;
-            listElement.appendChild(li);
-        });
-    }
-
-    function gainPoint() {
-        plants.push({});
-        renderGarden();
-    }
-
-    function renderGarden() {
-        const garden = document.getElementById('garden');
-        garden.innerHTML = plants.map(() => `<div class="plant"></div>`).join('');
-    }
-
-    function visitFriend() {
-        alert("Feature coming soon!");
-    }
-
-    displayTime(timeLeft);
-</script>
-
+    <footer>
+        <!-- Footer contents here -->
+    </footer>
 </body>
 </html>
