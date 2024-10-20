@@ -3,97 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mood Tracker</title>
+    <title>Interactive Riddle Puzzle</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            background-color: #f0f4f8;
+            background-color: #f4f4f9;
             margin: 0;
-            color: #333;
-            transition: background-color 0.3s;
         }
         .container {
-            text-align: center;
-            background: #fff;
+            width: 400px;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            border-radius: 8px;
+            text-align: center;
         }
-        select {
-            font-size: 16px;
-            padding: 5px;
-            border-radius: 5px;
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
             border: 1px solid #ccc;
-            margin-top: 10px;
+            border-radius: 4px;
         }
         button {
-            margin-top: 20px;
-            font-size: 16px;
             padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
+            background-color: #4CAF50;
             color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #45a049;
         }
-        .output {
+        #message {
             margin-top: 20px;
             font-size: 18px;
-            color: #555;
-            transition: color 0.3s;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Mood Tracker</h1>
-        <p>How are you feeling today?</p>
-        <select id="moodSelect">
-            <option value="happy">Happy</option>
-            <option value="sad">Sad</option>
-            <option value="angry">Angry</option>
-            <option value="excited">Excited</option>
-            <option value="anxious">Anxious</option>
-        </select>
-        <button onclick="showQuote()">Submit</button>
-        <div class="output" id="output"></div>
+        <h2>Riddle Puzzle Game</h2>
+        <p>Solve the riddle to win!</p>
+        <h4>Riddle: I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?</h4>
+        
+        <input type="text" id="answerInput" placeholder="Enter your answer here">
+        <button onclick="checkAnswer()">Submit</button>
+        
+        <div id="message"></div>
     </div>
 
     <script>
-        const quotes = {
-            happy: "Keep smiling, because life is a beautiful thing and there's so much to smile about.",
-            sad: "Sadness flies away on the wings of time. Remember, after every storm, there's a rainbow.",
-            angry: "For every minute you remain angry, you give up sixty seconds of peace of mind.",
-            excited: "The key to happiness is excitement. Harness that energy and make magic happen!",
-            anxious: "Anxiety is like a rocking chair. It gives you something to do, but it doesn't get you very far. Breathe and let go."
-        };
-
-        function showQuote() {
-            const mood = document.getElementById('moodSelect').value;
-            const output = document.getElementById('output');
-            output.innerHTML = quotes[mood];
-            changeMoodColor(mood);
-        }
-
-        function changeMoodColor(mood) {
-            const colors = {
-                happy: "#f9dc5c",
-                sad: "#b3cde0",
-                angry: "#f08080",
-                excited: "#ffde59",
-                anxious: "#add8e6"
-            };
+        function checkAnswer() {
+            const answer = document.getElementById('answerInput').value.toLowerCase();
+            const message = document.getElementById('message');
             
-            document.body.style.backgroundColor = colors[mood];
-            document.querySelector('.output').style.color = colors[mood];
+            if (answer === "echo") {
+                message.textContent = "Congratulations! You solved the riddle.";
+                message.style.color = "green";
+            } else {
+                message.textContent = "Try again!";
+                message.style.color = "red";
+            }
         }
     </script>
 </body>
