@@ -3,196 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Quest: Knead for Speed</title>
+    <title>Bread Quest</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #fce5cd;
-            margin: 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #game-title {
-            text-align: center;
-            font-size: 2em;
-            padding: 20px;
-            background-color: #f9cb9c;
-            color: #783f04;
-        }
-
-        #game-container {
-            position: relative;
-            width: 600px;
-            height: 400px;
-            margin: 0 auto;
-            background-color: #fffbe6;
-            overflow: hidden;
-            border: 5px solid #783f04;
-        }
-
-        .ingredient {
-            position: absolute;
-            font-size: 1.5em;
-        }
-
-        #dough {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background-color: #d6a57c;
-            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5em;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4efe1;
         }
-
-        #checklist {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #f9cb9c;
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 10;
-        }
-
-        .obstacle {
-            position: absolute;
-            background-color: #efd135;
-        }
-
-        #timer {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5em;
-            background: #f9cb9c;
-            padding: 5px;
-            border-radius: 5px;
+        canvas {
+            border: 2px solid #ccc;
+            background-image: linear-gradient(to top, #ffffff, #d7d2cc);
         }
     </style>
 </head>
 <body>
-    <div id="game-title">Bread Quest: Knead for Speed</div>
-    <div id="game-container">
-        <div id="checklist">Ingredients: <br>🍞 Flour<br>💧 Water<br>🧂 Salt<br>🧅 Yeast</div>
-        <div id="timer">Time: 60s</div>
-        <div id="dough">🟡</div>
-        
-        <!-- Ingredients -->
-        <div class="ingredient" style="left: 50px; top: 50px;">🍞</div> <!-- Flour -->
-        <div class="ingredient" style="left: 500px; top: 300px;">💧</div> <!-- Water -->
-        <div class="ingredient" style="left: 300px; top: 100px;">🧂</div> <!-- Salt -->
-        <div class="ingredient" style="left: 150px; top: 350px;">🧅</div> <!-- Yeast -->
 
-        <!-- Oven (Destination) -->
-        <div class="ingredient" style="left: 550px; top: 50px;">🔥</div> <!-- Oven -->
+<canvas id="gameCanvas" width="800" height="600"></canvas>
 
-        <!-- Obstacles -->
-        <div class="obstacle" style="width: 20px; height: 60px; left: 200px; top: 200px;"></div>
-        <div class="obstacle" style="width: 60px; height: 20px; left: 400px; top: 300px;"></div>
-    </div>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
 
-    <script>
-        const dough = document.getElementById('dough');
-        const ingredients = Array.from(document.getElementsByClassName('ingredient'));
-        const timerElement = document.getElementById('timer');
-        const checklist = document.getElementById('checklist');
-        const obstacles = Array.from(document.getElementsByClassName('obstacle'));
+    const player = {
+        x: 100,
+        y: 500,
+        width: 40,
+        height: 40,
+        speed: 5,
+        dx: 0,
+        dy: 0
+    };
+    
+    const breads = [
+        { x: 200, y: 400, width: 30, height: 30 },
+        { x: 500, y: 200, width: 30, height: 30 },
+        { x: 600, y: 500, width: 30, height: 30 }
+    ];
 
-        let collectedIngredients = {
-            '🍞': false,
-            '💧': false,
-            '🧂': false,
-            '🧅': false
-        };
+    const obstacles = [
+        { x: 300, y: 450, width: 80, height: 20 },
+        { x: 400, y: 350, width: 20, height: 80 },
+        { x: 650, y: 250, width: 100, height: 20 }
+    ];
 
-        let doughPosition = { x: 0, y: 0 };
-        let timer = 60;
-        let interval;
+    let score = 0;
 
-        function startGame() {
-            interval = setInterval(() => {
-                timer--;
-                timerElement.innerText = `Time: ${timer}s`;
-                if (timer <= 0) {
-                    gameOver(false);
-                }
-            }, 1000);
-        }
+    function drawPlayer() {
+        ctx.fillStyle = 'saddlebrown';
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
 
-        function moveDough(dx, dy) {
-            const newX = doughPosition.x + dx;
-            const newY = doughPosition.y + dy;
+    function drawBreads() {
+        ctx.fillStyle = 'gold';
+        breads.forEach(bread => {
+            ctx.fillRect(bread.x, bread.y, bread.width, bread.height);
+        });
+    }
 
-            if (newX < 0 || newX > 570 || newY < 0 || newY > 370) return; // Boundary check
+    function drawObstacles() {
+        ctx.fillStyle = 'red';
+        obstacles.forEach(obstacle => {
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        });
+    }
 
-            // Collision detection with obstacles
-            for (let obstacle of obstacles) {
-                const rect = obstacle.getBoundingClientRect();
-                if (newX + 30 > rect.left && newX < rect.right && newY + 30 > rect.top && newY < rect.bottom) {
-                    return; // Stop movement if collision detected
-                }
-            }
+    function drawScore() {
+        ctx.fillStyle = 'black';
+        ctx.fillText(`Score: ${score}`, 20, 30);
+    }
 
-            doughPosition.x = newX;
-            doughPosition.y = newY;
-            dough.style.left = `${doughPosition.x}px`;
-            dough.style.top = `${doughPosition.y}px`;
+    function clear() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
-            checkCollisions();
-        }
+    function newPos() {
+        player.x += player.dx;
+        player.y += player.dy;
+        detectCollisions();
+        detectBreadCollection();
+    }
 
-        function checkCollisions() {
-            ingredients.forEach(ingredient => {
-                const rect = ingredient.getBoundingClientRect();
-                if (doughPosition.x + 30 > rect.left && doughPosition.x < rect.right && doughPosition.y + 30 > rect.top && doughPosition.y < rect.bottom) {
-                    const symbol = ingredient.innerText.trim();
-                    if (symbol === '🔥' && Object.values(collectedIngredients).every(item => item)) {
-                        gameOver(true);
-                    } else if (collectedIngredients[symbol] !== undefined) {
-                        collectedIngredients[symbol] = true;
-                        ingredient.style.display = 'none';
-                        updateChecklist();
-                    }
-                }
-            });
-        }
-
-        function updateChecklist() {
-            checklist.innerHTML = 'Ingredients: <br>' +
-                (collectedIngredients['🍞'] ? '✔️' : '🍞') + ' Flour<br>' +
-                (collectedIngredients['💧'] ? '✔️' : '💧') + ' Water<br>' +
-                (collectedIngredients['🧂'] ? '✔️' : '🧂') + ' Salt<br>' +
-                (collectedIngredients['🧅'] ? '✔️' : '🧅') + ' Yeast';
-        }
-
-        function gameOver(win) {
-            clearInterval(interval);
-            alert(win ? "You won! The bread is baked perfectly!" : "Time's up! You couldn't bake the bread in time.");
-            window.location.reload();
-        }
-
-        window.addEventListener('keydown', (e) => {
-            switch (e.key) {
-                case 'ArrowUp':
-                    moveDough(0, -10);
-                    break;
-                case 'ArrowDown':
-                    moveDough(0, 10);
-                    break;
-                case 'ArrowLeft':
-                    moveDough(-10, 0);
-                    break;
-                case 'ArrowRight':
-                    moveDough(10, 0);
-                    break;
+    function detectCollisions() {
+        obstacles.forEach(obstacle => {
+            if (player.x < obstacle.x + obstacle.width &&
+                player.x + player.width > obstacle.x &&
+                player.y < obstacle.y + obstacle.height &&
+                player.y + player.height > obstacle.y) {
+                player.x -= player.dx;
+                player.y -= player.dy;
             }
         });
+    }
 
-        startGame();
-    </script>
+    function detectBreadCollection() {
+        breads.forEach((bread, index) => {
+            if (player.x < bread.x + bread.width &&
+                player.x + player.width > bread.x &&
+                player.y < bread.y + bread.height &&
+                player.y + player.height > bread.y) {
+                score += 10;
+                breads.splice(index, 1);
+            }
+        });
+    }
+
+    function update() {
+        clear();
+        drawPlayer();
+        drawBreads();
+        drawObstacles();
+        drawScore();
+
+        newPos();
+        requestAnimationFrame(update);
+    }
+
+    function moveUp() {
+        player.dy = -player.speed;
+    }
+
+    function moveDown() {
+        player.dy = player.speed;
+    }
+
+    function moveRight() {
+        player.dx = player.speed;
+    }
+
+    function moveLeft() {
+        player.dx = -player.speed;
+    }
+
+    function keyDown(e) {
+        if (e.key === 'ArrowRight' || e.key === 'Right') {
+            moveRight();
+        } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+            moveLeft();
+        } else if (e.key === 'ArrowUp' || e.key === 'Up') {
+            moveUp();
+        } else if (e.key === 'ArrowDown' || e.key === 'Down') {
+            moveDown();
+        }
+    }
+
+    function keyUp(e) {
+        if (
+            e.key === 'ArrowRight' ||
+            e.key === 'Right' ||
+            e.key === 'ArrowLeft' ||
+            e.key === 'Left' ||
+            e.key === 'ArrowUp' ||
+            e.key === 'Up' ||
+            e.key === 'ArrowDown' ||
+            e.key === 'Down'
+        ) {
+            player.dx = 0;
+            player.dy = 0;
+        }
+    }
+
+    document.addEventListener('keydown', keyDown);
+    document.addEventListener('keyup', keyUp);
+
+    update();
+</script>
+
 </body>
 </html>
