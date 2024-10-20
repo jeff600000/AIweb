@@ -3,160 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curioscape - A Curiosity-Driven Experience</title>
+    <title>CreativeHub</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f2f2f2;
-            color: #333;
+            background-color: #f4f4f4;
         }
         header {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            padding: 20px;
+            background: #5f9ea0;
+            color: #fff;
+            padding: 15px 20px;
             text-align: center;
-            color: white;
-        }
-        h1 {
-            margin: 0;
         }
         nav {
-            margin: 20px;
+            margin: 15px 0;
         }
-        button {
-            margin: 10px;
-            padding: 10px;
+        nav button {
+            margin: 0 10px;
+            padding: 10px 15px;
+            background: #ff6347;
+            color: #fff;
             border: none;
-            border-radius: 5px;
-            background-color: #6a11cb;
-            color: white;
             cursor: pointer;
-        }
-        section {
-            padding: 20px;
-            margin: 10px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .article {
-            display: none;
-        }
-        .active {
-            display: block;
-        }
-        #interactives {
-            display: none;
-        }
-        .curiosity-challenge {
-            margin: 20px 0;
-            display: flex;
-            justify-content: space-around;
-        }
-        .badge {
-            display: inline-block;
-            margin: 5px;
-            padding: 5px;
-            border: 1px solid #6a11cb;
             border-radius: 5px;
+        }
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 15px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+        .card img {
+            width: 100%;
+            border-radius: 10px 10px 0 0;
+        }
+        footer {
+            background: #5f9ea0;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Curioscape</h1>
-        <nav>
-            <button onclick="showSection('articles')">Curiosity Articles</button>
-            <button onclick="showSection('forum')">Community Forum</button>
-            <button onclick="showSection('quizzes')">Interactive Quizzes</button>
-            <button onclick="showSection('videos')">Curiosity Video Series</button>
-            <button onclick="showSection('resources')">Resource Library</button>
-        </nav>
-    </header>
 
-    <section id="articles" class="section">
-        <h2>Curiosity Articles</h2>
-        <button onclick="addArticle()">Submit Your Curiosity</button>
-        <div id="articleContainer"></div>
-    </section>
+<header>
+    <h1>Welcome to CreativeHub</h1>
+    <nav>
+        <button onclick="displaySection('gallery')">Showcase Gallery</button>
+        <button onclick="displaySection('challenges')">Creative Challenges</button>
+        <button onclick="displaySection('tutorials')">Tutorials</button>
+        <button onclick="displaySection('collaborations')">Collaboration Space</button>
+        <button onclick="displaySection('marketplace')">Marketplace</button>
+        <button onclick="displaySection('forums')">Discussion Forums</button>
+    </nav>
+</header>
 
-    <section id="forum" class="section">
-        <h2>Community Forum</h2>
-        <div id="forumContainer"></div>
-        <button onclick="startChallenge()">Post a Curiosity Challenge</button>
-    </section>
+<div class="content" id="contentArea">
+    <!-- Content will be dynamically injected here -->
+</div>
 
-    <section id="quizzes" class="section">
-        <h2>Interactive Quizzes</h2>
-        <button onclick="startQuiz()">Take a Quiz</button>
-        <button onclick="startPoll()">Participate in a Poll</button>
-    </section>
+<footer>
+    <p>Explore your creativity!</p>
+</footer>
 
-    <section id="videos" class="section">
-        <h2>Curiosity Video Series</h2>
-        <button onclick="submitVideoQuery()">Submit a Video Query</button>
-    </section>
+<script>
+    const contentData = {
+        gallery: `
+            <div class="card">
+                <img src="https://example.com/artwork1.jpg" alt="Artwork 1">
+                <h2>Artwork 1</h2>
+                <p>By Artist 1</p>
+            </div>
+            <div class="card">
+                <img src="https://example.com/artwork2.jpg" alt="Artwork 2">
+                <h2>Artwork 2</h2>
+                <p>By Artist 2</p>
+            </div>
+        `,
+        challenges: `
+            <div class="card">
+                <h2>Nature Inspired Art Challenge!</h2>
+                <p>Submit your artwork based on the theme of nature for a chance to win!</p>
+                <button onclick="alert('Challenge submitted!')">Submit Entry</button>
+            </div>
+        `,
+        tutorials: `
+            <div class="card">
+                <h2>5 Tips for Breathing Life into Your Characters</h2>
+                <button onclick="alert('Article bookmarked!')">Bookmark</button>
+            </div>
+        `,
+        collaborations: `
+            <div class="card">
+                <h2>Seeking a Music Producer for a Short Film Soundtrack</h2>
+                <button onclick="alert('Collaboration request submitted!')">Get Involved</button>
+            </div>
+        `,
+        marketplace: `
+            <div class="card">
+                <h2>New in the Store: Digital Packs for Game Developers!</h2>
+                <button onclick="alert('Item added to cart!')">Add to Cart</button>
+            </div>
+        `,
+        forums: `
+            <div class="card">
+                <h2>What’s Your Go-To Creative Block Remedy?</h2>
+                <button onclick="alert('Post shared!')">Share Your Tip</button>
+            </div>
+        `,
+    };
 
-    <section id="resources" class="section">
-        <h2>Resource Library</h2>
-        <p>Access a variety of curated resources for deep exploration!</p>
-    </section>
+    function displaySection(section) {
+        document.getElementById('contentArea').innerHTML = contentData[section];
+    }
+</script>
 
-    <div id="interactives"></div>
-
-    <script>
-        function showSection(section) {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(sec => {
-                sec.style.display = 'none';
-            });
-            document.getElementById(section).style.display = 'block';
-        }
-
-        function addArticle() {
-            const articleContainer = document.getElementById('articleContainer');
-            const newArticle = document.createElement('div');
-            newArticle.className = 'article';
-            newArticle.innerHTML = `<p>Newly Submitted Curiosity Article!</p>`;
-            articleContainer.appendChild(newArticle);
-            newArticle.classList.add('active');
-        }
-
-        function startChallenge() {
-            const forumContainer = document.getElementById('forumContainer');
-            const challengePost = document.createElement('div');
-            challengePost.innerHTML = `<p>Curiosity Challenge: What fascinates you the most about the universe?</p>`;
-            challengePost.className = 'curiosity-challenge';
-            forumContainer.appendChild(challengePost);
-        }
-
-        function startQuiz() {
-            const interactives = document.getElementById('interactives');
-            interactives.innerHTML = '<h3>Your curiosity type: Science Lover</h3>';
-            interactives.style.display = 'block';
-        }
-
-        function startPoll() {
-            const interactives = document.getElementById('interactives');
-            interactives.innerHTML += `
-                <h3>Vote for the next article topic:</h3>
-                <button onclick="vote('Space Exploration')">Space Exploration</button>
-                <button onclick="vote('Ancient Civilizations')">Ancient Civilizations</button>
-            `;
-        }
-
-        function vote(topic) {
-            const interactives = document.getElementById('interactives');
-            interactives.innerHTML += `<p>You voted for: ${topic}</p>`;
-        }
-
-        function submitVideoQuery() {
-            const interactives = document.getElementById('interactives');
-            interactives.innerHTML += '<p>Video Query submitted! Stay tuned for answers.</p>';
-        }
-        
-        showSection('articles');
-    </script>
 </body>
 </html>
