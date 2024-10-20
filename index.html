@@ -3,103 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Enigma</title>
-    <style>
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #1c1c1c;
-            margin: 0;
-            color: #e0e0e0;
-            transition: background-color 0.5s, color 0.5s;
-        }
-        #color-box {
-            width: 150px;
-            height: 150px;
-            margin: 20px;
-            border: 1px solid #333;
-            transition: border-color 0.5s;
-        }
-        .input-container {
-            margin: 10px 0;
-        }
-        .input-container input {
-            width: 50px;
-            padding: 5px;
-            margin-right: 5px;
-            color: #333;
-            border: none;
-            border-radius: 3px;
-        }
-        #result {
-            font-weight: bold;
-            margin: 15px 0;
-            transition: transform 0.5s, opacity 0.5s;
-        }
-        #result.fade {
-            opacity: 0.5;
-            transform: scale(1.1);
-        }
-        button {
-            background-color: #444;
-            color: #e0e0e0;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.5s, transform 0.2s;
-        }
-        button:hover {
-            background-color: #555;
-            transform: scale(1.1);
-        }
-    </style>
+    <title>Random Compliment Generator</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Mystery Color Game</h1>
-    <div id="color-box"></div>
-    <div class="input-container">
-        <input type="number" id="red" placeholder="R" min="0" max="255">
-        <input type="number" id="green" placeholder="G" min="0" max="255">
-        <input type="number" id="blue" placeholder="B" min="0" max="255">
+    <div class="container">
+        <h1>Random Compliment Generator</h1>
+        <div id="compliment" class="compliment-box">
+            Click the button to receive a compliment!
+        </div>
+        <button onclick="generateCompliment()">Get Compliment</button>
     </div>
-    <button onclick="checkGuess()">Submit Guess</button>
-    <div id="result"></div>
-
-    <script>
-        let randomColor = {
-            r: Math.floor(Math.random() * 256),
-            g: Math.floor(Math.random() * 256),
-            b: Math.floor(Math.random() * 256)
-        };
-
-        document.getElementById('color-box').style.backgroundColor = `rgb(${randomColor.r}, ${randomColor.g}, ${randomColor.b})`;
-
-        function checkGuess() {
-            const redGuess = parseInt(document.getElementById('red').value);
-            const greenGuess = parseInt(document.getElementById('green').value);
-            const blueGuess = parseInt(document.getElementById('blue').value);
-
-            const resultElement = document.getElementById('result');
-            const colorBox = document.getElementById('color-box');
-
-            if (redGuess === randomColor.r && greenGuess === randomColor.g && blueGuess === randomColor.b) {
-                resultElement.innerText = "Correct! You decoded the color!";
-                resultElement.style.color = "limegreen";
-                document.body.style.backgroundColor = `rgb(${randomColor.r}, ${randomColor.g}, ${randomColor.b})`;
-                colorBox.style.borderColor = "limegreen";
-            } else {
-                resultElement.innerText = "Inaccurate! Attempt another pass.";
-                resultElement.style.color = "red";
-                resultElement.classList.add("fade");
-                setTimeout(() => {
-                    resultElement.classList.remove("fade");
-                }, 500);
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f4f8;
+    margin: 0;
+    overflow: hidden;
+}
+
+.container {
+    text-align: center;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.compliment-box {
+    padding: 20px;
+    background-color: #e0f7fa;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    min-height: 60px;
+    font-style: italic;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #00796b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+    background-color: #004d40;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(-1px);
+}
+</style>
+
+<script>
+const compliments = [
+    "You have a great sense of humor!",
+    "You are a thoughtful and generous person.",
+    "You have a very kind heart.",
+    "You’re a true original!",
+    "Your smile is contagious.",
+    "You are awesome!",
+    "You make the world a better place.",
+    "You're an incredibly thoughtful person.",
+    "You're a fantastic friend!",
+    "You are a ray of sunshine!"
+];
+
+function generateCompliment() {
+    const randomIndex = Math.floor(Math.random() * compliments.length);
+    const complimentBox = document.getElementById("compliment");
+    complimentBox.textContent = compliments[randomIndex];
+    complimentBox.style.backgroundColor = getRandomColor();
+    complimentBox.style.transform = `rotate(${(Math.random() - 0.5) * 10}deg)`;
+}
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+</script>
