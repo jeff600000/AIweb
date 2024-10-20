@@ -3,204 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Playground</title>
+    <title>Wanderlust Explorer</title>
+    <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f5;
-            margin: 0;
-            padding: 0;
+        .map-container {
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg');
+            background-size: cover;
+            height: 500px;
+            width: 100%;
         }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            background-color: #fff;
-            border-bottom: 1px solid #ccc;
-            justify-content: space-around;
-            align-items: center;
-        }
-        nav a {
-            padding: 15px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-        nav a:hover {
-            background-color: #f0f0f5;
-        }
-        .container {
-            padding: 20px;
-        }
-        .dashboards, .mini-games, .creative-tools, .virtual-hangouts, .exploration {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: calc(33% - 40px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+        .destination-marker {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
             cursor: pointer;
-        }
-        .section:hover {
-            transform: translateY(-5px);
-        }
-        .section h3 {
-            margin: 0;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 10px;
-        }
-        .section p {
-            margin: 10px 0;
-            color: #666;
+            transform: translate(-15px, -15px);
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-100">
 
-<header>
-    <h1>Welcome to The Playground</h1>
-</header>
+    <div id="app" class="p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Wanderlust Explorer</h1>
+        
+        <button @click="startQuiz" class="mb-4 bg-blue-500 text-white py-2 px-4 rounded">Start Exploration Quiz</button>
 
-<nav>
-    <a href="#dashboards">Dashboards</a>
-    <a href="#mini-games">Mini-Games</a>
-    <a href="#creative-tools">Creative Tools</a>
-    <a href="#virtual-hangouts">Virtual Hangouts</a>
-    <a href="#exploration">Exploration</a>
-</nav>
+        <div v-if="showQuiz">
+            <div class="bg-white p-4 shadow rounded mb-4">
+                <h2 class="text-xl font-semibold mb-2">Travel Preferences Quiz</h2>
+                <p>What's your preferred climate?</p>
+                <label><input type="radio" value="Warm" v-model="preferences.climate"> Warm</label>
+                <label><input type="radio" value="Cold" v-model="preferences.climate"> Cold</label>
+                <p>Preferred Activities?</p>
+                <label><input type="checkbox" value="Adventure" v-model="preferences.activities"> Adventure</label>
+                <label><input type="checkbox" value="Relaxation" v-model="preferences.activities"> Relaxation</label>
+                <button @click="getDestination" class="mt-4 bg-green-500 text-white py-2 px-4 rounded">Get Suggestions</button>
+            </div>
+        </div>
 
-<div class="container" id="dashboards">
-    <h2>Dashboards & Personalization</h2>
-    <div class="dashboards">
-        <div class="section" onclick="personalization()">
-            <h3>Personalized Homepage</h3>
-            <p>Customize themes and widgets for your homepage.</p>
+        <div v-if="suggestedDestination">
+            <h2 class="text-2xl font-semibold mb-2">Suggested Destination: {{ suggestedDestination.name }}</h2>
+            <img :src="suggestedDestination.image" alt="Destination Image" class="w-full rounded mb-4">
+
+            <div class="map-container relative">
+                <div class="destination-marker" 
+                     :style="{ top: suggestedDestination.mapY + '%', left: suggestedDestination.mapX + '%' }"
+                     @click="showDestinationDetails">
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showDetails">
+            <h2 class="text-xl font-semibold mt-4 mb-2">Destination Details</h2>
+            <p>{{ suggestedDestination.details }}</p>
+            <button @click="toggleDiscussion" class="mt-2 bg-yellow-500 text-white py-2 px-4 rounded">Open Discussion Board</button>
+        </div>
+
+        <div v-if="showDiscussion">
+            <div class="bg-white p-4 shadow rounded mb-4">
+                <h3 class="text-lg font-semibold mb-2">Discussion Board</h3>
+                <textarea v-model="newPost" rows="3" class="w-full p-2 mb-2"></textarea>
+                <button @click="addPost" class="bg-blue-500 text-white py-2 px-4 rounded">Post</button>
+                <div v-for="(post, index) in posts" :key="index" class="mt-2 p-2 bg-gray-200 rounded">
+                    {{ post }}
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="container" id="mini-games">
-    <h2>Mini-Games Hub</h2>
-    <div class="mini-games">
-        <div class="section" onclick="playPuzzle()">
-            <h3>Puzzles</h3>
-            <p>Solve fun puzzles and challenge your mind.</p>
-        </div>
-        <div class="section" onclick="playTrivia()">
-            <h3>Trivia</h3>
-            <p>Test your knowledge and compete in trivia games.</p>
-        </div>
-        <div class="section" onclick="playArcade()">
-            <h3>Arcade-Style Games</h3>
-            <p>Enjoy classic arcade experiences.</p>
-        </div>
-    </div>
-</div>
-
-<div class="container" id="creative-tools">
-    <h2>Creative Tools Suite</h2>
-    <div class="creative-tools">
-        <div class="section" onclick="openDoodlePad()">
-            <h3>Doodle Pad</h3>
-            <p>Express your creativity with our drawing tools.</p>
-        </div>
-        <div class="section" onclick="createMusic()">
-            <h3>Music Maker</h3>
-            <p>Compose melodies and share your creations.</p>
-        </div>
-        <div class="section" onclick="writeStory()">
-            <h3>Story Creator</h3>
-            <p>Write and share your own stories.</p>
-        </div>
-    </div>
-</div>
-
-<div class="container" id="virtual-hangouts">
-    <h2>Virtual Hangouts</h2>
-    <div class="virtual-hangouts">
-        <div class="section" onclick="joinChatRoom()">
-            <h3>Chat Rooms</h3>
-            <p>Join thematic chat rooms to talk and meet new friends.</p>
-        </div>
-        <div class="section" onclick="enterAvatarHangout()">
-            <h3>Avatar Hangouts</h3>
-            <p>Interact in real-time with your avatar.</p>
-        </div>
-        <div class="section" onclick="attendEvent()">
-            <h3>Event Spaces</h3>
-            <p>Participate in virtual events and concerts.</p>
-        </div>
-    </div>
-</div>
-
-<div class="container" id="exploration">
-    <h2>Exploration & Learning</h2>
-    <div class="exploration">
-        <div class="section" onclick="dailyChallenge()">
-            <h3>Daily Challenges</h3>
-            <p>Engage in exciting challenges and win rewards!</p>
-        </div>
-        <div class="section" onclick="learnFunFact()">
-            <h3>Fun Facts</h3>
-            <p>Discover new knowledge with random facts.</p>
-        </div>
-        <div class="section" onclick="enterLanguageZone()">
-            <h3>Language Zone</h3>
-            <p>Learn a new language in a fun way!</p>
-        </div>
-    </div>
-</div>
-
-<script>
-    function personalization() {
-        window.open('', '_blank').document.write('<h2>Personalized Homepage</h2><p>Customize your experience with different themes and widgets.</p>');
-    }
-    function playPuzzle() {
-        window.open('', '_blank').document.write('<h2>Puzzle Game</h2><p>Enjoy our engaging and challenging puzzle games!</p>');
-    }
-    function playTrivia() {
-        window.open('', '_blank').document.write('<h2>Trivia Quiz</h2><p>Test your knowledge with our trivia quizzes!</p>');
-    }
-    function playArcade() {
-        window.open('', '_blank').document.write('<h2>Arcade Games</h2><p>Play classic and modern arcade games with a click.</p>');
-    }
-    function openDoodlePad() {
-        window.open('', '_blank').document.write('<h2>Doodle Pad</h2><p>Use a variety of brushes and colors to doodle your ideas.</p>');
-    }
-    function createMusic() {
-        window.open('', '_blank').document.write('<h2>Music Maker</h2><p>Create catchy tunes and share them with your friends!</p>');
-    }
-    function writeStory() {
-        window.open('', '_blank').document.write('<h2>Story Creator</h2><p>Unleash your imagination by writing and sharing stories.</p>');
-    }
-    function joinChatRoom() {
-        window.open('', '_blank').document.write('<h2>Chat Rooms</h2><p>Join our themed chat rooms and start conversations today.</p>');
-    }
-    function enterAvatarHangout() {
-        window.open('', '_blank').document.write('<h2>Avatar Hangouts</h2><p>Interact with other avatars in real-time.</p>');
-    }
-    function attendEvent() {
-        window.open('', '_blank').document.write('<h2>Event Spaces</h2><p>Join our virtual events and concerts for the ultimate experience.</p>');
-    }
-    function dailyChallenge() {
-        window.open('', '_blank').document.write('<h2>Daily Challenge</h2><p>Take on daily challenges and earn rewards.</p>');
-    }
-    function learnFunFact() {
-        window.open('', '_blank').document.write('<h2>Fun Facts & Knowledge Cards</h2><p>Learn something new every day with our fun facts.</p>');
-    }
-    function enterLanguageZone() {
-        window.open('', '_blank').document.write('<h2>Language Zone</h2><p>Enhance your language skills through interactive content.</p>');
-    }
-</script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                showQuiz: false,
+                preferences: {
+                    climate: '',
+                    activities: []
+                },
+                suggestedDestination: null,
+                showDetails: false,
+                showDiscussion: false,
+                newPost: '',
+                posts: []
+            },
+            methods: {
+                startQuiz() {
+                    this.showQuiz = true;
+                },
+                getDestination() {
+                    // Simulate getting a destination based on preferences
+                    this.suggestedDestination = {
+                        name: 'Bali, Indonesia',
+                        image: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Bali_Bromo.JPG',
+                        mapX: 70,
+                        mapY: 60,
+                        details: 'Bali is known for its forested volcanic mountains, iconic rice paddies, beaches, and coral reefs.'
+                    };
+                },
+                showDestinationDetails() {
+                    this.showDetails = true;
+                },
+                toggleDiscussion() {
+                    this.showDiscussion = !this.showDiscussion;
+                },
+                addPost() {
+                    if (this.newPost) {
+                        this.posts.push(this.newPost);
+                        this.newPost = '';
+                    }
+                }
+            }
+        });
+    </script>
 
 </body>
 </html>
