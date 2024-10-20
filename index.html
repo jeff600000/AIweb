@@ -3,89 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Cryptic Shuffle</title>
+    <title>Meditation Timer</title>
     <style>
         body {
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #220f29;
-            color: #fff;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #9eafb4, #627d99);
+            color: white;
+            text-align: center;
+            transition: background 2s;
         }
-        .puzzle-container {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 5px;
+        .timer-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.5s;
         }
-        .tile {
-            width: 100px;
-            height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #3e1f47;
-            border: 2px solid #6a4e7d;
-            font-size: 24px;
+        .timer-container:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+        h1 {
+            font-size: 48px;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: color 0.5s;
         }
-        .tile:hover {
-            transform: scale(1.1);
+        h1:hover {
+            color: #ff6f61;
         }
-        .hidden {
-            visibility: hidden;
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.5s;
+        }
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-
-    <div class="puzzle-container" id="puzzle">
-        <div class="tile" data-index="0">1</div>
-        <div class="tile" data-index="1">2</div>
-        <div class="tile" data-index="2">3</div>
-        <div class="tile" data-index="3">4</div>
-        <div class="tile" data-index="4">5</div>
-        <div class="tile" data-index="5">6</div>
-        <div class="tile" data-index="6">7</div>
-        <div class="tile" data-index="7">8</div>
-        <div class="tile hidden" data-index="8"></div>
+    <div class="timer-container" id="mainContainer">
+        <h1 id="timer" onclick="toggleDarkMode()">5:00</h1>
+        <button onclick="startTimer()">Start</button>
+        <button onclick="resetTimer()">Reset</button>
     </div>
 
     <script>
-        const tiles = Array.from(document.querySelectorAll('.tile'));
-        let emptyIndex = 8;
+        let timer;
+        let countdown;
+        let isRunning = false;
+        const defaultTime = 300;
+        let timeRemaining = defaultTime;
 
-        tiles.forEach(tile => {
-            tile.addEventListener('click', () => {
-                const tileIndex = parseInt(tile.getAttribute('data-index'));
-                if (isMovable(tileIndex, emptyIndex)) {
-                    moveTile(tileIndex, emptyIndex);
-                }
-            });
-        });
-
-        function isMovable(tileIndex, emptyIndex) {
-            const rowDiff = Math.abs(Math.floor(tileIndex / 3) - Math.floor(emptyIndex / 3));
-            const colDiff = Math.abs((tileIndex % 3) - (emptyIndex % 3));
-            return (rowDiff + colDiff === 1);
+        function displayTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('timer').textContent = `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
-        function moveTile(fromIndex, toIndex) {
-            [tiles[fromIndex].innerHTML, tiles[toIndex].innerHTML] = [tiles[toIndex].innerHTML, tiles[fromIndex].innerHTML];
-            [tiles[fromIndex].classList, tiles[toIndex].classList] = [tiles[toIndex].classList, tiles[fromIndex].classList];
-            
-            // swap attributes
-            const tempDataIndex = tiles[fromIndex].getAttribute('data-index');
-            tiles[fromIndex].setAttribute('data-index', tiles[toIndex].getAttribute('data-index'));
-            tiles[toIndex].setAttribute('data-index', tempDataIndex);
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            timer = timeRemaining;
 
-            // update emptyIndex
-            emptyIndex = fromIndex;
+            countdown = setInterval(() => {
+                timer--;
+                displayTime(timer);
+
+                if (timer <= 0) {
+                    clearInterval(countdown);
+                    alert('Meditation session completed!');
+                    isRunning = false;
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(countdown);
+            isRunning = false;
+            timeRemaining = defaultTime;
+            displayTime(timeRemaining);
+        }
+
+        function toggleDarkMode() {
+            document.body.style.background = document.body.style.background === 'black' ? 'linear-gradient(to bottom, #9eafb4, #627d99)' : 'black';
+        }
+
+        window.onload = function() {
+            displayTime(timeRemaining);
         }
     </script>
-
 </body>
 </html>
