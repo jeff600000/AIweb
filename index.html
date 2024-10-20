@@ -3,88 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Weaver</title>
+    <title>Vibe Tracker</title>
     <style>
         body {
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            font-family: 'Courier New', Courier, monospace;
+            transition: background-color 0.5s ease;
+            background-color: #eeeeee;
         }
-        .timer-box {
-            text-align: center;
-            padding: 40px;
-            border: 2px dashed #e0e0e0;
-            border-radius: 12px;
-            background-color: #2a2a2a;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        #vibe-input {
+            margin: 20px;
+            width: 60%;
         }
-        #display {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+        #vibe-display {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffcccb;
+            font-size: 1.5em;
         }
-        input[type="number"] {
-            width: 60px;
-            text-align: center;
-            margin-right: 10px;
-        }
-        button {
-            padding-top: 10px;
+        .mystery {
             margin-top: 20px;
-            background-color: transparent;
-            border: 2px solid #00ccff;
-            color: #00ccff;
-            border-radius: 8px;
+            color: #666;
+            font-size: 0.9em;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        button:hover {
-            background-color: #00ccff;
-            color: #1a1a1a;
         }
     </style>
 </head>
 <body>
 
-<div class="timer-box">
-    <h1>Time Weaver</h1>
-    <div>
-        <input type="number" id="input-minutes" placeholder="Min" min="0">
-        <input type="number" id="input-seconds" placeholder="Sec" min="0" max="59">
-    </div>
-    <button onclick="invokeTimer()">Cast Time</button>
-    <div id="display">00:00</div>
-</div>
+    <h1>Vibe Tracker</h1>
+    <input type="range" id="vibe-input" min="1" max="10">
+    <div id="vibe-display">Set your vibe!</div>
+    <div class="mystery" onclick="revealMystery()">What secrets do you hold?</div>
 
-<script>
-    function invokeTimer() {
-        const displayElement = document.getElementById('display');
-        let minutes = parseInt(document.getElementById('input-minutes').value) || 0;
-        let seconds = parseInt(document.getElementById('input-seconds').value) || 0;
-        let totalTime = minutes * 60 + seconds;
+    <script>
+        const body = document.body;
+        const vibeInput = document.getElementById('vibe-input');
+        const vibeDisplay = document.getElementById('vibe-display');
+        
+        vibeInput.addEventListener('input', function() {
+            const vibeValue = vibeInput.value;
+            vibeDisplay.textContent = `Your vibe is: ${vibeValue}`;
+            changeBackground(vibeValue);
+        });
 
-        displayElement.textContent = weaveTime(totalTime);
-
-        const interval = setInterval(() => {
-            if (--totalTime <= 0) {
-                clearInterval(interval);
-                displayElement.textContent = "Time Escaped!";
-                alert('Time Warp Complete!');
-            } else {
-                displayElement.textContent = weaveTime(totalTime);
+        function changeBackground(vibe) {
+            let color;
+            switch(true) {
+                case (vibe <= 3):
+                    color = '#ff4d4d'; // red for low vibes
+                    break;
+                case (vibe <= 6):
+                    color = '#ffd11a'; // yellow for medium vibes
+                    break;
+                default:
+                    color = '#85e085'; // green for high vibes
             }
-        }, 1000);
-    }
-
-    function weaveTime(total) {
-        const min = Math.floor(total / 60);
-        const sec = total % 60;
-        return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-    }
-</script>
+            body.style.backgroundColor = color;
+        }
+        
+        function revealMystery() {
+            const messages = [
+                "Whispers of the digital realm...",
+                "Look within the code...",
+                "The answer lies in simplicity...",
+                "Change alters perception...",
+                "Have you discovered the hidden path?"
+            ];
+            alert(messages[Math.floor(Math.random() * messages.length)]);
+        }
+    </script>
 
 </body>
 </html>
