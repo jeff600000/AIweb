@@ -3,161 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Healthy Living Hub</title>
+    <title>Curioscape - A Curiosity-Driven Experience</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #f2f2f2;
+            color: #333;
         }
         header {
-            background: #4CAF50;
-            color: #fff;
-            padding: 10px 20px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            padding: 20px;
             text-align: center;
+            color: white;
+        }
+        h1 {
+            margin: 0;
         }
         nav {
-            display: flex;
-            justify-content: center;
-            background: #333;
+            margin: 20px;
         }
-        nav a {
+        button {
+            margin: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #6a11cb;
             color: white;
-            padding: 14px 20px;
-            text-decoration: none;
-            text-align: center;
-        }
-        nav a:hover {
-            background: #575757;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 5px;
-        }
-        .articles {
-            margin: 20px 0;
-        }
-        .article {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            transition: transform 0.2s;
-        }
-        .article:hover {
-            transform: scale(1.05);
-        }
-        .button {
-            display: inline-block;
-            background: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            margin-top: 10px;
-            border-radius: 5px;
             cursor: pointer;
         }
-        .button:hover {
-            background: #45a049;
+        section {
+            padding: 20px;
+            margin: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        #commentSection {
-            margin-top: 20px;
+        .article {
+            display: none;
         }
-        #comments {
-            margin-top: 10px;
-            max-height: 150px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
+        .active {
+            display: block;
+        }
+        #interactives {
+            display: none;
+        }
+        .curiosity-challenge {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-around;
+        }
+        .badge {
+            display: inline-block;
+            margin: 5px;
             padding: 5px;
-        }
-        #newsletter {
-            margin-top: 20px;
+            border: 1px solid #6a11cb;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>Curioscape</h1>
+        <nav>
+            <button onclick="showSection('articles')">Curiosity Articles</button>
+            <button onclick="showSection('forum')">Community Forum</button>
+            <button onclick="showSection('quizzes')">Interactive Quizzes</button>
+            <button onclick="showSection('videos')">Curiosity Video Series</button>
+            <button onclick="showSection('resources')">Resource Library</button>
+        </nav>
+    </header>
 
-<header>
-    <h1>Healthy Living Hub</h1>
-</header>
+    <section id="articles" class="section">
+        <h2>Curiosity Articles</h2>
+        <button onclick="addArticle()">Submit Your Curiosity</button>
+        <div id="articleContainer"></div>
+    </section>
 
-<nav>
-    <a href="#" onclick="filterArticles('nutrition')">Nutrition</a>
-    <a href="#" onclick="filterArticles('fitness')">Fitness</a>
-    <a href="#" onclick="filterArticles('mentalHealth')">Mental Health</a>
-</nav>
+    <section id="forum" class="section">
+        <h2>Community Forum</h2>
+        <div id="forumContainer"></div>
+        <button onclick="startChallenge()">Post a Curiosity Challenge</button>
+    </section>
 
-<div class="container">
-    <div class="articles" id="articleList">
-        <div class="article" data-category="nutrition">
-            <h2>10 Tips for Healthy Eating</h2>
-            <p>Learn how to incorporate healthy eating habits into your daily life.</p>
-            <div class="button" onclick="comment('10 Tips for Healthy Eating')">Comment</div>
-        </div>
-        <div class="article" data-category="fitness">
-            <h2>The Importance of Regular Exercise</h2>
-            <p>Discover the benefits of maintaining a consistent exercise routine.</p>
-            <div class="button" onclick="comment('The Importance of Regular Exercise')">Comment</div>
-        </div>
-        <div class="article" data-category="mentalHealth">
-            <h2>Mindfulness Techniques to Reduce Stress</h2>
-            <p>Explore various mindfulness strategies to improve mental well-being.</p>
-            <div class="button" onclick="comment('Mindfulness Techniques to Reduce Stress')">Comment</div>
-        </div>
-    </div>
+    <section id="quizzes" class="section">
+        <h2>Interactive Quizzes</h2>
+        <button onclick="startQuiz()">Take a Quiz</button>
+        <button onclick="startPoll()">Participate in a Poll</button>
+    </section>
 
-    <div id="commentSection">
-        <h3>Comments</h3>
-        <div id="comments"></div>
-        <textarea id="commentInput" placeholder="Write your comment..."></textarea>
-        <div class="button" onclick="addComment()">Submit Comment</div>
-    </div>
+    <section id="videos" class="section">
+        <h2>Curiosity Video Series</h2>
+        <button onclick="submitVideoQuery()">Submit a Video Query</button>
+    </section>
 
-    <div id="newsletter">
-        <h3>Sign up for Our Newsletter</h3>
-        <input type="text" id="emailInput" placeholder="Your email address" />
-        <div class="button" onclick="subscribe()">Subscribe</div>
-    </div>
-</div>
+    <section id="resources" class="section">
+        <h2>Resource Library</h2>
+        <p>Access a variety of curated resources for deep exploration!</p>
+    </section>
 
-<script>
-    function filterArticles(category) {
-        const articles = document.querySelectorAll('.article');
-        articles.forEach(article => {
-            article.style.display = article.getAttribute('data-category') === category || category === '' ? '' : 'none';
-        });
-    }
+    <div id="interactives"></div>
 
-    function comment(articleTitle) {
-        document.getElementById('commentInput').setAttribute('data-article', articleTitle);
-        document.getElementById('commentInput').value = '';
-        document.getElementById('commentInput').focus();
-    }
-
-    function addComment() {
-        const input = document.getElementById('commentInput');
-        const articleTitle = input.getAttribute('data-article');
-        const commentText = input.value;
-        if (commentText) {
-            const commentsDiv = document.getElementById('comments');
-            const newComment = document.createElement('div');
-            newComment.textContent = `${articleTitle}: ${commentText}`;
-            commentsDiv.appendChild(newComment);
-            input.value = '';
+    <script>
+        function showSection(section) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(sec => {
+                sec.style.display = 'none';
+            });
+            document.getElementById(section).style.display = 'block';
         }
-    }
 
-    function subscribe() {
-        const email = document.getElementById('emailInput').value;
-        if (email) {
-            alert('Thank you for subscribing!'); // Replace with a cookie storage or a UI change to show success without alerts.
-            document.getElementById('emailInput').value = '';
+        function addArticle() {
+            const articleContainer = document.getElementById('articleContainer');
+            const newArticle = document.createElement('div');
+            newArticle.className = 'article';
+            newArticle.innerHTML = `<p>Newly Submitted Curiosity Article!</p>`;
+            articleContainer.appendChild(newArticle);
+            newArticle.classList.add('active');
         }
-    }
-</script>
 
+        function startChallenge() {
+            const forumContainer = document.getElementById('forumContainer');
+            const challengePost = document.createElement('div');
+            challengePost.innerHTML = `<p>Curiosity Challenge: What fascinates you the most about the universe?</p>`;
+            challengePost.className = 'curiosity-challenge';
+            forumContainer.appendChild(challengePost);
+        }
+
+        function startQuiz() {
+            const interactives = document.getElementById('interactives');
+            interactives.innerHTML = '<h3>Your curiosity type: Science Lover</h3>';
+            interactives.style.display = 'block';
+        }
+
+        function startPoll() {
+            const interactives = document.getElementById('interactives');
+            interactives.innerHTML += `
+                <h3>Vote for the next article topic:</h3>
+                <button onclick="vote('Space Exploration')">Space Exploration</button>
+                <button onclick="vote('Ancient Civilizations')">Ancient Civilizations</button>
+            `;
+        }
+
+        function vote(topic) {
+            const interactives = document.getElementById('interactives');
+            interactives.innerHTML += `<p>You voted for: ${topic}</p>`;
+        }
+
+        function submitVideoQuery() {
+            const interactives = document.getElementById('interactives');
+            interactives.innerHTML += '<p>Video Query submitted! Stay tuned for answers.</p>';
+        }
+        
+        showSection('articles');
+    </script>
 </body>
 </html>
