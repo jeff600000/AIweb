@@ -3,199 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creative Playground</title>
+    <title>Future Trends Hub</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f5;
-            color: #333;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            background-color: #f4f4f4;
         }
         header {
-            background-color: #4A90E2;
-            color: white;
+            background: #333;
+            color: #fff;
             padding: 10px 20px;
             text-align: center;
-            position: sticky;
-            top: 0;
         }
-        nav {
+        .hero {
+            position: relative;
+            height: 50vh;
+            background: url('https://source.unsplash.com/random/1920x1080') no-repeat center center/cover;
             display: flex;
-            justify-content: space-around;
-            background-color: #355C7D;
+            justify-content: center;
+            align-items: center;
             color: white;
-            padding: 10px;
+            font-size: 2rem;
         }
-        nav button {
-            background-color: transparent;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            padding: 5px;
-        }
-        nav button:hover {
-            border-bottom: 2px solid white;
-        }
-        .feature {
+        .container {
             padding: 20px;
-            border-bottom: 1px solid #ccc;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .section {
+            flex: 1 1 30%;
+            background: white;
             margin: 10px;
-            background-color: white;
-            border-radius: 5px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
-        .feature h2 {
-            margin-top: 0;
-        }
-        .feature-content {
-            display: none;
-        }
-        footer {
-            background-color: #4A90E2;
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
             color: white;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        .canvas {
-            border: 1px solid #ccc;
+        .poll-result {
+            display: none;
+            margin-top: 10px;
+            background-color: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Creative Playground</h1>
-    </header>
-    <nav>
-        <button onclick="showFeature('canvasFeature')">Interactive Canvas</button>
-        <button onclick="showFeature('musicLab')">Music Lab</button>
-        <button onclick="showFeature('storyStudio')">Story Studio</button>
-        <button onclick="showFeature('experimentalZone')">Experimental Zone</button>
-        <button onclick="showFeature('gallery')">Gallery & Feedback</button>
-        <button onclick="showFeature('resourceLibrary')">Resource Library</button>
-        <button onclick="showFeature('profiles')">User Profiles</button>
-    </nav>
 
-    <div id="canvasFeature" class="feature">
-        <h2>Interactive Canvas</h2>
-        <canvas id="drawingCanvas" class="canvas" width="500" height="500"></canvas>
-        <br>
-        <button onclick="clearCanvas()">Clear Canvas</button>
+<header>
+    <h1>Future Trends Hub</h1>
+</header>
+
+<div class="hero">
+    Stay Ahead of Tomorrow
+</div>
+
+<div class="container">
+    <div class="section">
+        <h2>Trending Now</h2>
+        <p id="trending">Loading...</p>
+        <button onclick="fetchTrending()">Refresh Trending Topics</button>
     </div>
 
-    <div id="musicLab" class="feature">
-        <h2>Music Lab</h2>
-        <div class="feature-content">
-            <p>Create music with virtual instruments and loops.</p>
-            <button onclick="playSound()">Play a Sound</button>
-        </div>
+    <div class="section">
+        <h2>Interactive Poll</h2>
+        <p>What's the next big trend in technology?</p>
+        <button onclick="vote('AI')">AI Innovations</button>
+        <button onclick="vote('Green Tech')">Green Technology</button>
+        <button onclick="vote('Wearables')">Wearables</button>
+        <div class="poll-result" id="pollResult"></div>
     </div>
 
-    <div id="storyStudio" class="feature">
-        <h2>Story Studio</h2>
-        <div class="feature-content">
-            <p>Write and illustrate your stories.</p>
-            <textarea placeholder="Start writing your story..."></textarea>
-            <button>Generate Plot Idea</button>
-        </div>
+    <div class="section">
+        <h2>User Contributions</h2>
+        <button onclick="submitTrend()">Submit a Trend</button>
+        <div id="submittedTrends"></div>
     </div>
+</div>
 
-    <div id="experimentalZone" class="feature">
-        <h2>Experimental Zone</h2>
-        <div class="feature-content">
-            <p>Work on coding projects and learn new skills.</p>
-            <button onclick="alert('Interactive coding tutorials coming soon!')">Try a Tutorial</button>
-        </div>
-    </div>
+<script>
+    function fetchTrending() {
+        // Simulating fetching trending topics
+        const trends = ['AI Breakthroughs', 'Sustainable Fashion', 'Remote Work Trends'];
+        document.getElementById('trending').innerHTML = trends.join('<br/>');
+    }
 
-    <div id="gallery" class="feature">
-        <h2>Gallery & Feedback</h2>
-        <div class="feature-content">
-            <p>Explore creations from other users and share feedback.</p>
-            <button>View Gallery</button>
-        </div>
-    </div>
+    function vote(choice) {
+        const result = document.getElementById('pollResult');
+        result.style.display = 'block';
+        result.innerHTML = 'Thank you for voting for: ' + choice + '!';
+    }
 
-    <div id="resourceLibrary" class="feature">
-        <h2>Resource Library</h2>
-        <div class="feature-content">
-            <p>Access tutorials, articles, and community forums.</p>
-            <button>Explore Resources</button>
-        </div>
-    </div>
-
-    <div id="profiles" class="feature">
-        <h2>User Profiles</h2>
-        <div class="feature-content">
-            <p>Manage your projects and collaborations.</p>
-            <button>View Profile</button>
-        </div>
-    </div>
-
-    <footer>
-        <p>© 2023 Creative Playground. All rights reserved.</p>
-    </footer>
-
-    <script>
-        const features = document.querySelectorAll('.feature');
-        
-        function showFeature(id) {
-            features.forEach(feature => {
-                const content = feature.querySelector('.feature-content');
-                if (feature.id === id) {
-                    if (content.style.display === 'block') {
-                        content.style.display = 'none';
-                    } else {
-                        content.style.display = 'block';
-                    }
-                } else {
-                    content.style.display = 'none';
-                }
-            });
+    function submitTrend() {
+        const trend = prompt("What new trend do you want to submit?");
+        if (trend) {
+            const trendsDiv = document.getElementById('submittedTrends');
+            const newTrend = document.createElement('div');
+            newTrend.innerHTML = '- ' + trend;
+            trendsDiv.appendChild(newTrend);
         }
+    }
 
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
-        let painting = false;
+    window.onload = fetchTrending;
+</script>
 
-        function startPosition(e) {
-            painting = true;
-            draw(e);
-        }
-
-        function endPosition() {
-            painting = false;
-            ctx.beginPath();
-        }
-
-        function draw(e) {
-            if (!painting) return;
-            ctx.lineWidth = 5;
-            ctx.lineCap = 'round';
-
-            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-        }
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        canvas.addEventListener('mousedown', startPosition);
-        canvas.addEventListener('mouseup', endPosition);
-        canvas.addEventListener('mousemove', draw);
-
-        function playSound() {
-            const audio = new Audio('https://www.soundjay.com/button/sounds/button-4.mp3');
-            audio.play();
-        }
-    </script>
 </body>
 </html>
