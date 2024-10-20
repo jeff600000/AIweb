@@ -1,224 +1,162 @@
-<!-- I need to put this here, dont ask why -->**1. Homepage (index.html):**
-
-```html
-<!DOCTYPE html>
+<!-- I need to put this here, dont ask why --><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluffy the Traveling Cat</title>
+    <title>Plant Pals Adventure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff;
-            color: #333;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            background-color: #f5f7fa;
         }
         header {
-            background-color: #ff69b4;
-            padding: 15px;
-            text-align: center;
+            background-color: #6ebf61;
             color: white;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #ffebcd;
-            padding: 10px;
-        }
-        nav a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-        h1 {
             text-align: center;
-            margin-top: 50px;
-        }
-        p {
-            text-align: center;
-            font-size: 18px;
-            max-width: 600px;
-            margin: 20px auto;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Fluffy the Traveling Cat</h1>
-    </header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="contact.html">Contact</a>
-    </nav>
-    <h1>Welcome to Fluffy's Adventures!</h1>
-    <p>
-        Join Fluffy as she explores the world, one paw at a time. Follow her journey through bustling cities, serene landscapes, and magical places!
-    </p>
-</body>
-</html>
-```
-
-**2. Gallery Page (gallery.html):**
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluffy's Gallery</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #ff69b4;
-            padding: 15px;
-            text-align: center;
-            color: white;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #ffebcd;
-            padding: 10px;
-        }
-        nav a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-        h1 {
-            text-align: center;
-            margin: 30px 0;
-        }
-        .gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 20px;
-        }
-        .gallery img {
-            margin: 10px;
-            width: 250px;
-            height: 300px;
-            object-fit: cover;
-            border: 5px solid #ff69b4;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Fluffy's Gallery</h1>
-    </header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="contact.html">Contact</a>
-    </nav>
-    <h1>Fluffy's Travel Photos</h1>
-    <div class="gallery">
-        <img src="images/paris.jpg" alt="Fluffy in Paris">
-        <img src="images/nyc.jpg" alt="Fluffy in New York City">
-        <img src="images/tokyo.jpg" alt="Fluffy in Tokyo">
-        <img src="images/sydney.jpg" alt="Fluffy in Sydney">
-        <img src="images/cairo.jpg" alt="Fluffy in Cairo">
-    </div>
-</body>
-</html>
-```
-
-**3. Contact Page (contact.html):**
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Fluffy</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #ff69b4;
-            padding: 15px;
-            text-align: center;
-            color: white;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #ffebcd;
-            padding: 10px;
-        }
-        nav a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-        h1 {
-            text-align: center;
-            margin: 30px 0;
-        }
-        .contact-form {
-            max-width: 500px;
-            margin: 0 auto;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .contact-form input, .contact-form textarea {
-            width: 100%;
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #4e8b49;
             padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
         }
-        .contact-form button {
-            background-color: #ff69b4;
+        nav a {
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
             cursor: pointer;
         }
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            background-image: url('hero-bg.jpg');
+            background-size: cover;
+            color: white;
+        }
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .plant-card {
+            background-color: #fff;
+            width: 300px;
+            margin: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .plant-card:hover {
+            transform: translateY(-5px);
+        }
+        .plant-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .footer {
+            background-color: #4e8b49;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        /* Interactive Popup Styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 500px;
+            z-index: 1000;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Contact Fluffy</h1>
+        <h1>Plant Pals Adventure</h1>
     </header>
     <nav>
-        <a href="index.html">Home</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="contact.html">Contact</a>
+        <a href="#" onclick="showPopup('about')">About</a>
+        <a href="#" onclick="showPopup('garden')">Your Garden</a>
+        <a href="#" onclick="showPopup('explore')">Explore Plants</a>
+        <a href="#" onclick="showPopup('contact')">Contact</a>
     </nav>
-    <h1>Send Fluffy a Message</h1>
-    <div class="contact-form">
-        <form action="#" method="post">
-            <input type="text" name="name" required placeholder="Your Name">
-            <input type="email" name="email" required placeholder="Your Email">
-            <textarea name="message" rows="5" required placeholder="Your Message"></textarea>
-            <button type="submit">Send</button>
-        </form>
+    <div class="hero">
+        <h1>Welcome to Plant Pals Adventure!</h1>
+        <p>Discover, learn, and grow your virtual garden with the most amazing plant pals.</p>
     </div>
+    <div class="main-content">
+        <div class="plant-card" onclick="showPopup('Aloe Vera')">
+            <img src="aloe-vera.jpg" alt="Aloe Vera">
+            <h2>Aloe Vera</h2>
+            <p>A succulent plant known for its resilient nature and soothing gel.</p>
+        </div>
+        <div class="plant-card" onclick="showPopup('Bamboo')">
+            <img src="bamboo.jpg" alt="Bamboo">
+            <h2>Bamboo</h2>
+            <p>A fast-growing plant that symbolizes strength and flexibility.</p>
+        </div>
+        <div class="plant-card" onclick="showPopup('Cactus')">
+            <img src="cactus.jpg" alt="Cactus">
+            <h2>Cactus</h2>
+            <p>A desert plant known for its unique adaptations and spiky appearance.</p>
+        </div>
+        <div class="plant-card" onclick="showPopup('Fern')">
+            <img src="fern.jpg" alt="Fern">
+            <h2>Fern</h2>
+            <p>An ancient group of plants with lush, feathery foliage.</p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>&copy; 2023 Plant Pals Adventure. All Rights Reserved.</p>
+    </div>
+
+    <!-- Popup and Overlay -->
+    <div class="overlay" id="overlay" onclick="hidePopup()"></div>
+    <div class="popup" id="popup">
+        <p id="popup-content">Placeholder</p>
+    </div>
+
+    <script>
+        function showPopup(content) {
+            document.getElementById('popup-content').textContent = content;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+        }
+
+        function hidePopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+        }
+    </script>
+
 </body>
 </html>
-```
