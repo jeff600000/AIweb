@@ -3,109 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unicorn Adventure Park</title>
+    <title>A Mysterious Portfolio</title>
     <style>
         body {
-            background-color: #f8f6ff;
-            font-family: 'Comic Sans MS', sans-serif;
-            color: #4A3C6E;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #1e1e1e;
+            color: #f5f5f5;
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
         header {
-            background-color: #b897ff;
+            background-color: #333;
+            color: #ff6347;
+            padding: 50px;
             text-align: center;
-            padding: 1.5em 0;
-        }
-        h1 {
-            margin: 0;
-            font-size: 3em;
         }
         nav {
-            background-color: #d9b3ff;
-            padding: 1em 0;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            background: #444;
         }
         nav a {
-            color: #fff;
-            margin: 0 15px;
+            color: #ff6347;
+            padding: 15px;
             text-decoration: none;
-            font-size: 1.2em;
-            transition: color 0.3s;
+            transition: background 0.3s;
         }
         nav a:hover {
-            color: #4A3C6E;
+            background: #ff6347;
+            color: #444;
         }
-        .content {
-            max-width: 800px;
-            margin: 2em auto;
-            padding: 1em;
+        section {
+            padding: 50px;
+            text-align: center;
         }
-        .attraction {
-            background-color: #e6d4ff;
-            margin-bottom: 1.5em;
-            padding: 1em;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
+        section h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
         }
-        .attraction button {
-            background-color: #b3b3ff;
-            border: none;
-            border-radius: 5px;
-            padding: 0.5em 1em;
-            font-size: 1em;
-            color: #fff;
+        .gallery {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .gallery img {
+            width: 200px;
+            height: 200px;
+            margin: 15px;
+            border-radius: 50%;
             cursor: pointer;
-            position: absolute;
-            bottom: 1em;
-            right: 1em;
-            transition: background-color 0.3s;
+            transition: transform 0.3s, filter 0.5s;
+            filter: grayscale(100%);
         }
-        .attraction button:hover {
-            background-color: #8266ff;
+        .gallery img:hover {
+            transform: scale(1.2);
+            filter: grayscale(0);
         }
         footer {
-            background-color: #b897ff;
+            background-color: #333;
+            color: #ff6347;
             text-align: center;
-            padding: 1em 0;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .secret {
+            display: none;
         }
     </style>
+    <script>
+        function revealSecret() {
+            const secretElements = document.querySelectorAll('.secret');
+            secretElements.forEach(el => el.style.display = 'block');
+            alert('Secrets Revealed!');
+        }
+    </script>
 </head>
 <body>
     <header>
-        <h1>🌈 Unicorn Adventure Park 🦄</h1>
+        <h1>The Enigmatic Portfolio</h1>
+        <p>Discover hidden mysteries as you explore...</p>
     </header>
+    
     <nav>
-        <a href="#">Home</a>
-        <a href="#">Attractions</a>
-        <a href="#">Tickets</a>
-        <a href="#">Contact</a>
+        <a href="#about">Who?</a>
+        <a href="#portfolio">What?</a>
+        <a href="#contact">How?</a>
     </nav>
-    <div class="content">
-        <div class="attraction">
-            <h2>Magical Unicorn Carousel</h2>
-            <p>Take a magical spin on our Unicorn Carousel, filled with beautifully crafted unicorns that will transport you to a world of fantasy!</p>
-            <button onclick="alert('Get ready to whirl into the magical world!')">Ride Now</button>
+    
+    <section id="about">
+        <h2>Who am I?</h2>
+        <p>I am but a traveler through the dimensions of creativity. Curious? Click on the images below...</p>
+    </section>
+    
+    <section id="portfolio">
+        <h2>What do I do?</h2>
+        <div class="gallery">
+            <img src="https://via.placeholder.com/200" alt="A hint of creativity" onclick="revealSecret()">
+            <img src="https://via.placeholder.com/200" alt="A stroke of genius" onclick="revealSecret()">
+            <img src="https://via.placeholder.com/200" alt="A glimpse of art" onclick="revealSecret()">
         </div>
-        <div class="attraction">
-            <h2>Rainbow Rollercoaster</h2>
-            <p>Experience the thrill of our Rainbow Rollercoaster, a colorful ride that soars through twinkling clouds and across vibrant rainbows.</p>
-            <button onclick="alert('Hold on tight, the rainbow ride awaits!')">Join the Adventure</button>
-        </div>
-        <div class="attraction">
-            <h2>Enchanted Forest Maze</h2>
-            <p>Navigate your way through the Enchanted Forest Maze, a mystical labyrinth filled with surprises and magical creatures.</p>
-            <button onclick="alert('Prepare to be enchanted by the forest maze!')">Explore Now</button>
-        </div>
-    </div>
+    </section>
+    
+    <section id="contact" class="secret">
+        <h2>How to contact?</h2>
+        <p>Reach through the veil of mystery and leave a message by way of an ancient scroll or a whispered word.</p>
+    </section>
+    
     <footer>
-        <p>&copy; 2023 Unicorn Adventure Park. All rights reserved.</p>
+        &copy; Mysteries of 2023 Revealed
     </footer>
-    <script>
-        // Add interactive elements or animations here if needed
-    </script>
 </body>
 </html>
-
-This version includes interactive buttons for each attraction, inviting users to click and receive an alert with a fun message. Feel free to add more interactivity with JavaScript or further style it with CSS!
