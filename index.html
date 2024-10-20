@@ -3,169 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Quest</title>
+    <title>Bread Adventure</title>
     <style>
         body {
-            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-family: Arial, sans-serif;
+            background-color: #f3e5ab;
             margin: 0;
+            padding: 0;
             overflow: hidden;
-            background-color: #f4e7da;
         }
-        canvas {
-            display: block;
-            margin: 0 auto;
-            background-color: #ffebb7;
-            border: 2px solid #c9aa74;
+        #game-container {
+            width: 90vw;
+            height: 90vh;
+            margin: 5vh auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 5px;
         }
-        #stats {
+        .map-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .oven {
+            background-color: #f2a65a;
+        }
+        .mixing {
+            background-color: #fff6ea;
+        }
+        .storage {
+            background-color: #d3d3d3;
+        }
+        .storefront {
+            background-color: #ffe4b5;
+        }
+        #player {
+            width: 30px;
+            height: 30px;
+            background-color: #f0e68c;
+            border-radius: 50%;
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 10px;
-            border-radius: 5px;
         }
+        #info-panel {
+            position: absolute;
+            top: 5vh;
+            right: 5vw;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+        #start-screen, #end-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            display: none;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .enemy {
+            font-size: 24px;
+            cursor: pointer;
+         }
     </style>
 </head>
 <body>
-    <div id="stats">
-        <div>🍞 Toppings: <span id="toppings-count">0</span></div>
-        <div>💛 Score: <span id="player-score">0</span></div>
+    <div id="start-screen">
+        <h1>Bread Adventure</h1>
+        <p>Help the brave slice of bread save the bakery!</p>
+        <button onclick="startGame()">Start Game</button>
     </div>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <audio loop id="bg-music" src="placeholder_music_path"></audio>
+    <div id="end-screen">
+        <h1>Game Over</h1>
+        <p>Your Score: <span id="final-score"></span></p>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+    <div id="info-panel">
+        <p>Health: <span id="health">100</span></p>
+        <p>Score: <span id="score">0</span></p>
+        <p>Power-ups: <span id="powerups">None</span></p>
+    </div>
+    <div id="game-container">
+        <div class="map-cell oven"></div>
+        <div class="map-cell mixing"></div>
+        <div class="map-cell storage"></div>
+        <div class="map-cell storefront"></div>
+        <div class="map-cell oven"></div>
+        <div class="map-cell mixing"></div>
+        <div class="map-cell storage"></div>
+        <div class="map-cell storefront"></div>
+        <div class="map-cell oven"></div>
+        <div class="map-cell mixing"></div>
+        <div class="map-cell storage"></div>
+        <div class="map-cell storefront"></div>
+        <div class="map-cell oven"></div>
+        <div class="map-cell mixing"></div>
+        <div class="map-cell storage"></div>
+        <div class="map-cell storefront"></div>
+    </div>
+    <div id="player"></div>
+
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const toppingsCounter = document.getElementById('toppings-count');
-        const scoreCounter = document.getElementById('player-score');
-        const bgMusic = document.getElementById('bg-music');
+        const player = document.getElementById('player');
+        const healthDisplay = document.getElementById('health');
+        const scoreDisplay = document.getElementById('score');
+        const powerupsDisplay = document.getElementById('powerups');
+        const startScreen = document.getElementById('start-screen');
+        const endScreen = document.getElementById('end-screen');
+        const finalScore = document.getElementById('final-score');
+        
+        const mapCells = document.querySelectorAll('.map-cell');
+        let health = 100;
+        let score = 0;
+        let powerups = '';
+        let playerPosition = 0;
 
-        // Game variables
-        const gridSize = 40;
-        let player = { x: 0, y: 0, score: 0, toppings: 0 };
-        let enemies = [];
-        let toppings = [];
-        let keys = {};
-
-        // Sample areas (Rye Ridge, Sourdough Summit, Baguette Bridge)
-        const gameMap = [
-            ['_', '_', '🍞', '_', '_', '🥖'],
-            ['_', '🥖', '_', '🍞', '🥖', '_'],
-            ['_', '_', '🥖', '_', '_', '🍞'],
-            ['🍞', '_', '_', '🥖', '_', '_'],
-            ['_', '🥖', '_', '_', '🍞', '_']
-        ];
-
-        // Initialize enemies
-        function initEnemies() {
-            enemies.push({ type: 'fork', x: 80, y: 120 });
-            enemies.push({ type: 'knife', x: 200, y: 300 });
-            enemies.push({ type: 'toaster', x: 400, y: 400 });
-        }
-
-        // Initialize toppings
-        function initToppings() {
-            gameMap.forEach((row, y) => {
-                row.forEach((cell, x) => {
-                    if (cell === '🥖') {
-                        toppings.push({ x: x * gridSize, y: y * gridSize });
-                    }
-                });
-            });
-        }
-
-        function drawMap() {
-            gameMap.forEach((row, y) => {
-                row.forEach((cell, x) => {
-                    if (cell === '_') {
-                        ctx.fillStyle = '#d4c3aa'; // path color
-                    } else {
-                        ctx.fillStyle = '#f5e0c3'; // loaf color
-                    }
-                    ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
-                });
-            });
-        }
-
-        function drawPlayer() {
-            ctx.fillStyle = '#c29b6d'; // slice of bread color
-            ctx.fillRect(player.x, player.y, gridSize, gridSize);
-            ctx.fillText('🍞', player.x + 5, player.y + 30); // bread emoji
-        }
-
-        function drawEnemiesAndToppings() {
-            ctx.font = '24px Arial';
-            
-            enemies.forEach(enemy => {
-                if (enemy.type === 'fork') {
-                    ctx.fillText('🍴', enemy.x + 5, enemy.y + 30);
-                } else if (enemy.type === 'knife') {
-                    ctx.fillText('🔪', enemy.x + 5, enemy.y + 30);
-                } else if (enemy.type === 'toaster') {
-                    ctx.fillText('🔌', enemy.x + 5, enemy.y + 30);
-                }
-            });
-
-            toppings.forEach(topping => {
-                ctx.fillText('🥖', topping.x + 5, topping.y + 30);
-            });
-        }
-
-        function update() {
-            // Player Movement
-            if (keys['ArrowUp'] && player.y > 0) player.y -= gridSize;
-            if (keys['ArrowDown'] && player.y < canvas.height - gridSize) player.y += gridSize;
-            if (keys['ArrowLeft'] && player.x > 0) player.x -= gridSize;
-            if (keys['ArrowRight'] && player.x < canvas.width - gridSize) player.x += gridSize;
-
-            // Collecting toppings
-            toppings = toppings.filter(topping => {
-                if (player.x === topping.x && player.y === topping.y) {
-                    player.toppings++;
-                    player.score += 10;
-                    toppingsCounter.textContent = player.toppings;
-                    scoreCounter.textContent = player.score;
-                    return false;
-                }
-                return true;
-            });
-
-            // Enemy interactions can be expanded based on specific attributes
-            enemies.forEach(enemy => {
-                if (player.x === enemy.x && player.y === enemy.y) {
-                    player.score -= 5;
-                    scoreCounter.textContent = player.score;
-                }
-            });
-        }
-
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawMap();
-            drawPlayer();
-            drawEnemiesAndToppings();
-            update();
-            requestAnimationFrame(gameLoop);
-        }
+        const enemies = ['🥖', '🍞', '🍞']; // Moldy Bread, Stale Crumbs, Burnt Toast
+        let enemyData = [];
 
         function startGame() {
-            initEnemies();
-            initToppings();
-            bgMusic.volume = 0.2;
-            bgMusic.play();
-            gameLoop();
+            health = 100;
+            score = 0;
+            powerups = '';
+            playerPosition = 0;
+            healthDisplay.textContent = health;
+            scoreDisplay.textContent = score;
+            powerupsDisplay.textContent = 'None';
+            startScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            updatePlayerPosition();
+            spawnEnemies();
         }
 
-        window.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
-        });
+        function updatePlayerPosition() {
+            const tile = mapCells[playerPosition];
+            const rect = tile.getBoundingClientRect();
+            player.style.left = rect.left + 'px';
+            player.style.top = rect.top + 'px';
+        }
 
-        window.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
+        function movePlayer(newPosition) {
+            if (newPosition >= 0 && newPosition < mapCells.length) {
+                playerPosition = newPosition;
+                updatePlayerPosition();
+            }
+        }
+
+        function restartGame() {
+            startScreen.style.display = 'flex';
+        }
+
+        function spawnEnemies() {
+            enemyData.forEach(enemy => enemy.element.remove());
+            enemyData = [];
+            mapCells.forEach((cell, index) => {
+                if (Math.random() < 0.25) { // 25% chance to spawn an enemy
+                    const enemyType = enemies[Math.floor(Math.random() * enemies.length)];
+                    const enemyElement = document.createElement('div');
+                    enemyElement.className = 'enemy';
+                    enemyElement.textContent = enemyType;
+                    enemyElement.onclick = () => attackEnemy(index, enemyElement);
+                    cell.appendChild(enemyElement);
+                    enemyData.push({ index: index, element: enemyElement, health: 3 });
+                }
+            });
+        }
+
+        function attackEnemy(index, enemyElement) {
+            const enemy = enemyData.find(e => e.index === index);
+            if (enemy) {
+                enemy.health -= 1;
+                if (enemy.health <= 0) {
+                    enemyElement.remove();
+                    score += 10;
+                    scoreDisplay.textContent = score;
+                }
+            }
+        }
+
+        function gameOver() {
+            endScreen.style.display = 'flex';
+            finalScore.textContent = score;
+        }
+
+        document.onkeydown = function(e) {
+            switch (e.key) {
+                case 'ArrowUp': 
+                    movePlayer(playerPosition - 4);
+                    break;
+                case 'ArrowDown': 
+                    movePlayer(playerPosition + 4);
+                    break;
+                case 'ArrowLeft': 
+                    movePlayer(playerPosition - 1);
+                    break;
+                case 'ArrowRight': 
+                    movePlayer(playerPosition + 1);
+                    break;
+            }
+        };
 
         startGame();
+        setInterval(() => {
+            health -= 1;
+            if (health <= 0) {
+                gameOver();
+            }
+            healthDisplay.textContent = health;
+            spawnEnemies();
+        }, 2000);
 
     </script>
 </body>
