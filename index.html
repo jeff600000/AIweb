@@ -3,236 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bread Adventure Game</title>
+    <title>Bread Adventure</title>
     <style>
-        body, html {
+        body {
             margin: 0;
             overflow: hidden;
-            font-family: 'Arial', sans-serif;
         }
         canvas {
+            background-color: #f5deb3; /* Wheat background */
             display: block;
-            background-color: #f1e2c0;
+            margin: auto;
         }
-        #scoreboard {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            padding: 10px;
-        }
-        #score, #lives {
-            margin: 0;
+        #gameCanvas {
+            border: 2px solid #8b4513; /* Brown border */
         }
     </style>
 </head>
 <body>
-    <div id="scoreboard">
-        <p id="score">Score: 0</p>
-        <p id="lives">Lives: 3</p>
-    </div>
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Canvas and game grid settings
-        const tileSize = 64;
-        const mapWidth = 20;
-        const mapHeight = 10;
-        canvas.width = tileSize * mapWidth;
-        canvas.height = tileSize * mapHeight;
+        const gridCellSize = 50;
+        const mapWidth = Math.floor(canvas.width / gridCellSize);
+        const mapHeight = Math.floor(canvas.height / gridCellSize);
 
-        // Game state
-        let score = 0;
-        let lives = 3;
-
-        // Player settings
-        const player = {
-            x: tileSize * 2,
-            y: tileSize * 8,
-            width: tileSize,
-            height: tileSize,
-            dx: 0,
-            dy: 0,
+        let player = {
+            x: gridCellSize,
+            y: gridCellSize,
+            size: 30,
             speed: 5,
-            onGround: false,
         };
 
-        // Controls
-        const keys = {
-            right: false,
-            left: false,
-            up: false
-        };
-
-        // Map tiles and objects
-        const tiles = [
-            '🍞', '🥖', '🥯', '🥞', '🥐'
-        ];
-        const world = [
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 1, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 1, 0, 0, 4, 0, 0, 0,
-            0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0,
-            0, 0, 0, 0, 0, 4, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 3, 3, 3, 0,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        ];
-        const toppings = [
-            { x: tileSize * 6, y: tileSize * 7, collected: false },
-            { x: tileSize * 12, y: tileSize * 5, collected: false },
-            { x: tileSize * 16, y: tileSize * 9, collected: false }
+        let enemies = [
+            { x: 300, y: 300, size: 30, speed: 2 },
+            { x: 500, y: 100, size: 30, speed: 3 },
         ];
 
-        // Enemy setup
-        const enemies = [
-            { x: tileSize * 5, y: tileSize * 8, direction: 1, speed: 2 },
-            { x: tileSize * 15, y: tileSize * 6, direction: -1, speed: 3 }
+        let powerUps = [
+            { x: 200, y: 150, collected: false },
+            { x: 600, y: 450, collected: false }
         ];
+
+        const typesOfTerrain = ['Toasty Plains', 'Buttery River', 'Jam-filled Forest'];
+        
+        let map = [];
+        for (let i = 0; i < mapHeight; i++) {
+            let row = [];
+            for (let j = 0; j < mapWidth; j++) {
+                let randomTerrain = Math.floor(Math.random() * typesOfTerrain.length);
+                row.push(typesOfTerrain[randomTerrain]);
+            }
+            map.push(row);
+        }
+
+        let keys = {};
+
+        document.addEventListener('keydown', function(event) {
+            keys[event.key] = true;
+        });
+
+        document.addEventListener('keyup', function(event) {
+            keys[event.key] = false;
+        });
+
+        function drawGrid() {
+            ctx.strokeStyle = '#8b4513';
+            for (let i = 0; i < mapHeight; i++) {
+                for (let j = 0; j < mapWidth; j++) {
+                    ctx.strokeRect(j * gridCellSize, i * gridCellSize, gridCellSize, gridCellSize);
+                }
+            }
+        }
+
+        function handlePlayerMovement() {
+            if (keys['ArrowUp']) player.y -= player.speed;
+            if (keys['ArrowDown']) player.y += player.speed;
+            if (keys['ArrowLeft']) player.x -= player.speed;
+            if (keys['ArrowRight']) player.x += player.speed;
+            preventOffScreenMovement(player);
+        }
+
+        function preventOffScreenMovement(obj) {
+            obj.x = Math.max(0, Math.min(canvas.width - obj.size, obj.x));
+            obj.y = Math.max(0, Math.min(canvas.height - obj.size, obj.y));
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = '#d2691e'; // Chocolate color
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+        }
+
+        function drawEnemies() {
+            ctx.fillStyle = '#006400'; // Dark green color
+            enemies.forEach(enemy => {
+                ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+                moveEnemy(enemy);
+            });
+        }
+
+        function moveEnemy(enemy) {
+            let direction = Math.floor(Math.random() * 4);
+            if (direction === 0) enemy.y -= enemy.speed;
+            else if (direction === 1) enemy.y += enemy.speed;
+            else if (direction === 2) enemy.x -= enemy.speed;
+            else if (direction === 3) enemy.x += enemy.speed;
+            preventOffScreenMovement(enemy);
+        }
+
+        function drawPowerUps() {
+            ctx.fillStyle = '#ffd700'; // Gold color
+            powerUps.forEach(powerUp => {
+                if (!powerUp.collected) {
+                    ctx.beginPath();
+                    ctx.arc(powerUp.x, powerUp.y, 10, 0, 2 * Math.PI);
+                    ctx.fill();
+                    collectPowerUp(powerUp);
+                }
+            });
+        }
+
+        function collectPowerUp(powerUp) {
+            if (!powerUp.collected && checkCollision(player, powerUp)) {
+                powerUp.collected = true;
+                player.speed += 1; // Increase player speed
+            }
+        }
+
+        function checkCollision(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.size &&
+                   obj1.x + obj1.size > obj2.x &&
+                   obj1.y < obj2.y + obj2.size &&
+                   obj1.y + obj1.size > obj2.y;
+        }
 
         function update() {
-            handleControls();
-            movePlayer();
-            moveEnemies();
-            checkCollisions();
-            render();
-            requestAnimationFrame(update);
+            handlePlayerMovement();
+            if (performance.now() % 100 < 50) handleEnemyAI();
         }
 
-        function handleControls() {
-            player.dx = 0;
-            player.dy = 0;
-            if (keys.right) player.dx = player.speed;
-            if (keys.left) player.dx = -player.speed;
-            if (keys.up && player.onGround) player.dy = -15;
+        function handleEnemyAI() {
+            enemies.forEach(moveEnemy);
         }
 
-        function movePlayer() {
-            player.dy += 0.8; // gravity
-
-            // Horizontal move
-            player.x += player.dx;
-
-            // Collision with world
-            player.onGround = false;
-            if (isCollidingWithMap()) {
-                if (player.dx > 0) player.x = Math.floor(player.x / tileSize) * tileSize;
-                if (player.dx < 0) player.x = Math.ceil(player.x / tileSize) * tileSize - player.width;
-            }
-
-            // Vertical move
-            player.y += player.dy;
-
-            if (isCollidingWithMap()) {
-                if (player.dy > 0) {
-                    player.y = Math.floor(player.y / tileSize) * tileSize;
-                    player.onGround = true;
-                }
-                if (player.dy < 0) player.y = Math.ceil(player.y / tileSize) * tileSize - player.height;
-                player.dy = 0;
-            }
-        }
-
-        function moveEnemies() {
-            enemies.forEach(enemy => {
-                enemy.x += enemy.speed * enemy.direction;
-                if (isCollidingWithMap(enemy)) enemy.direction *= -1;
-            });
-        }
-
-        function isCollidingWithMap(obj = player) {
-            const top = Math.floor(obj.y / tileSize);
-            const bottom = Math.floor((obj.y + obj.height) / tileSize);
-            const left = Math.floor(obj.x / tileSize);
-            const right = Math.floor((obj.x + obj.width) / tileSize);
-
-            return (
-                world[top * mapWidth + left] === 1 || 
-                world[top * mapWidth + right] === 1 ||
-                world[bottom * mapWidth + left] === 1 || 
-                world[bottom * mapWidth + right] === 1
-            );
-        }
-
-        function checkCollisions() {
-            // Check toppings collection
-            toppings.forEach(topping => {
-                if (!topping.collected && player.x < topping.x + tileSize && player.x + player.width > topping.x &&
-                    player.y < topping.y + tileSize && player.y + player.height > topping.y) {
-                    topping.collected = true;
-                    score += 100;
-                    document.getElementById('score').textContent = `Score: ${score}`;
-                }
-            });
-
-            // Check collisions with enemies
-            enemies.forEach(enemy => {
-                if (player.x < enemy.x + tileSize && player.x + player.width > enemy.x &&
-                    player.y < enemy.y + tileSize && player.y + player.height > enemy.y) {
-                    respawn();
-                }
-            });
-        }
-
-        function respawn() {
-            lives--;
-            document.getElementById('lives').textContent = `Lives: ${lives}`;
-            if (lives > 0) {
-                player.x = tileSize * 2;
-                player.y = tileSize * 8;
-            } else {
-                alert("Game Over! Reload to try again.");
-                score = 0;
-                lives = 3;
-                document.getElementById('score').textContent = `Score: ${score}`;
-                document.getElementById('lives').textContent = `Lives: ${lives}`;
-                toppings.forEach(topping => topping.collected = false);
-            }
-        }
-
-        function render() {
+        function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            world.forEach((tile, index) => {
-                const x = (index % mapWidth) * tileSize;
-                const y = Math.floor(index / mapWidth) * tileSize;
-                if (tile > 0) ctx.fillText(tiles[tile - 1], x, y + tileSize);
-            });
-
-            ctx.fillStyle = '#d2691e';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-
-            toppings.forEach(topping => {
-                if (!topping.collected) {
-                    ctx.fillStyle = 'yellow';
-                    ctx.fillRect(topping.x, topping.y, tileSize, tileSize);
-                }
-            });
-
-            enemies.forEach(enemy => {
-                ctx.fillStyle = 'green';
-                ctx.fillRect(enemy.x, enemy.y, tileSize, tileSize);
-            });
+            drawGrid();
+            drawPlayer();
+            drawEnemies();
+            drawPowerUps();
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
-            if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
-            if (e.key === 'ArrowUp' || e.key === 'w') keys.up = true;
-        });
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
 
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
-            if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
-            if (e.key === 'ArrowUp' || e.key === 'w') keys.up = false;
-        });
-
-        requestAnimationFrame(update);
+        gameLoop();
     </script>
 </body>
 </html>
