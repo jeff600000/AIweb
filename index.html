@@ -3,115 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mood Tracker</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Enigma of the 15</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #151515;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(4, 80px);
+            gap: 5px;
+            transform: rotate(1deg);
+            border: 3px solid #42f5e9;
+            box-shadow: 0 0 20px #42f5e9, 0 0 20px #42f5e9 inset;
+        }
+
+        .tile {
+            width: 80px;
+            height: 80px;
+            background-color: #3c3c3c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #ffffff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tile:hover {
+            background-color: #505050;
+            transform: scale(1.1);
+        }
+
+        .empty {
+            background-color: transparent;
+            cursor: default;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Mood Tracker</h1>
-    </header>
-    <main>
-        <section id="mood-entry">
-            <h2>Log Your Mood</h2>
-            <input type="date" id="date" required>
-            <select id="mood" required>
-                <option value="happy">Happy</option>
-                <option value="sad">Sad</option>
-                <option value="neutral">Neutral</option>
-                <option value="anxious">Anxious</option>
-                <option value="excited">Excited</option>
-            </select>
-            <button onclick="addMood()">Add Mood</button>
-        </section>
-        <section id="mood-history">
-            <h2>Your Mood History</h2>
-            <ul id="mood-list"></ul>
-        </section>
-    </main>
-    <footer>
-        <p>Stay aware of your feelings!</p>
-    </footer>
+    <div id="puzzle-container" title="Move the tiles and solve the mystery!">
+        <!-- The tiles will be generated dynamically with JavaScript -->
+    </div>
+
     <script>
-        const moodList = document.getElementById('mood-list');
+        const puzzleContainer = document.getElementById('puzzle-container');
+        let tiles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, null]; // 15-puzzle
 
-        function addMood() {
-            const date = document.getElementById('date').value;
-            const mood = document.getElementById('mood').value;
+        // Shuffle the tiles array at the start
+        tiles = tiles.sort(() => Math.random() - 0.5);
 
-            if (date && mood) {
-                const newEntry = document.createElement('li');
-                newEntry.textContent = `Date: ${date} — Mood: ${mood}`;
-                moodList.appendChild(newEntry);
+        // Render the shuffled tiles on the grid
+        tiles.forEach((number, index) => {
+            createTile(number, index);
+        });
 
-                document.getElementById('date').value = '';
-                document.getElementById('mood').value = 'happy';
+        function createTile(number, index) {
+            const tile = document.createElement('div');
+            tile.classList.add('tile');
+            if (number !== null) {
+                tile.textContent = number;
             } else {
-                alert('Please enter both date and mood.');
+                tile.classList.add('empty');
             }
+            tile.addEventListener('click', () => moveTile(index));
+            puzzleContainer.appendChild(tile);
+        }
+
+        function moveTile(index) {
+            const emptyIndex = tiles.indexOf(null);
+            if ([index - 1, index + 1, index - 4, index + 4].includes(emptyIndex)) {
+                [tiles[emptyIndex], tiles[index]] = [tiles[index], tiles[emptyIndex]];
+                renderPuzzle();
+            }
+        }
+
+        function renderPuzzle() {
+            puzzleContainer.innerHTML = '';
+            tiles.forEach((number, index) => {
+                createTile(number, index);
+            });
         }
     </script>
 </body>
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f9;
-        color: #333;
-        transition: all 1s;
-    }
-
-    header {
-        background-color: #6200ea;
-        color: #fff;
-        padding: 1em;
-        text-align: center;
-    }
-
-    main {
-        margin: 20px;
-    }
-
-    #date, #mood, button {
-        font-size: 1em;
-        padding: 10px;
-        margin: 5px 0;
-    }
-
-    button {
-        background-color: #6200ea;
-        border: none;
-        color: white;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #3700b3;
-    }
-
-    #mood-list {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    #mood-list li {
-        background-color: #e0e0e0;
-        padding: 1em;
-        margin-bottom: 5px;
-        border-radius: 5px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-
-    footer {
-        padding: 1em;
-        text-align: center;
-        background-color: #6200ea;
-        color: #fff;
-        position: fixed;
-        width: 100%;
-        bottom: 0;
-        left: 0;
-    }
-</style>
 </html>
