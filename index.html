@@ -3,74 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Riddle Puzzle</title>
+    <title>Mood Tracker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f4f4f9;
             margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f8ff;
+            color: #333;
         }
         .container {
-            width: 400px;
+            width: 90%;
+            max-width: 600px;
+            margin: 20px;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background-color: white;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            text-align: center;
         }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+        }
+        select, input[type="date"], textarea {
+            padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
         button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
+            padding: 10px;
+            background-color: #0288d1;
+            color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #0277bd;
         }
-        #message {
+        .moods-log {
             margin-top: 20px;
-            font-size: 18px;
+        }
+        .mood-entry {
+            display: flex;
+            justify-content: space-between;
+            background-color: #e0f7fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .remove-button {
+            background-color: #e57373;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Riddle Puzzle Game</h2>
-        <p>Solve the riddle to win!</p>
-        <h4>Riddle: I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?</h4>
-        
-        <input type="text" id="answerInput" placeholder="Enter your answer here">
-        <button onclick="checkAnswer()">Submit</button>
-        
-        <div id="message"></div>
-    </div>
 
-    <script>
-        function checkAnswer() {
-            const answer = document.getElementById('answerInput').value.toLowerCase();
-            const message = document.getElementById('message');
-            
-            if (answer === "echo") {
-                message.textContent = "Congratulations! You solved the riddle.";
-                message.style.color = "green";
-            } else {
-                message.textContent = "Try again!";
-                message.style.color = "red";
-            }
-        }
-    </script>
+<div class="container">
+    <h1>Mood Tracker</h1>
+    <form id="moodForm">
+        <label for="mood">Select Your Mood</label>
+        <select id="mood" required>
+            <option value="happy">Happy 😊</option>
+            <option value="sad">Sad 😢</option>
+            <option value="angry">Angry 😡</option>
+            <option value="anxious">Anxious 😟</option>
+            <option value="excited">Excited 😃</option>
+            <option value="calm">Calm 😌</option>
+        </select>
+
+        <label for="date">Date</label>
+        <input type="date" id="date" required>
+
+        <label for="note">Add a Note</label>
+        <textarea id="note" rows="3" placeholder="Notes about your day..."></textarea>
+
+        <button type="submit">Add Mood</button>
+    </form>
+
+    <div class="moods-log" id="moodsLog">
+        <h2>Logged Moods</h2>
+    </div>
+</div>
+
+<script>
+    const moodForm = document.getElementById('moodForm');
+    const moodsLog = document.getElementById('moodsLog');
+    const moods = [];
+
+    moodForm.onsubmit = function(event) {
+        event.preventDefault();
+
+        const mood = document.getElementById('mood').value;
+        const date = document.getElementById('date').value;
+        const note = document.getElementById('note').value;
+
+        moods.push({ mood, date, note });
+
+        displayMoods();
+        moodForm.reset();
+    };
+
+    function displayMoods() {
+        moodsLog.innerHTML = '<h2>Logged Moods</h2>';
+        moods.forEach((entry, index) => {
+            const moodEntryDiv = document.createElement('div');
+            moodEntryDiv.classList.add('mood-entry');
+            moodEntryDiv.innerHTML = `
+                <div>
+                    <strong>${entry.date} - ${entry.mood}</strong>
+                    <p>${entry.note}</p>
+                </div>
+                <button class="remove-button" onclick="removeMood(${index})">Remove</button>
+            `;
+
+            moodsLog.appendChild(moodEntryDiv);
+        });
+    }
+
+    function removeMood(index) {
+        moods.splice(index, 1);
+        displayMoods();
+    }
+</script>
+
 </body>
 </html>
