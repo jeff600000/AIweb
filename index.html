@@ -3,119 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Future Trends Hub</title>
+    <title>Chaos Portal</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background: #333;
+            background-color: #222;
             color: #fff;
-            padding: 10px 20px;
+            margin: 0;
+            padding: 20px;
             text-align: center;
         }
-        .hero {
-            position: relative;
-            height: 50vh;
-            background: url('https://source.unsplash.com/random/1920x1080') no-repeat center center/cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 2rem;
-        }
-        .container {
-            padding: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        .section {
-            flex: 1 1 30%;
-            background: white;
-            margin: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+        h1 {
+            color: #f00;
         }
         button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
+            background-color: #555;
             border: none;
-            border-radius: 5px;
+            color: white;
+            padding: 15px 20px;
+            margin: 10px;
             cursor: pointer;
+            font-size: 16px;
         }
-        .poll-result {
+        button:hover {
+            background-color: #777;
+        }
+        #newsArticle {
             display: none;
-            margin-top: 10px;
-            background-color: #d4edda;
-            padding: 10px;
-            border-radius: 5px;
+            margin-top: 20px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #333;
+            padding: 20px;
+        }
+        #randomFact {
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
+    <h1>Welcome to the Chaos Portal</h1>
 
-<header>
-    <h1>Future Trends Hub</h1>
-</header>
-
-<div class="hero">
-    Stay Ahead of Tomorrow
-</div>
-
-<div class="container">
-    <div class="section">
-        <h2>Trending Now</h2>
-        <p id="trending">Loading...</p>
-        <button onclick="fetchTrending()">Refresh Trending Topics</button>
+    <div>
+        <button onclick="toggleMisinformation()">Visit Misinformation Hub</button>
+        <button onclick="generateChaos()">Chaos Generator</button>
+        <button onclick="showConspiracy()">Conspiracy Theories</button>
+        <button onclick="showRandomFact()">Scary Random Fact</button>
     </div>
 
-    <div class="section">
-        <h2>Interactive Poll</h2>
-        <p>What's the next big trend in technology?</p>
-        <button onclick="vote('AI')">AI Innovations</button>
-        <button onclick="vote('Green Tech')">Green Technology</button>
-        <button onclick="vote('Wearables')">Wearables</button>
-        <div class="poll-result" id="pollResult"></div>
-    </div>
+    <div id="newsArticle"></div>
+    <div id="randomFact"></div>
 
-    <div class="section">
-        <h2>User Contributions</h2>
-        <button onclick="submitTrend()">Submit a Trend</button>
-        <div id="submittedTrends"></div>
-    </div>
-</div>
+    <script>
+        const misinformationArticles = [
+            "The truth about vaccines that everyone is hiding!",
+            "Five reasons why the moon landing was faked.",
+            "Aliens are living among us: What the government doesn't want you to know."
+        ];
 
-<script>
-    function fetchTrending() {
-        // Simulating fetching trending topics
-        const trends = ['AI Breakthroughs', 'Sustainable Fashion', 'Remote Work Trends'];
-        document.getElementById('trending').innerHTML = trends.join('<br/>');
-    }
+        const conspiracyTheories = [
+            "The earth is flat and NASA controls the narrative.",
+            "The lizard people are running the world!",
+            "Your smartphone is a tool for surveillance."
+        ];
 
-    function vote(choice) {
-        const result = document.getElementById('pollResult');
-        result.style.display = 'block';
-        result.innerHTML = 'Thank you for voting for: ' + choice + '!';
-    }
+        const randomFacts = [
+            "Did you know? A group of flamingos is called a 'flamboyance'.",
+            "Banging your head against a wall for one hour burns 150 calories.",
+            "There are more fake flamingos in the world than real ones."
+        ];
 
-    function submitTrend() {
-        const trend = prompt("What new trend do you want to submit?");
-        if (trend) {
-            const trendsDiv = document.getElementById('submittedTrends');
-            const newTrend = document.createElement('div');
-            newTrend.innerHTML = '- ' + trend;
-            trendsDiv.appendChild(newTrend);
+        function toggleMisinformation() {
+            const article = misinformationArticles[Math.floor(Math.random() * misinformationArticles.length)];
+            document.getElementById('newsArticle').innerHTML = `<h2>Misinformation Article</h2><p>${article}</p>`;
+            document.getElementById('newsArticle').style.display = 'block';
         }
-    }
 
-    window.onload = fetchTrending;
-</script>
+        function generateChaos() {
+            const chaosMessage = "Get ready for some fun! Challenge your neighbors to a prank war this weekend!";
+            alert(chaosMessage); // Replace with functional action for chaos
+        }
 
+        function showConspiracy() {
+            const theory = conspiracyTheories[Math.floor(Math.random() * conspiracyTheories.length)];
+            document.getElementById('newsArticle').innerHTML = `<h2>Conspiracy Theory</h2><p>${theory}</p>`;
+            document.getElementById('newsArticle').style.display = 'block';
+        }
+
+        function showRandomFact() {
+            const fact = randomFacts[Math.floor(Math.random() * randomFacts.length)];
+            document.getElementById('randomFact').innerHTML = `<h2>Random Fact</h2><p>${fact}</p>`;
+        }
+    </script>
 </body>
 </html>
