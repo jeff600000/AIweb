@@ -3,167 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore World</title>
+    <title>Creative Playground</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f5;
+            color: #333;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            background-color: #f4f4f9;
-            color: #333;
         }
         header {
-            background: url('https://example.com/world.jpg') no-repeat center center/cover;
-            height: 60vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        header h1 {
-            color: #fff;
-            font-size: 48px;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+            background-color: #4A90E2;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
         }
         nav {
-            background: #333;
-            padding: 10px 0;
             display: flex;
-            justify-content: center;
-        }
-        nav a {
-            color: #fff;
-            margin: 0 20px;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        #search-bar {
-            margin: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        #search-bar input {
+            justify-content: space-around;
+            background-color: #355C7D;
+            color: white;
             padding: 10px;
-            width: 80%;
-            max-width: 400px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-right: 5px;
         }
-        #search-bar button {
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
+        nav button {
+            background-color: transparent;
             border: none;
-            border-radius: 5px;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
+            border-bottom: 2px solid transparent;
+            padding: 5px;
         }
-        #search-bar button:hover {
-            background-color: #555;
+        nav button:hover {
+            border-bottom: 2px solid white;
         }
-        section {
-            padding: 40px;
+        .feature {
+            padding: 20px;
+            border-bottom: 1px solid #ccc;
+            margin: 10px;
+            background-color: white;
+            border-radius: 5px;
         }
-        .interactive-map, .featured-destinations {
-            margin: 20px 0;
+        .feature h2 {
+            margin-top: 0;
         }
-        .featured-destinations img {
-            width: 100%;
-            max-width: 300px;
-            border-radius: 10px;
-        }
-        .map {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            border: 1px solid #ddd;
-            height: 500px;
-            background-color: #0079a1;
-        }
-        .experiences, .community {
-            margin: 40px 0;
-        }
-        .profile, .additional {
-            margin: 40px 0;
+        .feature-content {
+            display: none;
         }
         footer {
-            background: #222;
-            color: #fff;
+            background-color: #4A90E2;
+            color: white;
             text-align: center;
-            padding: 20px;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        .canvas {
+            border: 1px solid #ccc;
         }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const map = document.querySelector('.map');
-            map.addEventListener('click', () => {
-                alert('Interactive Map: Explore countries and regions!');
-            });
-
-            const searchButton = document.querySelector('#search-bar button');
-            searchButton.addEventListener('click', () => {
-                alert('Search feature: Find places or experiences!');
-            });
-        });
-    </script>
 </head>
 <body>
-
     <header>
-        <h1>Explore World</h1>
+        <h1>Creative Playground</h1>
     </header>
-
     <nav>
-        <a href="#discover">Discover</a>
-        <a href="#experiences">Experiences</a>
-        <a href="#community">Community</a>
-        <a href="#profile">Profile</a>
+        <button onclick="showFeature('canvasFeature')">Interactive Canvas</button>
+        <button onclick="showFeature('musicLab')">Music Lab</button>
+        <button onclick="showFeature('storyStudio')">Story Studio</button>
+        <button onclick="showFeature('experimentalZone')">Experimental Zone</button>
+        <button onclick="showFeature('gallery')">Gallery & Feedback</button>
+        <button onclick="showFeature('resourceLibrary')">Resource Library</button>
+        <button onclick="showFeature('profiles')">User Profiles</button>
     </nav>
 
-    <div id="search-bar">
-        <input type="text" placeholder="Search for places or experiences...">
-        <button>Search</button>
+    <div id="canvasFeature" class="feature">
+        <h2>Interactive Canvas</h2>
+        <canvas id="drawingCanvas" class="canvas" width="500" height="500"></canvas>
+        <br>
+        <button onclick="clearCanvas()">Clear Canvas</button>
     </div>
 
-    <section id="discover" class="discover">
-        <h2>Discover the World</h2>
-        <div class="interactive-map">
-            <h3>Interactive Map</h3>
-            <div class="map">[Map Placeholder]</div>
+    <div id="musicLab" class="feature">
+        <h2>Music Lab</h2>
+        <div class="feature-content">
+            <p>Create music with virtual instruments and loops.</p>
+            <button onclick="playSound()">Play a Sound</button>
         </div>
-        <div class="featured-destinations">
-            <h3>Featured Destinations</h3>
-            <img src="https://example.com/destination1.jpg" alt="Destination 1">
-            <p>Explore breathtaking landscapes and vibrant cultures.</p>
+    </div>
+
+    <div id="storyStudio" class="feature">
+        <h2>Story Studio</h2>
+        <div class="feature-content">
+            <p>Write and illustrate your stories.</p>
+            <textarea placeholder="Start writing your story..."></textarea>
+            <button>Generate Plot Idea</button>
         </div>
-    </section>
+    </div>
 
-    <section id="experiences" class="experiences">
-        <h2>Virtual Experiences</h2>
-        <p>Join virtual tours, attend cultural workshops, and participate in photo challenges.</p>
-    </section>
+    <div id="experimentalZone" class="feature">
+        <h2>Experimental Zone</h2>
+        <div class="feature-content">
+            <p>Work on coding projects and learn new skills.</p>
+            <button onclick="alert('Interactive coding tutorials coming soon!')">Try a Tutorial</button>
+        </div>
+    </div>
 
-    <section id="community" class="community">
-        <h2>Join Our Community</h2>
-        <p>Share travel stories, join discussions, and connect with fellow explorers.</p>
-    </section>
+    <div id="gallery" class="feature">
+        <h2>Gallery & Feedback</h2>
+        <div class="feature-content">
+            <p>Explore creations from other users and share feedback.</p>
+            <button>View Gallery</button>
+        </div>
+    </div>
 
-    <section id="profile" class="profile">
-        <h2>Your Profile</h2>
-        <p>Track your virtual travels, set goals, and connect with friends.</p>
-    </section>
+    <div id="resourceLibrary" class="feature">
+        <h2>Resource Library</h2>
+        <div class="feature-content">
+            <p>Access tutorials, articles, and community forums.</p>
+            <button>Explore Resources</button>
+        </div>
+    </div>
 
-    <section class="additional">
-        <h2>Additional Features</h2>
-        <p>Access language settings, earn rewards, and get travel updates.</p>
-    </section>
+    <div id="profiles" class="feature">
+        <h2>User Profiles</h2>
+        <div class="feature-content">
+            <p>Manage your projects and collaborations.</p>
+            <button>View Profile</button>
+        </div>
+    </div>
 
     <footer>
-        <p>&copy; 2023 Explore World</p>
+        <p>© 2023 Creative Playground. All rights reserved.</p>
     </footer>
 
+    <script>
+        const features = document.querySelectorAll('.feature');
+        
+        function showFeature(id) {
+            features.forEach(feature => {
+                const content = feature.querySelector('.feature-content');
+                if (feature.id === id) {
+                    if (content.style.display === 'block') {
+                        content.style.display = 'none';
+                    } else {
+                        content.style.display = 'block';
+                    }
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        }
+
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+        }
+
+        function endPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!painting) return;
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+
+            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        function playSound() {
+            const audio = new Audio('https://www.soundjay.com/button/sounds/button-4.mp3');
+            audio.play();
+        }
+    </script>
 </body>
 </html>
