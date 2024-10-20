@@ -3,75 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mystery Unraveled</title>
+    <title>Mood Tracker</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f5f5;
-            text-align: center;
-            color: #333;
-        }
-        #puzzleContainer {
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 80vh;
+            height: 100vh;
+            background-color: #f0f4f8;
+            margin: 0;
+            color: #333;
+            transition: background-color 0.3s;
         }
-        .puzzlePiece {
-            margin: 10px;
+        .container {
+            text-align: center;
+            background: #fff;
             padding: 20px;
-            background-color: #fff;
-            border: 2px solid #ccc;
-            cursor: pointer;
-            transition: background-color 0.3s, border-color 0.3s;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .puzzlePiece:hover {
-            background-color: #e1e1e1;
-            border-color: #aaa;
+        select {
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
         }
-        #story {
-            border-top: 2px solid #333;
-            padding-top: 20px;
+        button {
             margin-top: 20px;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #555;
+            transition: color 0.3s;
         }
     </style>
 </head>
 <body>
-    <h1>Mystery Unraveled</h1>
-    <div id="puzzleContainer">
-        <div class="puzzlePiece" onclick="choosePiece(1)">Clue 1</div>
-        <div class="puzzlePiece" onclick="choosePiece(2)">Clue 2</div>
-        <div class="puzzlePiece" onclick="choosePiece(3)">Clue 3</div>
-        <div class="puzzlePiece" onclick="choosePiece(4)">Clue 4</div>
-    </div>
-    <div id="story">
-        <h2>The Story:</h2>
-        <p id="storyText">...</p>
+    <div class="container">
+        <h1>Mood Tracker</h1>
+        <p>How are you feeling today?</p>
+        <select id="moodSelect">
+            <option value="happy">Happy</option>
+            <option value="sad">Sad</option>
+            <option value="angry">Angry</option>
+            <option value="excited">Excited</option>
+            <option value="anxious">Anxious</option>
+        </select>
+        <button onclick="showQuote()">Submit</button>
+        <div class="output" id="output"></div>
     </div>
 
     <script>
-        const storyParts = [
-            'In a quiet town, an unexpected event occurred...',
-            'A detective found a mysterious note left in the old library...',
-            'A series of hidden messages led to a secret room...',
-            'The truth behind the mystery revealed an unsuspected twist...'
-        ];
+        const quotes = {
+            happy: "Keep smiling, because life is a beautiful thing and there's so much to smile about.",
+            sad: "Sadness flies away on the wings of time. Remember, after every storm, there's a rainbow.",
+            angry: "For every minute you remain angry, you give up sixty seconds of peace of mind.",
+            excited: "The key to happiness is excitement. Harness that energy and make magic happen!",
+            anxious: "Anxiety is like a rocking chair. It gives you something to do, but it doesn't get you very far. Breathe and let go."
+        };
 
-        const chosenPieces = [];
-
-        function choosePiece(index) {
-            if (!chosenPieces.includes(index)) {
-                chosenPieces.push(index);
-                revealStory();
-            }
+        function showQuote() {
+            const mood = document.getElementById('moodSelect').value;
+            const output = document.getElementById('output');
+            output.innerHTML = quotes[mood];
+            changeMoodColor(mood);
         }
 
-        function revealStory() {
-            if (chosenPieces.length === storyParts.length) {
-                document.getElementById('storyText').innerText = storyParts.join(' ');
-            } else {
-                document.getElementById('storyText').innerText = 'Keep uncovering the clues...';
-            }
+        function changeMoodColor(mood) {
+            const colors = {
+                happy: "#f9dc5c",
+                sad: "#b3cde0",
+                angry: "#f08080",
+                excited: "#ffde59",
+                anxious: "#add8e6"
+            };
+            
+            document.body.style.backgroundColor = colors[mood];
+            document.querySelector('.output').style.color = colors[mood];
         }
     </script>
 </body>
