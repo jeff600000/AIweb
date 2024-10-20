@@ -3,130 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel World - A Virtual Travel Experience</title>
+    <title>Explore World</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f0f0f0;
+            overflow-x: hidden;
+            background-color: #f4f4f9;
             color: #333;
         }
         header {
-            background-color: #0077cc;
-            padding: 1rem;
-            text-align: center;
-            color: white;
+            background: url('https://example.com/world.jpg') no-repeat center center/cover;
+            height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        #map {
-            width: 100%;
-            height: 80vh;
-            background-color: #dfe3e8;
+        header h1 {
+            color: #fff;
+            font-size: 48px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
         }
-        .features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            padding: 20px;
-            margin: auto;
+        nav {
+            background: #333;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav a {
+            color: #fff;
+            margin: 0 20px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        #search-bar {
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        #search-bar input {
+            padding: 10px;
             width: 80%;
-        }
-        .feature {
-            background-color: white;
-            padding: 20px;
+            max-width: 400px;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-right: 5px;
+        }
+        #search-bar button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #search-bar button:hover {
+            background-color: #555;
+        }
+        section {
+            padding: 40px;
+        }
+        .interactive-map, .featured-destinations {
+            margin: 20px 0;
+        }
+        .featured-destinations img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+        }
+        .map {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            height: 500px;
+            background-color: #0079a1;
+        }
+        .experiences, .community {
+            margin: 40px 0;
+        }
+        .profile, .additional {
+            margin: 40px 0;
         }
         footer {
+            background: #222;
+            color: #fff;
             text-align: center;
-            padding: 1rem;
-            background-color: #003366;
-            color: white;
-            margin-top: 20px;
+            padding: 20px;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r123/three.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let mapInitialized = false;
-            const mapElement = document.getElementById('map');
-            mapElement.addEventListener('click', () => {
-                if (!mapInitialized) {
-                    initializeMap();
-                    mapInitialized = true;
-                }
+            const map = document.querySelector('.map');
+            map.addEventListener('click', () => {
+                alert('Interactive Map: Explore countries and regions!');
             });
 
-            function initializeMap() {
-                // Placeholder 3D map implementation
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                const renderer = new THREE.WebGLRenderer();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                document.getElementById('map').appendChild(renderer.domElement);
-
-                const geometry = new THREE.SphereGeometry(5, 32, 32);
-                const material = new THREE.MeshBasicMaterial({ color: 0x0077cc });
-                const globe = new THREE.Mesh(geometry, material);
-                scene.add(globe);
-
-                camera.position.z = 10;
-
-                function animate() {
-                    requestAnimationFrame(animate);
-                    globe.rotation.y += 0.01;
-                    renderer.render(scene, camera);
-                }
-                animate();
-            }
-
-            document.querySelectorAll('.feature').forEach(el => {
-                el.addEventListener('click', () => {
-                    alert('Feature coming soon!');
-                });
+            const searchButton = document.querySelector('#search-bar button');
+            searchButton.addEventListener('click', () => {
+                alert('Search feature: Find places or experiences!');
             });
         });
     </script>
 </head>
 <body>
+
     <header>
-        <h1>Travel World</h1>
-        <p>Your gateway to experiencing the world virtually</p>
+        <h1>Explore World</h1>
     </header>
 
-    <section id="map">
-        <p style="text-align:center; padding-top:20px;">Click to explore the interactive 3D map.</p>
+    <nav>
+        <a href="#discover">Discover</a>
+        <a href="#experiences">Experiences</a>
+        <a href="#community">Community</a>
+        <a href="#profile">Profile</a>
+    </nav>
+
+    <div id="search-bar">
+        <input type="text" placeholder="Search for places or experiences...">
+        <button>Search</button>
+    </div>
+
+    <section id="discover" class="discover">
+        <h2>Discover the World</h2>
+        <div class="interactive-map">
+            <h3>Interactive Map</h3>
+            <div class="map">[Map Placeholder]</div>
+        </div>
+        <div class="featured-destinations">
+            <h3>Featured Destinations</h3>
+            <img src="https://example.com/destination1.jpg" alt="Destination 1">
+            <p>Explore breathtaking landscapes and vibrant cultures.</p>
+        </div>
     </section>
 
-    <section class="features">
-        <div class="feature" data-feature="vr">
-            <h2>Virtual Reality Experiences</h2>
-            <p>Explore famous landmarks with VR technology.</p>
-        </div>
-        <div class="feature" data-feature="culture">
-            <h2>Cultural Immersions</h2>
-            <p>Experience local music, cuisine, and festivals.</p>
-        </div>
-        <div class="feature" data-feature="challenges">
-            <h2>Traveler's Challenges</h2>
-            <p>Take quizzes and earn badges by learning about different regions.</p>
-        </div>
-        <div class="feature" data-feature="live">
-            <h2>Live Interaction Events</h2>
-            <p>Join live-streamed tours with real-time guides.</p>
-        </div>
-        <div class="feature" data-feature="profile">
-            <h2>User Profiles</h2>
-            <p>Create a profile to track your travels and engage with the community.</p>
-        </div>
-        <div class="feature" data-feature="itinerary">
-            <h2>Personalized Itinerary</h2>
-            <p>Plan your virtual travel and receive personalized recommendations.</p>
-        </div>
+    <section id="experiences" class="experiences">
+        <h2>Virtual Experiences</h2>
+        <p>Join virtual tours, attend cultural workshops, and participate in photo challenges.</p>
+    </section>
+
+    <section id="community" class="community">
+        <h2>Join Our Community</h2>
+        <p>Share travel stories, join discussions, and connect with fellow explorers.</p>
+    </section>
+
+    <section id="profile" class="profile">
+        <h2>Your Profile</h2>
+        <p>Track your virtual travels, set goals, and connect with friends.</p>
+    </section>
+
+    <section class="additional">
+        <h2>Additional Features</h2>
+        <p>Access language settings, earn rewards, and get travel updates.</p>
     </section>
 
     <footer>
-        <p>&copy; 2023 Travel World. All Rights Reserved.</p>
+        <p>&copy; 2023 Explore World</p>
     </footer>
+
 </body>
 </html>
