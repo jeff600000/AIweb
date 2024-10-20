@@ -3,109 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple To-Do List</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Memory Card Matching Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: #61dafb;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 10px;
+            margin: 20px;
+            perspective: 1000px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            transition: transform 0.3s;
+            transform-style: preserve-3d;
+        }
+        .card.flip {
+            transform: rotateY(180deg);
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            transform-origin: center right;
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card-back {
+            background-color: #61dafb;
+            color: #282c34;
+            transform: rotateY(180deg);
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>To-Do List</h1>
-        <input type="text" id="taskInput" placeholder="Add a new task...">
-        <button onclick="addTask()">Add Task</button>
-        <ul id="taskList"></ul>
+    <div class="game-board" id="gameBoard">
+        <div class="card" data-name="1"><div class="card-inner"><div class="card-front"></div><div class="card-back">1</div></div></div>
+        <div class="card" data-name="2"><div class="card-inner"><div class="card-front"></div><div class="card-back">2</div></div></div>
+        <div class="card" data-name="3"><div class="card-inner"><div class="card-front"></div><div class="card-back">3</div></div></div>
+        <div class="card" data-name="4"><div class="card-inner"><div class="card-front"></div><div class="card-back">4</div></div></div>
+        <div class="card" data-name="1"><div class="card-inner"><div class="card-front"></div><div class="card-back">1</div></div></div>
+        <div class="card" data-name="2"><div class="card-inner"><div class="card-front"></div><div class="card-back">2</div></div></div>
+        <div class="card" data-name="3"><div class="card-inner"><div class="card-front"></div><div class="card-back">3</div></div></div>
+        <div class="card" data-name="4"><div class="card-inner"><div class="card-front"></div><div class="card-back">4</div></div></div>
     </div>
-    <script src="scripts.js"></script>
+    <script>
+        const cards = document.querySelectorAll('.card');
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+            
+            secondCard = this;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.name === secondCard.dataset.name;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1500);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        (function shuffle() {
+            cards.forEach(card => {
+                let randomPos = Math.floor(Math.random() * 8);
+                card.style.order = randomPos;
+            });
+        })();
+
+        cards.forEach(card => card.addEventListener('click', flipCard));
+    </script>
 </body>
 </html>
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-}
-
-.container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 300px;
-}
-
-h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-}
-
-button {
-    width: 100%;
-    padding: 8px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    padding: 10px;
-    background: #f9f9f9;
-    margin-top: 5px;
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
-}
-
-li button {
-    background: none;
-    border: none;
-    color: #007BFF;
-    cursor: pointer;
-}
-
-li button:hover {
-    color: #0056b3;
-}
-</style>
-<script>
-function addTask() {
-    const taskInput = document.getElementById('taskInput');
-    const taskList = document.getElementById('taskList');
-
-    if (taskInput.value.trim() !== '') {
-        const listItem = document.createElement('li');
-        listItem.textContent = taskInput.value;
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.onclick = function() {
-            taskList.removeChild(listItem);
-        };
-
-        listItem.appendChild(deleteButton);
-        taskList.appendChild(listItem);
-
-        taskInput.value = '';
-    }
-}
-</script>
