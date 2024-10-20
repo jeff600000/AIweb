@@ -1,111 +1,138 @@
 <!-- I need to put this here, dont ask why --><!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java Joy Coffee Shop</title>
+    <title>Alex Johnson - Graphic Designer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            background-color: #f4f4f4;
         }
-
         header {
-            background-color: #6B4F4F;
+            background-color: #333;
             color: #fff;
             padding: 10px 0;
             text-align: center;
         }
-
-        nav {
-            margin-top: 10px;
+        header h1 {
+            margin: 0;
         }
-
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background: #555;
+        }
         nav a {
             color: #fff;
-            margin: 0 15px;
             text-decoration: none;
-            font-weight: bold;
+            padding: 14px 20px;
+            display: block;
         }
-
-        .hero {
-            text-align: center;
-            margin: 20px 0;
+        nav a:hover {
+            background-color: #444;
         }
-
-        .hero img {
-            width: 300px;
-            border-radius: 8px;
-        }
-
-        .featured-blends {
-            margin: 20px;
+        .container {
             padding: 20px;
-            background-color: #fff;
+        }
+        .introduction {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .projects {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .project {
+            background: #fff;
+            margin: 10px;
+            padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: calc(33% - 40px);
+            box-sizing: border-box;
+            transition: transform 0.3s;
         }
-
-        .blend {
-            margin-bottom: 20px;
+        .project:hover {
+            transform: translateY(-5px);
         }
-
-        footer {
-            background-color: #6B4F4F;
+        .contact {
+            background-color: #333;
             color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        footer {
             text-align: center;
             padding: 10px 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
+            background-color: #222;
+            color: #ccc;
+        }
+        @media screen and (max-width: 768px) {
+            .project {
+                width: calc(50% - 40px);
+            }
+        }
+        @media screen and (max-width: 480px) {
+            .project {
+                width: 100%;
+            }
+            nav {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
-
 <body>
 
-    <header>
-        <h1>Java Joy Coffee Shop</h1>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#featured-blends">Featured Blends</a>
-            <a href="#contact">Contact</a>
-        </nav>
-    </header>
+<header>
+    <h1>Welcome to Alex Johnson's Portfolio</h1>
+</header>
 
-    <section class="hero">
-        <h2>Welcome to Java Joy</h2>
-        <img src="https://via.placeholder.com/300.png?text=Coffee+Cup" alt="Coffee Cup">
-        <p>Your perfect coffee destination!</p>
+<nav>
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<div class="container">
+    <section id="about" class="introduction">
+        <h2>About Me</h2>
+        <p>Hello! I'm Alex Johnson, a passionate graphic designer with over 5 years of experience in creating visually stunning designs. I specialize in branding, digital illustrations, and web design.</p>
     </section>
 
-    <section id="featured-blends" class="featured-blends">
-        <h2>Our Featured Coffee Blends</h2>
-        <div class="blend">
-            <h3>Morning Bliss</h3>
-            <p>A smooth and aromatic blend to start your day right.</p>
-            <button onclick="alert('Morning Bliss is perfect for you!')">Try it!</button>
-        </div>
-        <div class="blend">
-            <h3>Evening Delight</h3>
-            <p>An exquisite blend with a hint of chocolate for a relaxing evening.</p>
-            <button onclick="alert('Evening Delight awaits you!')">Try it!</button>
-        </div>
-        <div class="blend">
-            <h3>Decaf Dream</h3>
-            <p>All the flavor without the buzz, for those late-night cravings.</p>
-            <button onclick="alert('Decaf Dream is the best choice!')">Try it!</button>
+    <section id="projects">
+        <h2>My Projects</h2>
+        <div class="projects">
+            <div class="project" onclick="alert('Brand Redesign for a boutique fashion company.')">
+                <h3>Brand Redesign</h3>
+                <p>A complete brand overhaul for a boutique fashion company.</p>
+            </div>
+            <div class="project" onclick="alert('Responsive website design for a tech startup.')">
+                <h3>Website Design</h3>
+                <p>Responsive website design for a tech startup.</p>
+            </div>
+            <div class="project" onclick="alert('A collection of custom digital illustrations for various clients.')">
+                <h3>Digital Illustrations</h3>
+                <p>A collection of custom digital illustrations for various clients.</p>
+            </div>
         </div>
     </section>
+</div>
 
-    <footer id="contact">
-        <p>Contact us: <a href="mailto:info@javajoy.com" style="color: #fff;">info@javajoy.com</a> | Phone: <a href="tel:123-456-7890" style="color: #fff;">123-456-7890</a></p>
-    </footer>
+<div id="contact" class="contact">
+    <h2>Contact</h2>
+    <p>If you would like to work together, feel free to reach out!</p>
+    <p>Email: <a href="mailto:alex.johnson@email.com" style="color: #fff;">alex.johnson@email.com</a></p>
+    <p>Phone: <a href="tel:1234567890" style="color: #fff;">(123) 456-7890</a></p>
+</div>
+
+<footer>
+    &copy; 2023 Alex Johnson. All rights reserved.
+</footer>
 
 </body>
-
 </html>
