@@ -7,12 +7,13 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background: url('https://your-image-url.jpg') no-repeat center center fixed; /* Replace with actual image URL */
+            background-size: cover;
             margin: 0;
             padding: 0;
             text-align: center;
             overflow: hidden;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, background-image 0.3s ease;
         }
         header {
             background-color: #4CAF50;
@@ -43,6 +44,7 @@
             display: block;
         }
         button {
+            position: relative;
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -50,9 +52,24 @@
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s ease;
+            overflow: hidden;
         }
         button:hover {
             background-color: #45a049;
+        }
+        button::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
         footer {
             background-color: #4CAF50;
@@ -61,6 +78,10 @@
             position: fixed;
             bottom: 0;
             width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        footer:hover {
+            background-color: #45a049;
         }
         .hidden {
             display: none;
@@ -111,6 +132,8 @@
     </footer>
 
     <script>
+        let clickCount = 0;
+
         function showSection(sectionId) {
             const sections = document.querySelectorAll('section');
             sections.forEach(section => {
@@ -120,22 +143,32 @@
         }
 
         function addMessages() {
+            clickCount++;
             const messageContainer = document.getElementById('messageContainer');
             const message = document.createElement('p');
-            message.textContent = 'Button clicked! Welcome to the interactive experience!';
+            message.textContent = `Button clicked ${clickCount} time(s)! Welcome to the interactive experience!`;
             message.classList.add('message');
+            messageContainer.appendChild(message);
 
             setTimeout(() => {
                 messageContainer.innerHTML = '';
             }, 5000);
-
-            messageContainer.appendChild(message);
         }
 
         function toggleDarkMode() {
             const body = document.body;
             body.classList.toggle('dark-mode');
         }
+
+        document.addEventListener('keyup', function(event) {
+            if (event.key === '1') {
+                showSection('home');
+            } else if (event.key === '2') {
+                showSection('about');
+            } else if (event.key === '3') {
+                showSection('contact');
+            }
+        });
     </script>
 
 </body>
