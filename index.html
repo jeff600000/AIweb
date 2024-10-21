@@ -15,8 +15,8 @@
             padding: 0;
             text-align: center;
             overflow: hidden;
-            transition: background-color 0.3s ease, background-image 0.3s ease;
             color: #333;
+            transition: background-color 0.3s ease, background-image 0.3s ease;
         }
         header {
             background-color: #4CAF50;
@@ -29,6 +29,7 @@
             display: flex;
             justify-content: center;
             margin: 1em 0;
+            flex-wrap: wrap;
         }
         nav a {
             margin: 0 15px;
@@ -39,6 +40,21 @@
         }
         nav a:hover {
             color: #e0e0e0;
+        }
+        button.back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            display: none;
+            transition: background-color 0.3s;
+        }
+        button.back-to-top:hover {
+            background-color: #45a049;
         }
         section {
             display: none;
@@ -128,108 +144,151 @@
         button[type="submit"] {
             width: auto;
         }
+        section.faq-item {
+            cursor: pointer;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        section.faq-item:hover {
+            background-color: #f1f1f1;
+        }
+        .faq-answer {
+            display: none;
+            padding-left: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Welcome to My Interactive Website</h1>
-        <nav>
-            <a href="#home" onclick="showSection('home')">Home</a>
-            <a href="#about" onclick="showSection('about')">About</a>
-            <a href="#contact" onclick="showSection('contact')">Contact</a>
-            <a href="#faq" onclick="showSection('faq')">FAQ</a>
-        </nav>
-        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
-    </header>
+<header>
+    <h1>Welcome to My Interactive Website</h1>
+    <nav>
+        <a href="#home" onclick="showSection('home')">Home</a>
+        <a href="#about" onclick="showSection('about')">About</a>
+        <a href="#contact" onclick="showSection('contact')">Contact</a>
+        <a href="#faq" onclick="showSection('faq')">FAQ</a>
+    </nav>
+    <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+</header>
 
-    <section id="home" class="visible">
-        <p>This is a basic website made with just HTML and CSS. It's super easy to customize!</p>
-        <button onclick="addMessages()">Click Me</button>
-        <div id="messageContainer"></div>
-    </section>
+<section id="home" class="visible">
+    <p>This is a basic website made with just HTML and CSS. It's super easy to customize!</p>
+    <button onclick="addMessages()">Click Me</button>
+    <div id="messageContainer"></div>
+</section>
 
-    <section id="about" class="hidden">
-        <h2>About This Website</h2>
-        <p>It is designed to be fun and interactive, showcasing various features like navigation and buttons that respond to user actions.</p>
-    </section>
+<section id="about" class="hidden">
+    <h2>About This Website</h2>
+    <p>It is designed to be fun and interactive, showcasing various features like navigation and buttons that respond to user actions.</p>
+</section>
 
-    <section id="contact" class="hidden">
-        <h2>Contact Us</h2>
-        <form onsubmit="submitForm(event)">
-            <input type="text" placeholder="Your Name" required>
-            <input type="email" placeholder="Your Email" required>
-            <textarea placeholder="Your Message" required></textarea>
-            <button type="submit">Send</button>
-        </form>
-    </section>
+<section id="contact" class="hidden">
+    <h2>Contact Us</h2>
+    <form onsubmit="submitForm(event)">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Your Message" required></textarea>
+        <button type="submit">Send</button>
+    </form>
+</section>
 
-    <section id="faq" class="hidden">
-        <h2>Frequently Asked Questions</h2>
-        <ul>
-            <li><strong>Q: What is this website about?</strong>
-            <p>A: It is an interactive demo showcasing various web features and concepts.</p></li>
-            <li><strong>Q: How can I contact support?</strong>
-            <p>A: Use the contact form above to reach out!</p></li>
-        </ul>
-    </section>
+<section id="faq" class="hidden">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item" tabindex="0" aria-expanded="false" onclick="toggleFAQ('answer1', this)">
+        <strong>Q: What is this website about?</strong>
+        <div id="answer1" class="faq-answer"><p>A: It is an interactive demo showcasing various web features and concepts.</p></div>
+    </div>
+    <div class="faq-item" tabindex="0" aria-expanded="false" onclick="toggleFAQ('answer2', this)">
+        <strong>Q: How can I contact support?</strong>
+        <div id="answer2" class="faq-answer"><p>A: Use the contact form above to reach out!</p></div>
+    </div>
+</section>
 
-    <footer>
-        <p>My Interactive Website. All rights reserved.</p>
-    </footer>
+<button class="back-to-top" onclick="scrollToTop()">Back to Top</button>
 
-    <script>
-        let clickCount = 0;
+<footer>
+    <p>My Interactive Website. All rights reserved.</p>
+</footer>
 
-        function showSection(sectionId) {
-            const sections = document.querySelectorAll('section');
-            sections.forEach(section => {
-                section.classList.toggle('visible', section.id === sectionId);
-                section.classList.toggle('hidden', section.id !== sectionId);
-            });
-        }
+<script>
+    let clickCount = 0;
 
-        function addMessages() {
-            clickCount++;
-            const messageContainer = document.getElementById('messageContainer');
-            const message = document.createElement('p');
-            message.textContent = `Button clicked ${clickCount} time(s)! Welcome to the interactive experience!`;
-            message.classList.add('message');
-            messageContainer.appendChild(message);
-
-            setTimeout(() => {
-                messageContainer.innerHTML = '';
-            }, 5000);
-        }
-
-        function toggleDarkMode() {
-            const body = document.body;
-            body.classList.toggle('dark-mode');
-        }
-
-        function submitForm(event) {
-            event.preventDefault();
-            const messageContainer = document.getElementById('messageContainer');
-            const name = event.target[0].value;
-            messageContainer.innerHTML = `Thank you, ${name}, for your message!`;
-            event.target.reset();
-            setTimeout(() => {
-                messageContainer.innerHTML = '';
-            }, 5000);
-        }
-
-        document.addEventListener('keyup', function(event) {
-            if (event.key === '1') {
-                showSection('home');
-            } else if (event.key === '2') {
-                showSection('about');
-            } else if (event.key === '3') {
-                showSection('contact');
-            } else if (event.key === '4') {
-                showSection('faq');
-            }
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => {
+            section.classList.toggle('visible', section.id === sectionId);
+            section.classList.toggle('hidden', section.id !== sectionId);
         });
-    </script>
+        checkBackToTopButtonVisibility();
+    }
 
+    function addMessages() {
+        clickCount++;
+        const messageContainer = document.getElementById('messageContainer');
+        const message = document.createElement('p');
+        message.textContent = `Button clicked ${clickCount} time(s)! Welcome to the interactive experience!`;
+        message.classList.add('message');
+        messageContainer.appendChild(message);
+
+        setTimeout(() => {
+            messageContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+    }
+
+    function submitForm(event) {
+        event.preventDefault();
+        const messageContainer = document.getElementById('messageContainer');
+        const name = event.target[0].value;
+        messageContainer.innerHTML = `Thank you, ${name}, for your message!`;
+        event.target.reset();
+        setTimeout(() => {
+            messageContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    function toggleFAQ(answerId, element) {
+        const answer = document.getElementById(answerId);
+        answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+        const expanded = element.getAttribute('aria-expanded') === 'true';
+        element.setAttribute('aria-expanded', !expanded);
+    }
+
+    function checkBackToTopButtonVisibility() {
+        const backToTopButton = document.querySelector('.back-to-top');
+        backToTopButton.style.display = window.scrollY > 100 ? 'block' : 'none';
+    }
+
+    function scrollToTop() {
+        window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    // initially hiding FAQ answers
+    document.querySelectorAll('.faq-answer').forEach(answer => answer.style.display = 'none');
+
+    document.addEventListener('keyup', function(event) {
+        if (event.key === '1') {
+            showSection('home');
+        } else if (event.key === '2') {
+            showSection('about');
+        } else if (event.key === '3') {
+            showSection('contact');
+        } else if (event.key === '4') {
+            showSection('faq');
+        }
+    });
+
+    window.addEventListener('scroll', checkBackToTopButtonVisibility);
+</script>
 </body>
 </html>
