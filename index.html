@@ -3,206 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quirky Concatenations</title>
+    <title>Welcome to Bread SMP</title>
+    <meta name="description" content="A community for bread enthusiasts and gamers." />
+    <meta name="keywords" content="bread, gaming, community" />
     <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background-color: #f7f7f7;
-            color: #333;
+        body, html {
             margin: 0;
             padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #f9f3e9;
+            color: #333;
         }
         header {
+            background-color: #bc9f7c;
+            padding: 20px;
             text-align: center;
-            background-color: #ffcc00;
-            padding: 20px;
         }
-        .carousel {
-            width: 100%;
-            height: 300px;
-            overflow: hidden;
-            position: relative;
+        h1 {
+            margin: 0;
         }
-        .carousel img {
-            width: 100%;
-            height: auto;
-            position: absolute;
-            animation: slide 8s infinite;
-        }
-        @keyframes slide {
-            0% { left: 0; }
-            20% { left: 0; }
-            25% { left: -100%; }
-            45% { left: -100%; }
-            50% { left: -200%; }
-            70% { left: -200%; }
-            75% { left: 0; }
-            100% { left: 0; }
-        }
-        .section {
-            padding: 20px;
-            background-color: #e7e7e7;
-            margin: 15px;
-            border-radius: 10px;
+        nav {
+            margin: 20px 0;
         }
         button {
-            padding: 10px 15px;
-            background-color: #28a745;
-            border: none;
+            background-color: #7E5B3A;
             color: white;
+            border: none;
+            padding: 10px 20px;
             cursor: pointer;
-            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #218838;
+            background-color: #6f4a3e;
+        }
+        #content-frame {
+            width: 100%;
+            height: calc(100% - 100px);
+            border: none;
         }
         footer {
             text-align: center;
-            background-color: #ffcc00;
             padding: 10px;
-        }
-        .quote {
-            font-style: italic;
-            margin-top: 15px;
-        }
-        #random-recipe {
-            display: none;
+            background-color: #bc9f7c;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Welcome to Quirky Concatenations - Where Randomness Meets Reality!</h1>
-        <div class="carousel">
-            <img src="https://example.com/cat-wizard.jpg" alt="Cat in Wizard Hat">
-            <img src="https://example.com/potato-rollercoaster.jpg" alt="Potato on a Rollercoaster">
-            <img src="https://example.com/dinosaur-coffee.jpg" alt="Dinosaur Sipping Coffee">
-        </div>
-        <h2>Embrace the Odd, Celebrate the Quirky!</h2>
+        <h1>Welcome to Bread SMP</h1>
+        <nav>
+            <button id="loadHome">Home</button>
+            <button id="loadAbout">About</button>
+            <button id="loadGames">Games</button>
+        </nav>
     </header>
-
-    <section class="section" id="trivia">
-        <h3>The Useless Trivia Corner</h3>
-        <ul>
-            <li>Honey never spoils. Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3000 years old and still edible!</li>
-            <li>Bananas are berries, but strawberries aren’t.</li>
-        </ul>
-    </section>
-
-    <section class="section" id="pet-gallery">
-        <h3>The Bizarre Pet Gallery</h3>
-        <input type="file" accept="image/*" id="upload" />
-        <button onclick="submitPetPhoto()">Submit Pet Photo</button>
-        <div id="pet-photos"></div>
-        <h4>Vote for the most bizarre pet! (Coming Soon)</h4>
-    </section>
-
-    <section class="section" id="random-recipe">
-        <h3>Random Recipe Generator</h3>
-        <button onclick="generateRandomRecipe()">Get Random Recipe</button>
-        <p id="recipe-output"></p>
-    </section>
-
-    <section class="section" id="conspiracy-theories">
-        <h3>Conspiracy Theories for Cats</h3>
-        <h4>Latest Theory:</h4>
-        <p>Are catnip toys actually from outer space?</p>
-    </section>
-
-    <section class="section" id="quote-generator">
-        <h3>Daily Nonsense Quote</h3>
-        <button onclick="generateQuote()">Get Quote</button>
-        <p class="quote" id="quote-output"></p>
-    </section>
-
-    <section class="section" id="dream-interpretation">
-        <h3>The Dream Interpreter</h3>
-        <input type="text" id="dream-input" placeholder="Enter your weird dream here">
-        <button onclick="interpretDream()">Interpret Dream</button>
-        <p id="dream-output"></p>
-    </section>
-
-    <section class="section" id="confetti-cannon">
-        <h3>Colorful Confetti Cannon Project</h3>
-        <p>Instructions on how to create confetti cannons with household items.</p>
-    </section>
-
-    <section class="section" id="interactive-polls">
-        <h3>Interactive Polls</h3>
-        <button onclick="addPoll()">Participate in Poll!</button>
-        <div id="polls"></div>
-    </section>
-
-    <section class="section" id="whimsical-wardrobe">
-        <h3>The Whimsical Wardrobe</h3>
-        <h4>Vote on these Strange Fashion Statements:</h4>
-        <p>Would you dare to wear Marshmallow-Printed Pajamas?</p>
-        <button onclick="vote('Marshmallow Pajamas')">Yes</button>
-        <button onclick="vote('Marshmallow Pajamas')">No</button>
-    </section>
-
+    <iframe id="content-frame" src="https://www.breadsmp.com" title="Bread SMP Community"></iframe>
     <footer>
-        <p>Follow us on social media for daily weirdness!</p>
-        <input type="text" id="email" placeholder="Subscribe to The Odd Exchange">
-        <button onclick="subscribe()">Subscribe</button>
+        <p>Discover the world of bread and gaming!</p>
     </footer>
-
     <script>
-        const recipes = ["Chocolate-Covered Olives with Sprinkles", "Avocado Pasta with Jelly"];
-        const quotes = [
-            "If you trip over a potato, consider it a life lesson from the Earth.",
-            "Dance like there's a giant cucumber watching you!"
-        ];
-        const dreamInterpretations = {
-            "I dreamt I was being chased by a giant carrot": "This suggests you’re feeling ‘rooted’ in your current life."
+        const frame = document.getElementById("content-frame");
+        document.getElementById("loadHome").onclick = function() {
+            frame.src = "https://www.breadsmp.com";
         };
-
-        function generateRandomRecipe() {
-            const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
-            document.getElementById('recipe-output').innerText = randomRecipe;
-        }
-
-        function generateQuote() {
-            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-            document.getElementById('quote-output').innerText = randomQuote;
-        }
-
-        function interpretDream() {
-            const dreamInput = document.getElementById('dream-input').value;
-            const interpretation = dreamInterpretations[dreamInput] || "An interpretation is not available for this dream.";
-            document.getElementById('dream-output').innerText = interpretation;
-        }
-
-        function submitPetPhoto() {
-            const fileInput = document.getElementById('upload');
-            if (fileInput.files.length > 0) {
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(fileInput.files[0]);
-                img.style.maxWidth = '100px';
-                img.style.margin = '5px';
-                document.getElementById('pet-photos').appendChild(img);
-            }
-        }
-
-        function addPoll() {
-            const pollQuestion = prompt("Enter your poll question:");
-            if (pollQuestion) {
-                const pollDiv = document.createElement('div');
-                pollDiv.innerHTML = `<strong>${pollQuestion}</strong><br>
-                <button onclick="vote('${pollQuestion} - Yes')">Yes</button>
-                <button onclick="vote('${pollQuestion} - No')">No</button>`;
-                document.getElementById('polls').appendChild(pollDiv);
-            }
-        }
-
-        function vote(option) {
-            alert(`Thank you for voting for: ${option}`);
-        }
-
-        function subscribe() {
-            const email = document.getElementById('email').value;
-            alert(`Thank you for subscribing with email: ${email}`);
-        }
+        document.getElementById("loadAbout").onclick = function() {
+            frame.src = "https://www.breadsmp.com/about";
+        };
+        document.getElementById("loadGames").onclick = function() {
+            frame.src = "https://www.breadsmp.com/games";
+        };
     </script>
 </body>
 </html>
