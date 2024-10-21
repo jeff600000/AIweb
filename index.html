@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curiosity Hub</title>
+    <title>Engaging Community Website</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,113 +13,169 @@
             color: #333;
         }
         header {
-            background: #4CAF50;
+            background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 20px;
             text-align: center;
         }
-        .banner {
-            position: relative;
-            height: 300px;
-            overflow: hidden;
-            display: grid;
-            place-items: center;
-            font-size: 2em;
-            color: white;
-        }
-        .carousel {
-            animation: slide 10s infinite;
-        }
-        @keyframes slide {
-            0% { background-color: #4CAF50; content: "Tech Innovations"; }
-            33% { background-color: #2196F3; content: "Lifestyle Hacks"; }
-            67% { background-color: #FFC107; content: "Mind-Blowing Science Facts"; }
-            100% { background-color: #4CAF50; content: "Tech Innovations"; }
-        }
-        .articles {
+        nav {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
+            background-color: #333;
+        }
+        nav a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .content {
             padding: 20px;
         }
-        .article {
-            background: white;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 30%;
-        }
-        button {
-            padding: 10px;
-            background: #4CAF50;
-            color: white;
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
             border: none;
+            background-color: #4CAF50;
+            color: white;
             cursor: pointer;
-            border-radius: 5px;
         }
-        .quiz, .discussion, .event {
-            margin: 20px;
+        .button:hover {
+            background-color: #45a049;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .gallery img {
+            width: 150px;
+            height: 150px;
+            margin: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Welcome to Curiosity Hub</h1>
+    <h1>Welcome to Our Engaging Community</h1>
+    <p>Explore, Create, and Connect</p>
 </header>
 
-<div class="banner">
-    <div class="carousel">Discover the World of Knowledge</div>
+<nav>
+    <a href="#" onclick="showSection('home')">Home</a>
+    <a href="#" onclick="showSection('blog')">Blog</a>
+    <a href="#" onclick="showSection('games')">Puzzle & Game Zone</a>
+    <a href="#" onclick="showSection('community')">Community Hub</a>
+    <a href="#" onclick="showSection('fun')">Fun Features</a>
+    <a href="#" onclick="showSection('wellness')">Wellness</a>
+</nav>
+
+<div class="content">
+    <div id="home" class="section">
+        <h2>Featured Content</h2>
+        <button class="button" onclick="showRandomFact()">Show Random Fact</button>
+        <p id="randomFact"></p>
+    </div>
+
+    <div id="blog" class="section hidden">
+        <h2>Blog Section</h2>
+        <p>Latest articles and guides tailored to your interests.</p>
+    </div>
+
+    <div id="games" class="section hidden">
+        <h2>Puzzle & Game Zone</h2>
+        <button class="button" onclick="startTrivia()">Start Trivia Challenge</button>
+        <div id="trivia" class="hidden">
+            <p>Trivia Question: What is the capital of France?</p>
+            <button class="button" onclick="checkAnswer('correct')">Paris</button>
+            <button class="button" onclick="checkAnswer('wrong')">Berlin</button>
+            <button class="button" onclick="checkAnswer('wrong')">Madrid</button>
+            <p id="triviaResult"></p>
+        </div>
+    </div>
+
+    <div id="community" class="section hidden">
+        <h2>Community Hub</h2>
+        <p>Discuss your favorite topics with others!</p>
+    </div>
+
+    <div id="fun" class="section hidden">
+        <h2>Fun Features</h2>
+        <button class="button" onclick="generateMeme()">Generate Meme</button>
+        <div id="meme" class="hidden"></div>
+    </div>
+
+    <div id="wellness" class="section hidden">
+        <h2>Lifestyle & Wellness</h2>
+        <button class="button" onclick="showFitnessChallenge()">Show Monthly Fitness Challenge</button>
+        <p id="fitnessChallenge" class="hidden">This month's challenge: 10,000 steps a day!</p>
+    </div>
 </div>
 
-<section class="articles">
-    <div class="article">
-        <h2>Featured Article 1</h2>
-        <p>Exciting insights into technology.</p>
-        <button onclick="viewArticle('Article 1')">Read More</button>
-    </div>
-    <div class="article">
-        <h2>Featured Article 2</h2>
-        <p>Lifestyle hacks you must try.</p>
-        <button onclick="viewArticle('Article 2')">Read More</button>
-    </div>
-    <div class="article">
-        <h2>Featured Article 3</h2>
-        <p>Mind-blowing science facts!</p>
-        <button onclick="viewArticle('Article 3')">Read More</button>
-    </div>
-</section>
-
-<section class="quiz">
-    <h2>Daily Curiosity Quiz</h2>
-    <button onclick="startQuiz()">Start Quiz</button>
-</section>
-
-<section class="discussion">
-    <h2>Community Forum</h2>
-    <button onclick="showForum()">Go to Forum</button>
-</section>
-
-<section class="event">
-    <h2>Upcoming Events</h2>
-    <button onclick="showEvents()">View Events</button>
-</section>
+<footer>
+    <p>Engage through creativity, knowledge, and fun!</p>
+</footer>
 
 <script>
-    function viewArticle(article) {
-        alert("You've clicked on: " + article);
+    function showSection(section) {
+        const sections = document.querySelectorAll('.section');
+        sections.forEach((sec) => {
+            sec.classList.add('hidden');
+        });
+        document.getElementById(section).classList.remove('hidden');
     }
 
-    function startQuiz() {
-        document.querySelector('.quiz').innerHTML = '<h2>Your Quiz Starts Now!</h2><p>Question: What is the speed of light?</p>';
+    function showRandomFact() {
+        const facts = [
+            "Honey never spoils.",
+            "Bananas are berries, but strawberries aren't.",
+            "A group of flamingos is called a 'flamboyance'."
+        ];
+        const randomFact = facts[Math.floor(Math.random() * facts.length)];
+        document.getElementById('randomFact').innerText = randomFact;
     }
 
-    function showForum() {
-        document.querySelector('.discussion').innerHTML = '<h2>Forum</h2><p>Welcome to the forum! Start a discussion.</p>';
+    function startTrivia() {
+        document.getElementById('trivia').classList.remove('hidden');
     }
 
-    function showEvents() {
-        document.querySelector('.event').innerHTML = '<h2>Events</h2><p>No events scheduled. Stay tuned!</p>';
+    function checkAnswer(answer) {
+        const result = document.getElementById('triviaResult');
+        if (answer === 'correct') {
+            result.innerText = 'Correct!';
+        } else {
+            result.innerText = 'Wrong! Try Again.';
+        }
     }
+
+    function generateMeme() {
+        document.getElementById('meme').innerHTML = '<img src="https://example.com/your_meme_image.png" alt="Your Meme" />';
+        document.getElementById('meme').classList.remove('hidden');
+    }
+
+    function showFitnessChallenge() {
+        document.getElementById('fitnessChallenge').classList.remove('hidden');
+    }
+
+    // Show home section by default
+    showSection('home');
 </script>
 
 </body>
