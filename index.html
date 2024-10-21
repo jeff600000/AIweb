@@ -3,134 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Quirkiverse</title>
+    <title>The Quirky Realm of Whimsical Wonders</title>
     <style>
         body {
-            font-family: 'Comic Sans MS', cursive;
-            background-color: #ffe5d9;
-            color: #593d3d;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(to right, #FF5F6D, #FCB3D3);
+            margin: 0;
+            color: white;
+            overflow: hidden;
+        }
+        .header {
             text-align: center;
+            padding: 2rem;
+            animation: swirl 10s infinite linear;
         }
-        h1 {
-            font-size: 3em;
-            animation: dance 1s infinite alternate;
+        @keyframes swirl {
+            0% { transform: rotate(0); }
+            100% { transform: rotate(360deg); }
         }
-        @keyframes dance {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
+        .section {
+            display: none;
+            padding: 1rem;
+            border: solid 1px white;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 1rem;
+            transition: all 0.5s ease;
+        }
+        .show {
+            display: block;
         }
         .button {
-            background-color: #f7c6cc;
+            background: #FF6F61;
             border: none;
-            padding: 10px 20px;
-            font-size: 1.5em;
+            color: white;
+            padding: 15px 25px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
             cursor: pointer;
-            margin: 10px;
+            border-radius: 5px;
         }
-        .container {
-            margin: 20px;
+        .emoji {
+            font-size: 2rem;
         }
-        #fact, #creature, #recipe, #challenge, #gallery {
-            display: none;
-            border: 2px dashed #593d3d;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px auto;
-            background: white;
-            width: 80%;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
+        #randomCompliment {
+            font-weight: bold;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to The Quirkiverse!</h1>
-    <audio controls autoplay loop style="display:none;">
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-        Your browser does not support the audio tag.
-    </audio>
-    
-    <div class="container">
-        <button class="button" onclick="generateRandom()">The Daily Randomizer</button>
-        <button class="button" onclick="showCreatures()">Mystical Menagerie</button>
-        <button class="button" onclick="showRecipe()">Recipe for Disaster</button>
-        <button class="button" onclick="showGallery()">Fashion Faux Pas</button>
-        <button class="button" onclick="showChallenge()">Quirk Challenge of the Month</button>
+    <div class="header">
+        <h1>Welcome to The Quirky Realm of Whimsical Wonders!</h1>
+        <p>Enter if you dare! Unravel the mysteries of the quirk!</p>
+        <button class="button" onclick="toggleSection('curiousCreatures')">Curious Creatures Corner</button>
+        <button class="button" onclick="toggleSection('recipeBook')">Time-Traveling Recipe Book</button>
+        <button class="button" onclick="toggleSection('complimentGenerator')">Random Compliment Generator</button>
+        <button class="button" onclick="toggleSection('socksDebate')">The Great Socks Debate</button>
+        <button class="button" onclick="toggleSection('riddleGenerator')">The Enigmatic Enigma</button>
+        <button class="button" onclick="toggleSection('petRock')">Virtual Pet Rock Sanctuary</button>
+        <button class="button" onclick="toggleSection('wallpaper')">Whimsical Wallpaper Wednesday</button>
+        <button class="button" onclick="toggleSection('weatherReport')">Wonders of the Wacky Weather</button>
+        <button class="button" onclick="toggleSection('lostSocks')">Gallery of Lost Socks</button>
+        <button class="button" onclick="toggleSection('auctionHouse')">The Bizarre Auction House</button>
+        <button class="button" onclick="toggleSection('contactUs')">Contact Us</button>
     </div>
 
-    <div id="fact"></div>
-    <div id="creature">
-        <h2>Meet the Creatures:</h2>
-        <p><strong>Fluffernugget:</strong> A small, furry creature with a donut-shaped body that loves to dance on rainbows.</p>
-        <p><strong>Gubblewump:</strong> An amphibious creature that emits confetti while singing slightly off-key show tunes.</p>
+    <div id="curiousCreatures" class="section">
+        <h2>Curious Creatures Corner</h2>
+        <p>Explore bizarre creatures like the Fluffernut and the Snickerdoodle Squid!</p>
+        <img src="https://via.placeholder.com/150" alt="Fluffernut">
     </div>
-    <div id="recipe">
-        <h2>Recipe for Disaster:</h2>
-        <p><strong>Chocolate Covered Pickles Surprise:</strong></p>
-        <img src="https://i.imgur.com/LsQu1SO.png" alt="Chocolate Covered Pickles Surprise">
-        <p>A step-by-step guide with pictures of a confused cucumber.</p>
-        <p><strong>Invisible Soup:</strong> Instructions on how to create the perfect bowl of air.</p>
+
+    <div id="recipeBook" class="section">
+        <h2>Time-Traveling Recipe Book</h2>
+        <p>Try Pterodactyl Wings in Asteroid Sauce or Elven Cheesecake!</p>
     </div>
-    <div id="gallery">
-        <h2>Fashion Faux Pas Gallery:</h2>
-        <p>Featured outfit: Socks with sandals adorned with googly eyes!</p>
-        <p>Submit your "What Was I Thinking?" photo!</p>
+
+    <div id="complimentGenerator" class="section">
+        <h2>Random Compliment Generator</h2>
+        <button class="button" onclick="generateCompliment()">Give Me a Compliment!</button>
+        <p id="randomCompliment"></p>
     </div>
-    <div id="challenge">
-        <h2>Quirk Challenge of the Month:</h2>
-        <p>"Wear the silliest hat you own and submit a photo!"</p>
-        <p>"Write a love letter to a fictional fruit."</p>
+
+    <div id="socksDebate" class="section">
+        <h2>The Great Socks Debate</h2>
+        <p>Is it better to wear socks with sandals?<p>
+        <p><strong>To Stripes or Not to Stripes?</strong></p>
+        <p>Vote Now!</p>
     </div>
+
+    <div id="riddleGenerator" class="section">
+        <h2>The Enigmatic Enigma</h2>
+        <p>Can you solve today’s riddle?</p>
+        <p>What has keys but can’t open locks?</p>
+    </div>
+
+    <div id="petRock" class="section">
+        <h2>Virtual Pet Rock Sanctuary</h2>
+        <p>Name your rock: <input type="text" id="rockName"><button class="button" onclick="adoptRock()">Adopt!</button></p>
+        <p id="rockMessage"></p>
+    </div>
+
+    <div id="wallpaper" class="section">
+        <h2>Whimsical Wallpaper Wednesday</h2>
+        <p>Download this week’s wallpaper: <button class="button" onclick="downloadWallpaper()">Download!</button></p>
+    </div>
+
+    <div id="weatherReport" class="section">
+        <h2>Wonders of the Wacky Weather</h2>
+        <p>Expect showers of spaghetti with a chance of meatballs!</p>
+    </div>
+
+    <div id="lostSocks" class="section">
+        <h2>Gallery of Lost Socks</h2>
+        <p>Share your lost sock story!</p>
+    </div>
+
+    <div id="auctionHouse" class="section">
+        <h2>The Bizarre Auction House</h2>
+        <p>Bid on haunted spoons and jars of moonlight!</p>
+    </div>
+
+    <div id="contactUs" class="section">
+        <h2>Contact Us</h2>
+        <p>Share your feedback or ideas:</p>
+        <textarea id="userFeedback" rows="4" cols="50"></textarea>
+        <button class="button" onclick="submitFeedback()">Submit</button>
+    </div>
+
+    <footer>
+        <div>
+            <h3>Follow Us on Social Media!</h3>
+            <p>FunkyFace | CuriousChirp</p>
+            <p>Did you know octopuses have three hearts?</p>
+        </div>
+    </footer>
 
     <script>
-        const facts = [
-            { text: "Did you know? Sea otters hold hands when they sleep to avoid drifting apart!", img: "https://media.giphy.com/media/3o6Mbp09bxdO0YshkM/giphy.gif" },
-            { text: "Eternal wisdom can be found in the size of your snowball.", img: "" }
+        function toggleSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('show');
+            });
+            document.getElementById(sectionId).classList.add('show');
+        }
+
+        const compliments = [
+            "You have the charisma of a thousand disco balls!",
+            "Your thoughts are like shooting stars in a pizza sky.",
+            "You are a burst of joyful sunshine!",
+            "You have the grace of a gazelle pirouetting in the moonlight!",
+            "You radiate positivity like a glitter bomb!"
         ];
 
-        function generateRandom() {
-            const randomIndex = Math.floor(Math.random() * facts.length);
-            const factDiv = document.getElementById("fact");
-            factDiv.innerHTML = `<h2>Random Fact:</h2><p>${facts[randomIndex].text}</p>${facts[randomIndex].img ? `<img src="${facts[randomIndex].img}" alt="Random Fact Image">` : ''}`;
-            factDiv.style.display = 'block';
-            document.getElementById("creature").style.display = 'none';
-            document.getElementById("recipe").style.display = 'none';
-            document.getElementById("gallery").style.display = 'none';
-            document.getElementById("challenge").style.display = 'none';
+        function generateCompliment() {
+            const randomIndex = Math.floor(Math.random() * compliments.length);
+            document.getElementById('randomCompliment').innerText = compliments[randomIndex];
         }
 
-        function showCreatures() {
-            document.getElementById("creature").style.display = 'block';
-            document.getElementById("fact").style.display = 'none';
-            document.getElementById("recipe").style.display = 'none';
-            document.getElementById("gallery").style.display = 'none';
-            document.getElementById("challenge").style.display = 'none';
+        function adoptRock() {
+            const name = document.getElementById('rockName').value;
+            document.getElementById('rockMessage').innerText = `You have adopted a rock named ${name}!`;
         }
 
-        function showRecipe() {
-            document.getElementById("recipe").style.display = 'block';
-            document.getElementById("fact").style.display = 'none';
-            document.getElementById("creature").style.display = 'none';
-            document.getElementById("gallery").style.display = 'none';
-            document.getElementById("challenge").style.display = 'none';
+        function downloadWallpaper() {
+            window.location.href = "https://via.placeholder.com/600"; // Link to wallpaper download
         }
 
-        function showGallery() {
-            document.getElementById("gallery").style.display = 'block';
-            document.getElementById("fact").style.display = 'none';
-            document.getElementById("creature").style.display = 'none';
-            document.getElementById("recipe").style.display = 'none';
-            document.getElementById("challenge").style.display = 'none';
-        }
-
-        function showChallenge() {
-            document.getElementById("challenge").style.display = 'block';
-            document.getElementById("fact").style.display = 'none';
-            document.getElementById("creature").style.display = 'none';
-            document.getElementById("recipe").style.display = 'none';
-            document.getElementById("gallery").style.display = 'none';
+        function submitFeedback() {
+            const feedback = document.getElementById('userFeedback').value;
+            alert(`Thank you for your feedback: "${feedback}"!`);
         }
     </script>
 </body>
