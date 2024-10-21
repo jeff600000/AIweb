@@ -3,133 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CreativeHub</title>
+    <title>Curiosity Hub</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            color: #333;
         }
         header {
-            background: #5f9ea0;
-            color: #fff;
-            padding: 15px 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
             text-align: center;
         }
-        nav {
-            margin: 15px 0;
+        .banner {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            font-size: 2em;
+            color: white;
         }
-        nav button {
-            margin: 0 10px;
-            padding: 10px 15px;
-            background: #ff6347;
-            color: #fff;
+        .carousel {
+            animation: slide 10s infinite;
+        }
+        @keyframes slide {
+            0% { background-color: #4CAF50; content: "Tech Innovations"; }
+            33% { background-color: #2196F3; content: "Lifestyle Hacks"; }
+            67% { background-color: #FFC107; content: "Mind-Blowing Science Facts"; }
+            100% { background-color: #4CAF50; content: "Tech Innovations"; }
+        }
+        .articles {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+        .article {
+            background: white;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 30%;
+        }
+        button {
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
             border: none;
             cursor: pointer;
             border-radius: 5px;
         }
-        .content {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 20px;
-        }
-        .card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 15px;
-            padding: 20px;
-            width: 300px;
-            text-align: center;
-        }
-        .card img {
-            width: 100%;
-            border-radius: 10px 10px 0 0;
-        }
-        footer {
-            background: #5f9ea0;
-            color: #fff;
-            text-align: center;
-            padding: 10px 0;
-            position: relative;
-            bottom: 0;
-            width: 100%;
+        .quiz, .discussion, .event {
+            margin: 20px;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Welcome to CreativeHub</h1>
-    <nav>
-        <button onclick="displaySection('gallery')">Showcase Gallery</button>
-        <button onclick="displaySection('challenges')">Creative Challenges</button>
-        <button onclick="displaySection('tutorials')">Tutorials</button>
-        <button onclick="displaySection('collaborations')">Collaboration Space</button>
-        <button onclick="displaySection('marketplace')">Marketplace</button>
-        <button onclick="displaySection('forums')">Discussion Forums</button>
-    </nav>
+    <h1>Welcome to Curiosity Hub</h1>
 </header>
 
-<div class="content" id="contentArea">
-    <!-- Content will be dynamically injected here -->
+<div class="banner">
+    <div class="carousel">Discover the World of Knowledge</div>
 </div>
 
-<footer>
-    <p>Explore your creativity!</p>
-</footer>
+<section class="articles">
+    <div class="article">
+        <h2>Featured Article 1</h2>
+        <p>Exciting insights into technology.</p>
+        <button onclick="viewArticle('Article 1')">Read More</button>
+    </div>
+    <div class="article">
+        <h2>Featured Article 2</h2>
+        <p>Lifestyle hacks you must try.</p>
+        <button onclick="viewArticle('Article 2')">Read More</button>
+    </div>
+    <div class="article">
+        <h2>Featured Article 3</h2>
+        <p>Mind-blowing science facts!</p>
+        <button onclick="viewArticle('Article 3')">Read More</button>
+    </div>
+</section>
+
+<section class="quiz">
+    <h2>Daily Curiosity Quiz</h2>
+    <button onclick="startQuiz()">Start Quiz</button>
+</section>
+
+<section class="discussion">
+    <h2>Community Forum</h2>
+    <button onclick="showForum()">Go to Forum</button>
+</section>
+
+<section class="event">
+    <h2>Upcoming Events</h2>
+    <button onclick="showEvents()">View Events</button>
+</section>
 
 <script>
-    const contentData = {
-        gallery: `
-            <div class="card">
-                <img src="https://example.com/artwork1.jpg" alt="Artwork 1">
-                <h2>Artwork 1</h2>
-                <p>By Artist 1</p>
-            </div>
-            <div class="card">
-                <img src="https://example.com/artwork2.jpg" alt="Artwork 2">
-                <h2>Artwork 2</h2>
-                <p>By Artist 2</p>
-            </div>
-        `,
-        challenges: `
-            <div class="card">
-                <h2>Nature Inspired Art Challenge!</h2>
-                <p>Submit your artwork based on the theme of nature for a chance to win!</p>
-                <button onclick="alert('Challenge submitted!')">Submit Entry</button>
-            </div>
-        `,
-        tutorials: `
-            <div class="card">
-                <h2>5 Tips for Breathing Life into Your Characters</h2>
-                <button onclick="alert('Article bookmarked!')">Bookmark</button>
-            </div>
-        `,
-        collaborations: `
-            <div class="card">
-                <h2>Seeking a Music Producer for a Short Film Soundtrack</h2>
-                <button onclick="alert('Collaboration request submitted!')">Get Involved</button>
-            </div>
-        `,
-        marketplace: `
-            <div class="card">
-                <h2>New in the Store: Digital Packs for Game Developers!</h2>
-                <button onclick="alert('Item added to cart!')">Add to Cart</button>
-            </div>
-        `,
-        forums: `
-            <div class="card">
-                <h2>What’s Your Go-To Creative Block Remedy?</h2>
-                <button onclick="alert('Post shared!')">Share Your Tip</button>
-            </div>
-        `,
-    };
+    function viewArticle(article) {
+        alert("You've clicked on: " + article);
+    }
 
-    function displaySection(section) {
-        document.getElementById('contentArea').innerHTML = contentData[section];
+    function startQuiz() {
+        document.querySelector('.quiz').innerHTML = '<h2>Your Quiz Starts Now!</h2><p>Question: What is the speed of light?</p>';
+    }
+
+    function showForum() {
+        document.querySelector('.discussion').innerHTML = '<h2>Forum</h2><p>Welcome to the forum! Start a discussion.</p>';
+    }
+
+    function showEvents() {
+        document.querySelector('.event').innerHTML = '<h2>Events</h2><p>No events scheduled. Stay tuned!</p>';
     }
 </script>
 
