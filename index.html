@@ -3,77 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Bread SMP</title>
-    <meta name="description" content="A community for bread enthusiasts and gamers." />
-    <meta name="keywords" content="bread, gaming, community" />
+    <title>My Interactive Website</title>
     <style>
-        body, html {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            background-color: #f9f3e9;
-            color: #333;
+            text-align: center;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
         }
         header {
-            background-color: #bc9f7c;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 {
-            margin: 0;
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em 0;
+            position: relative;
         }
         nav {
-            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            margin: 1em 0;
+        }
+        nav a {
+            margin: 0 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #e0e0e0;
+        }
+        section {
+            display: none;
+            transition: all 0.5s ease;
+        }
+        section.visible {
+            display: block;
         }
         button {
-            background-color: #7E5B3A;
+            background-color: #4CAF50;
             color: white;
             border: none;
             padding: 10px 20px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #6f4a3e;
-        }
-        #content-frame {
-            width: 100%;
-            height: calc(100% - 100px);
-            border: none;
+            background-color: #45a049;
         }
         footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #bc9f7c;
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .hidden {
+            display: none;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: #f0f0f0;
+        }
+        .message {
+            animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
+
     <header>
-        <h1>Welcome to Bread SMP</h1>
+        <h1>Welcome to My Interactive Website</h1>
         <nav>
-            <button id="loadHome">Home</button>
-            <button id="loadAbout">About</button>
-            <button id="loadGames">Games</button>
+            <a href="#home" onclick="showSection('home')">Home</a>
+            <a href="#about" onclick="showSection('about')">About</a>
+            <a href="#contact" onclick="showSection('contact')">Contact</a>
         </nav>
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
     </header>
-    <iframe id="content-frame" src="https://www.breadsmp.com" title="Bread SMP Community"></iframe>
+
+    <section id="home" class="visible">
+        <p>This is a basic website made with just HTML and CSS. It's super easy to customize!</p>
+        <button onclick="addMessages()">Click Me</button>
+        <div id="messageContainer"></div>
+    </section>
+
+    <section id="about" class="hidden">
+        <h2>About This Website</h2>
+        <p>It is designed to be fun and interactive, showcasing various features like navigation and buttons that respond to user actions.</p>
+    </section>
+
+    <section id="contact" class="hidden">
+        <h2>Contact Us</h2>
+        <p>This section is coming soon! Stay tuned for more features.</p>
+    </section>
+
     <footer>
-        <p>Discover the world of bread and gaming!</p>
+        <p>My Interactive Website. All rights reserved.</p>
     </footer>
+
     <script>
-        const frame = document.getElementById("content-frame");
-        document.getElementById("loadHome").onclick = function() {
-            frame.src = "https://www.breadsmp.com";
-        };
-        document.getElementById("loadAbout").onclick = function() {
-            frame.src = "https://www.breadsmp.com/about";
-        };
-        document.getElementById("loadGames").onclick = function() {
-            frame.src = "https://www.breadsmp.com/games";
-        };
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                section.classList.toggle('visible', section.id === sectionId);
+                section.classList.toggle('hidden', section.id !== sectionId);
+            });
+        }
+
+        function addMessages() {
+            const messageContainer = document.getElementById('messageContainer');
+            const message = document.createElement('p');
+            message.textContent = 'Button clicked! Welcome to the interactive experience!';
+            message.classList.add('message');
+
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 5000);
+
+            messageContainer.appendChild(message);
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+        }
     </script>
+
 </body>
 </html>
