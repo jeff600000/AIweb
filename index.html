@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" sizes="192x192" href="https://your-favicon-url.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
     <title>My Interactive Website</title>
     <style>
         body {
@@ -14,16 +16,21 @@
             margin: 0;
             padding: 0;
             text-align: center;
-            overflow: hidden;
             color: #333;
-            transition: background-color 0.3s ease, background-image 0.3s ease;
         }
         header {
             background-color: #4CAF50;
             color: white;
             padding: 1em 0;
-            position: relative;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.5s ease-in-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
         }
         nav {
             display: flex;
@@ -41,140 +48,39 @@
         nav a:hover {
             color: #e0e0e0;
         }
-        button.back-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            display: none;
-            transition: background-color 0.3s;
-        }
-        button.back-to-top:hover {
-            background-color: #45a049;
-        }
         section {
-            display: none;
-            transition: opacity 0.5s ease;
+            padding: 20px;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: translateY(20px);
             opacity: 0;
         }
         section.visible {
-            display: block;
+            transform: translateY(0);
             opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-        button {
-            position: relative;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #45a049;
         }
         footer {
             background-color: #4CAF50;
             color: white;
             padding: 1em 0;
-            position: fixed;
+            position: sticky;
             bottom: 0;
             width: 100%;
-            transition: background-color 0.3s ease;
-        }
-        footer:hover {
-            background-color: #45a049;
         }
         .dark-mode {
             background-color: #333;
-            color: #f0f0f0;
+            color: #e0e0e0;
         }
-        .dark-mode input, .dark-mode textarea {
-            background-color: #555;
-            color: #fff;
-            border: 1px solid #888;
+        .social-icons {
+            margin: 10px 0;
+            font-size: 24px;
         }
-        .message {
-            animation: fadeIn 0.5s forwards, fadeOut 0.5s forwards;
+        .social-icons a {
+            margin: 0 10px;
+            color: white;
+            transition: color 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-        input, textarea {
-            margin: 5px 0;
-            padding: 10px;
-            width: 80%;
-            max-width: 300px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        button[type="submit"] {
-            width: auto;
-        }
-        section.faq-item {
-            cursor: pointer;
-            padding: 10px;
-            background: #f9f9f9;
-            border: 1px solid #ccc;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
-        section.faq-item:hover {
-            background-color: #f1f1f1;
-        }
-        .faq-answer {
-            display: none;
-            padding-left: 20px;
-        }
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin: 20px auto;
-            padding: 0 10px;
-        }
-        .gallery img {
-            width: 100%;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .gallery img:hover {
-            transform: scale(1.05);
-        }
-        .lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
+        .social-icons a:hover {
+            color: #e0e0e0;
         }
     </style>
 </head>
@@ -183,71 +89,71 @@
 <header>
     <h1>Welcome to My Interactive Website</h1>
     <nav>
-        <a href="#home" onclick="showSection('home')" tabindex="0" aria-label="Navigate to Home Section">Home</a>
-        <a href="#about" onclick="showSection('about')" tabindex="0" aria-label="Navigate to About Section">About</a>
-        <a href="#gallery" onclick="showSection('gallery')" tabindex="0" aria-label="Navigate to Gallery Section">Gallery</a>
-        <a href="#contact" onclick="showSection('contact')" tabindex="0" aria-label="Navigate to Contact Section">Contact</a>
-        <a href="#faq" onclick="showSection('faq')" tabindex="0" aria-label="Navigate to FAQ Section">FAQ</a>
+        <a href="#home" onclick="showSection('home')">Home</a>
+        <a href="#about" onclick="showSection('about')">About</a>
+        <a href="#gallery" onclick="showSection('gallery')">Gallery</a>
+        <a href="#contact" onclick="showSection('contact')">Contact</a>
+        <a href="#faq" onclick="showSection('faq')">FAQ</a>
     </nav>
     <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
 </header>
 
-<section id="home" class="visible">
-    <p>This is a basic website made with just HTML and CSS. It's super easy to customize!</p>
+<section id="home" class="visible" data-aos="fade-up">
+    <p>This is an interactive website made with HTML, CSS, and JavaScript.</p>
     <button onclick="addMessages()">Click Me</button>
     <div id="messageContainer"></div>
 </section>
 
-<section id="about" class="hidden">
+<section id="about" class="hidden" data-aos="fade-up">
     <h2>About This Website</h2>
-    <p>It is designed to be fun and interactive, showcasing various features like navigation and buttons that respond to user actions.</p>
+    <p>This website showcases various features and provides a fun interactive experience.</p>
 </section>
 
-<section id="gallery" class="hidden">
+<section id="gallery" class="hidden" data-aos="fade-up">
     <h2>Image Gallery</h2>
     <div class="gallery">
-        <img src="https://example.com/image1.jpg" alt="Description of image 1" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image2.jpg" alt="Description of image 2" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image3.jpg" alt="Description of image 3" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image4.jpg" alt="Description of image 4" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image5.jpg" alt="Description of image 5" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image6.jpg" alt="Description of image 6" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image1.jpg" alt="Image 1" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image2.jpg" alt="Image 2" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image3.jpg" alt="Image 3" onclick="openLightbox(this.src)">
     </div>
 </section>
 
-<section id="contact" class="hidden">
+<section id="contact" class="hidden" data-aos="fade-up">
     <h2>Contact Us</h2>
     <form onsubmit="submitForm(event)">
-        <input type="text" placeholder="Your Name" required aria-label="Your Name">
-        <input type="email" placeholder="Your Email" required aria-label="Your Email">
-        <textarea placeholder="Your Message" required aria-label="Your Message"></textarea>
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Your Message" required></textarea>
         <button type="submit">Send</button>
     </form>
 </section>
 
-<section id="faq" class="hidden">
+<section id="faq" class="hidden" data-aos="fade-up">
     <h2>Frequently Asked Questions</h2>
-    <div class="faq-item" tabindex="0" aria-expanded="false" onclick="toggleFAQ('answer1', this)">
+    <div class="faq-item" onclick="toggleFAQ('answer1', this)">
         <strong>Q: What is this website about?</strong>
-        <div id="answer1" class="faq-answer"><p>A: It is an interactive demo showcasing various web features and concepts.</p></div>
-    </div>
-    <div class="faq-item" tabindex="0" aria-expanded="false" onclick="toggleFAQ('answer2', this)">
-        <strong>Q: How can I contact support?</strong>
-        <div id="answer2" class="faq-answer"><p>A: Use the contact form above to reach out!</p></div>
+        <div id="answer1" class="faq-answer"><p>A: It is an interactive demo showcasing various web features.</p></div>
     </div>
 </section>
 
-<button class="back-to-top" onclick="scrollToTop()">Back to Top</button>
-
-<div class="lightbox" id="lightbox" onclick="this.style.display='none'">
-    <img id="lightboxImage" src="" alt="Lightbox image">
-</div>
-
 <footer>
     <p>My Interactive Website. All rights reserved.</p>
+    <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+    </div>
 </footer>
 
+<div class="lightbox" id="lightbox" onclick="this.style.display='none'">
+    <img id="lightboxImage" src="" alt="Lightbox">
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
 <script>
+    AOS.init();
+
     let clickCount = 0;
 
     function showSection(sectionId) {
@@ -256,17 +162,12 @@
             section.classList.toggle('visible', section.id === sectionId);
             section.classList.toggle('hidden', section.id !== sectionId);
         });
-        checkBackToTopButtonVisibility();
     }
 
     function addMessages() {
         clickCount++;
         const messageContainer = document.getElementById('messageContainer');
-        const message = document.createElement('p');
-        message.textContent = `Button clicked ${clickCount} time(s)! Welcome to the interactive experience!`;
-        message.classList.add('message');
-        messageContainer.appendChild(message);
-        setTimeout(() => { messageContainer.innerHTML = ''; }, 10000);
+        messageContainer.innerHTML = `Button clicked ${clickCount} time(s)!`;
     }
 
     function openLightbox(src) {
@@ -282,41 +183,17 @@
 
     function submitForm(event) {
         event.preventDefault();
-        const messageContainer = document.getElementById('messageContainer');
         const name = event.target[0].value;
-        messageContainer.innerHTML = `Thank you, ${name}, for your message!`;
+        document.getElementById('messageContainer').innerHTML = `Thank you, ${name}, for your message!`;
         event.target.reset();
-        setTimeout(() => { messageContainer.innerHTML = ''; }, 10000);
     }
 
     function toggleFAQ(answerId, element) {
         const answer = document.getElementById(answerId);
-        const isVisible = answer.style.display === 'block';
-        answer.style.display = isVisible ? 'none' : 'block';
-        const expanded = element.getAttribute('aria-expanded') === 'true';
-        element.setAttribute('aria-expanded', !expanded);
-    }
-
-    function checkBackToTopButtonVisibility() {
-        const backToTopButton = document.querySelector('.back-to-top');
-        backToTopButton.style.display = window.scrollY > 100 ? 'block' : 'none';
-    }
-
-    function scrollToTop() {
-        window.scroll({ top: 0, left: 0, behavior: 'smooth' });
+        answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
     }
 
     document.querySelectorAll('.faq-answer').forEach(answer => answer.style.display = 'none');
-
-    document.addEventListener('keyup', function(event) {
-        if (event.key === '1') { showSection('home'); }
-        else if (event.key === '2') { showSection('about'); }
-        else if (event.key === '3') { showSection('gallery'); }
-        else if (event.key === '4') { showSection('contact'); }
-        else if (event.key === '5') { showSection('faq'); }
-    });
-
-    window.addEventListener('scroll', checkBackToTopButtonVisibility);
 </script>
 </body>
 </html>
