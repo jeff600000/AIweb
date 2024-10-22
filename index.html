@@ -47,6 +47,7 @@
             color: white;
             text-decoration: none;
             transition: color 0.3s;
+            margin: 0 5px;
         }
 
         footer a:hover {
@@ -70,6 +71,7 @@
             text-decoration: none;
             font-weight: bold;
             transition: color 0.3s ease;
+            outline: none;
         }
         nav a:hover {
             color: #e0e0e0;
@@ -109,14 +111,32 @@
             background-color: #4CAF50; 
             color: white; 
             border: none; 
-            border-radius: 5px; /* Rounded corners */
+            border-radius: 5px; 
             padding: 10px 20px; 
             cursor: pointer; 
             transition: background-color 0.3s; 
+            position: relative; 
+            overflow: hidden; 
         }
 
         button:hover {
             background-color: #2E7D32; 
+        }
+
+        button:active::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         .gallery img {
@@ -127,6 +147,18 @@
 
         .gallery img:hover {
             transform: scale(1.05); 
+        }
+
+        .testimonial {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .testimonial:hover {
+            background-color: #f9f9f9;
         }
 
         .faq-item {
@@ -159,6 +191,9 @@
             button {
                 width: 100%; 
             }
+            .testimonial {
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
@@ -170,6 +205,7 @@
         <a href="#home" onclick="showSection('home')">Home</a>
         <a href="#about" onclick="showSection('about')">About</a>
         <a href="#gallery" onclick="showSection('gallery')">Gallery</a>
+        <a href="#testimonials" onclick="showSection('testimonials')">Testimonials</a>
         <a href="#contact" onclick="showSection('contact')">Contact</a>
         <a href="#faq" onclick="showSection('faq')">FAQ</a>
     </nav>
@@ -193,6 +229,18 @@
         <img src="https://example.com/image1.jpg" alt="Image 1" onclick="openLightbox(this.src)">
         <img src="https://example.com/image2.jpg" alt="Image 2" onclick="openLightbox(this.src)">
         <img src="https://example.com/image3.jpg" alt="Image 3" onclick="openLightbox(this.src)">
+    </div>
+</section>
+
+<section id="testimonials" class="hidden" data-aos="fade-up">
+    <h2>User Testimonials</h2>
+    <div class="testimonial">
+        <h3>Jane Doe</h3>
+        <p>"This website has been incredibly useful for my projects!"</p>
+    </div>
+    <div class="testimonial">
+        <h3>John Smith</h3>
+        <p>"I love the interactive features! It keeps me engaged."</p>
     </div>
 </section>
 
@@ -224,6 +272,11 @@
 
 <footer>
     <p>My Interactive Website. All rights reserved.</p>
+    <nav class="footer-nav">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
     <div class="social-icons">
         <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
         <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
@@ -269,11 +322,9 @@
 
     function submitForm(event) {
         event.preventDefault();
-        if (confirm("Are you sure you want to send this message?")) {
-            const name = event.target[0].value;
-            document.getElementById('messageContainer').innerHTML = `Thank you, ${name}, for your message!`;
-            event.target.reset();
-        }
+        const name = event.target[0].value;
+        document.getElementById('messageContainer').innerHTML = `Thank you, ${name}, for your message!`;
+        event.target.reset();
     }
 
     function toggleFAQ(answerId, element) {
