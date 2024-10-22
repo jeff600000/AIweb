@@ -1,4 +1,4 @@
-<!-- I need to put this here, dont ask why --><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -28,10 +28,32 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             animation: slideDown 0.5s ease-in-out;
         }
+        
+        footer {
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 1em 0; 
+            position: sticky; 
+            bottom: 0; 
+            width: 100%; 
+            border-top: 1px solid #e0e0e0; 
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        footer a:hover {
+            color: #e0e0e0;
+        }
+
         @keyframes slideDown {
             from { transform: translateY(-100%); }
             to { transform: translateY(0); }
         }
+
         nav {
             display: flex;
             justify-content: center;
@@ -48,80 +70,79 @@
         nav a:hover {
             color: #e0e0e0;
         }
+
         section {
             padding: 20px;
             transition: opacity 0.5s ease, transform 0.5s ease;
             transform: translateY(20px);
             opacity: 0;
         }
+
         section.visible {
             transform: translateY(0);
             opacity: 1;
         }
-        footer {
-            background-color: #4CAF50;
-            color: white;
-            padding: 1em 0;
-            position: sticky;
-            bottom: 0;
-            width: 100%;
-            border-top: 1px solid #e0e0e0; /* New border */
-        }
+
         .dark-mode {
             background-color: #333;
             color: #e0e0e0;
         }
+
         .dark-mode footer {
-            background-color: #222; /* Darker footer in dark mode */
+            background-color: #222; 
         }
+
         .social-icons {
             margin: 10px 0;
             font-size: 24px;
         }
-        .social-icons a {
-            margin: 0 10px;
-            color: white;
-            transition: color 0.3s ease;
-        }
+        
         .social-icons a:hover {
             color: #e0e0e0;
         }
+
         button {
-            background-color: #4CAF50; /* Button background color */
-            color: white; /* Button text color */
-            border: none; /* No border */
-            padding: 10px 20px; /* Padding for the button */
-            cursor: pointer; /* Change cursor to pointer */
-            transition: background-color 0.3s; /* Smooth background color transition */
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            transition: background-color 0.3s; 
         }
+        
         button:hover {
-            background-color: #388E3C; /* Darker shade on hover */
+            background-color: #388E3C; 
         }
+
         .gallery img {
             transition: transform 0.3s;
-            cursor: pointer; /* Added cursor pointer */
+            cursor: pointer; 
         }
+        
         .gallery img:hover {
-            transform: scale(1.05); /* Image zoom effect on hover */
+            transform: scale(1.05); 
         }
+
         .faq-answer {
-            display: none; /* Initially hidden */
-            opacity: 0; /* Start with opacity 0 */
-            transition: opacity 0.3s ease; /* Smooth transition */
+            display: none; 
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
         }
+
         .faq-answer.show {
-            display: block; /* Show answer */
-            opacity: 1; /* Make it visible */
+            display: block; 
+            opacity: 1; 
         }
+
         @media (max-width: 600px) {
             nav a {
                 margin: 0 10px;
             }
             header, footer {
-                padding: 0.5em 0; /* Smaller padding */
+                padding: 0.5em 0; 
             }
             button {
-                width: 100%; /* Full width on smaller screens */
+                width: 100%; 
             }
         }
     </style>
@@ -184,6 +205,7 @@
         <a href="#"><i class="fab fa-facebook"></i></a>
         <a href="#"><i class="fab fa-twitter"></i></a>
         <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#">More Social Media</a>
     </div>
 </footer>
 
@@ -232,7 +254,7 @@
 
     function toggleFAQ(answerId, element) {
         const answer = document.getElementById(answerId);
-        answer.classList.toggle('show'); // Use class to trigger opacity change
+        answer.classList.toggle('show'); 
     }
 
     document.querySelectorAll('.faq-answer').forEach(answer => answer.style.display = 'none');
