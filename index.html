@@ -144,6 +144,38 @@
             display: none;
             padding-left: 20px;
         }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px auto;
+            padding: 0 10px;
+        }
+        .gallery img {
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+        }
     </style>
 </head>
 <body>
@@ -153,6 +185,7 @@
     <nav>
         <a href="#home" onclick="showSection('home')" tabindex="0" aria-label="Navigate to Home Section">Home</a>
         <a href="#about" onclick="showSection('about')" tabindex="0" aria-label="Navigate to About Section">About</a>
+        <a href="#gallery" onclick="showSection('gallery')" tabindex="0" aria-label="Navigate to Gallery Section">Gallery</a>
         <a href="#contact" onclick="showSection('contact')" tabindex="0" aria-label="Navigate to Contact Section">Contact</a>
         <a href="#faq" onclick="showSection('faq')" tabindex="0" aria-label="Navigate to FAQ Section">FAQ</a>
     </nav>
@@ -170,12 +203,24 @@
     <p>It is designed to be fun and interactive, showcasing various features like navigation and buttons that respond to user actions.</p>
 </section>
 
+<section id="gallery" class="hidden">
+    <h2>Image Gallery</h2>
+    <div class="gallery">
+        <img src="https://example.com/image1.jpg" alt="Description of image 1" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image2.jpg" alt="Description of image 2" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image3.jpg" alt="Description of image 3" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image4.jpg" alt="Description of image 4" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image5.jpg" alt="Description of image 5" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image6.jpg" alt="Description of image 6" onclick="openLightbox(this.src)">
+    </div>
+</section>
+
 <section id="contact" class="hidden">
     <h2>Contact Us</h2>
     <form onsubmit="submitForm(event)">
-        <input type="text" placeholder="Your Name" required>
-        <input type="email" placeholder="Your Email" required>
-        <textarea placeholder="Your Message" required></textarea>
+        <input type="text" placeholder="Your Name" required aria-label="Your Name">
+        <input type="email" placeholder="Your Email" required aria-label="Your Email">
+        <textarea placeholder="Your Message" required aria-label="Your Message"></textarea>
         <button type="submit">Send</button>
     </form>
 </section>
@@ -193,6 +238,10 @@
 </section>
 
 <button class="back-to-top" onclick="scrollToTop()">Back to Top</button>
+
+<div class="lightbox" id="lightbox" onclick="this.style.display='none'">
+    <img id="lightboxImage" src="" alt="Lightbox image">
+</div>
 
 <footer>
     <p>My Interactive Website. All rights reserved.</p>
@@ -217,10 +266,14 @@
         message.textContent = `Button clicked ${clickCount} time(s)! Welcome to the interactive experience!`;
         message.classList.add('message');
         messageContainer.appendChild(message);
+        setTimeout(() => { messageContainer.innerHTML = ''; }, 10000);
+    }
 
-        setTimeout(() => {
-            messageContainer.innerHTML = '';
-        }, 10000);
+    function openLightbox(src) {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        lightboxImage.src = src;
+        lightbox.style.display = 'flex';
     }
 
     function toggleDarkMode() {
@@ -233,9 +286,7 @@
         const name = event.target[0].value;
         messageContainer.innerHTML = `Thank you, ${name}, for your message!`;
         event.target.reset();
-        setTimeout(() => {
-            messageContainer.innerHTML = '';
-        }, 10000);
+        setTimeout(() => { messageContainer.innerHTML = ''; }, 10000);
     }
 
     function toggleFAQ(answerId, element) {
@@ -252,25 +303,17 @@
     }
 
     function scrollToTop() {
-        window.scroll({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-        });
+        window.scroll({ top: 0, left: 0, behavior: 'smooth' });
     }
 
     document.querySelectorAll('.faq-answer').forEach(answer => answer.style.display = 'none');
 
     document.addEventListener('keyup', function(event) {
-        if (event.key === '1') {
-            showSection('home');
-        } else if (event.key === '2') {
-            showSection('about');
-        } else if (event.key === '3') {
-            showSection('contact');
-        } else if (event.key === '4') {
-            showSection('faq');
-        }
+        if (event.key === '1') { showSection('home'); }
+        else if (event.key === '2') { showSection('about'); }
+        else if (event.key === '3') { showSection('gallery'); }
+        else if (event.key === '4') { showSection('contact'); }
+        else if (event.key === '5') { showSection('faq'); }
     });
 
     window.addEventListener('scroll', checkBackToTopButtonVisibility);
