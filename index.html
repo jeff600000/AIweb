@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" sizes="192x192" href="https://your-favicon-url.png" type="image/png">
+    <link rel="icon" sizes="192x192" href="https://example.com/favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: url('https://your-validated-background-url.jpg') no-repeat center center fixed;
+            background: url('https://example.com/background.jpg') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
             padding: 0;
@@ -38,6 +38,9 @@
             bottom: 0; 
             width: 100%; 
             border-top: 1px solid #e0e0e0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
         }
 
         footer a {
@@ -73,7 +76,7 @@
         }
 
         section {
-            padding: 20px;
+            padding: 10px;
             transition: opacity 0.5s ease, transform 0.5s ease;
             transform: translateY(20px);
             opacity: 0;
@@ -106,6 +109,7 @@
             background-color: #4CAF50; 
             color: white; 
             border: none; 
+            border-radius: 5px; /* Rounded corners */
             padding: 10px 20px; 
             cursor: pointer; 
             transition: background-color 0.3s; 
@@ -123,6 +127,15 @@
 
         .gallery img:hover {
             transform: scale(1.05); 
+        }
+
+        .faq-item {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .faq-item:hover {
+            background-color: #f2f2f2;
         }
 
         .faq-answer {
@@ -177,9 +190,9 @@
 <section id="gallery" class="hidden" data-aos="fade-up">
     <h2>Image Gallery</h2>
     <div class="gallery">
-        <img src="https://your-validated-image-url-1.jpg" alt="Image 1" onclick="openLightbox(this.src)">
-        <img src="https://your-validated-image-url-2.jpg" alt="Image 2" onclick="openLightbox(this.src)">
-        <img src="https://your-validated-image-url-3.jpg" alt="Image 3" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image1.jpg" alt="Image 1" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image2.jpg" alt="Image 2" onclick="openLightbox(this.src)">
+        <img src="https://example.com/image3.jpg" alt="Image 3" onclick="openLightbox(this.src)">
     </div>
 </section>
 
@@ -203,21 +216,25 @@
         <strong>Q: How can I contact support?</strong>
         <div id="answer2" class="faq-answer"><p>A: You can contact support via the contact form on this website.</p></div>
     </div>
+    <div class="faq-item" onclick="toggleFAQ('answer3', this)">
+        <strong>Q: What technologies are used on this site?</strong>
+        <div id="answer3" class="faq-answer"><p>A: The website is built using HTML, CSS, and JavaScript.</p></div>
+    </div>
 </section>
 
 <footer>
     <p>My Interactive Website. All rights reserved.</p>
     <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#">More Social Media</a>
+        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://linkedin.com" target="_blank">LinkedIn</a>
     </div>
 </footer>
 
-<div class="lightbox" id="lightbox" onclick="this.style.display='none'">
-    <button style="position: absolute; top: 10px; right: 20px; background: red; color: white;">Close</button>
-    <img id="lightboxImage" src="" alt="Lightbox">
+<div class="lightbox" id="lightbox" onclick="this.style.display='none'" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center;">
+    <button style="position: absolute; top: 10px; right: 20px; background: red; color: white;" onclick="document.getElementById('lightbox').style.display='none'">Close</button>
+    <img id="lightboxImage" src="" alt="Lightbox" style="max-width: 90%; max-height: 90%;">
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -230,6 +247,7 @@
     function showSection(sectionId) {
         const sections = document.querySelectorAll('section');
         sections.forEach(section => section.classList.toggle('visible', section.id === sectionId));
+        sections.forEach(section => section.classList.toggle('hidden', section.id !== sectionId));
     }
 
     function addMessages() {
@@ -251,9 +269,11 @@
 
     function submitForm(event) {
         event.preventDefault();
-        const name = event.target[0].value;
-        document.getElementById('messageContainer').innerHTML = `Thank you, ${name}, for your message!`;
-        event.target.reset();
+        if (confirm("Are you sure you want to send this message?")) {
+            const name = event.target[0].value;
+            document.getElementById('messageContainer').innerHTML = `Thank you, ${name}, for your message!`;
+            event.target.reset();
+        }
     }
 
     function toggleFAQ(answerId, element) {
