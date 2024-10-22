@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: url('https://example.com/updated-space-image.jpg') no-repeat center center fixed;
+            background: url('https://your-validated-background-url.jpg') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
             padding: 0;
@@ -65,10 +65,14 @@
             position: sticky;
             bottom: 0;
             width: 100%;
+            border-top: 1px solid #e0e0e0; /* New border */
         }
         .dark-mode {
             background-color: #333;
             color: #e0e0e0;
+        }
+        .dark-mode footer {
+            background-color: #222; /* Darker footer in dark mode */
         }
         .social-icons {
             margin: 10px 0;
@@ -81,6 +85,44 @@
         }
         .social-icons a:hover {
             color: #e0e0e0;
+        }
+        button {
+            background-color: #4CAF50; /* Button background color */
+            color: white; /* Button text color */
+            border: none; /* No border */
+            padding: 10px 20px; /* Padding for the button */
+            cursor: pointer; /* Change cursor to pointer */
+            transition: background-color 0.3s; /* Smooth background color transition */
+        }
+        button:hover {
+            background-color: #388E3C; /* Darker shade on hover */
+        }
+        .gallery img {
+            transition: transform 0.3s;
+            cursor: pointer; /* Added cursor pointer */
+        }
+        .gallery img:hover {
+            transform: scale(1.05); /* Image zoom effect on hover */
+        }
+        .faq-answer {
+            display: none; /* Initially hidden */
+            opacity: 0; /* Start with opacity 0 */
+            transition: opacity 0.3s ease; /* Smooth transition */
+        }
+        .faq-answer.show {
+            display: block; /* Show answer */
+            opacity: 1; /* Make it visible */
+        }
+        @media (max-width: 600px) {
+            nav a {
+                margin: 0 10px;
+            }
+            header, footer {
+                padding: 0.5em 0; /* Smaller padding */
+            }
+            button {
+                width: 100%; /* Full width on smaller screens */
+            }
         }
     </style>
 </head>
@@ -112,9 +154,9 @@
 <section id="gallery" class="hidden" data-aos="fade-up">
     <h2>Image Gallery</h2>
     <div class="gallery">
-        <img src="https://example.com/image1.jpg" alt="Image 1" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image2.jpg" alt="Image 2" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image3.jpg" alt="Image 3" onclick="openLightbox(this.src)">
+        <img src="https://your-validated-image-url-1.jpg" alt="Image 1" onclick="openLightbox(this.src)">
+        <img src="https://your-validated-image-url-2.jpg" alt="Image 2" onclick="openLightbox(this.src)">
+        <img src="https://your-validated-image-url-3.jpg" alt="Image 3" onclick="openLightbox(this.src)">
     </div>
 </section>
 
@@ -190,7 +232,7 @@
 
     function toggleFAQ(answerId, element) {
         const answer = document.getElementById(answerId);
-        answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+        answer.classList.toggle('show'); // Use class to trigger opacity change
     }
 
     document.querySelectorAll('.faq-answer').forEach(answer => answer.style.display = 'none');
