@@ -38,6 +38,8 @@
         nav .dropdown {
             position: relative;
             display: inline-block;
+            cursor: pointer;
+            tabindex: 0;
         }
         nav .dropdown:hover .dropdown-content {
             display: block;
@@ -127,6 +129,27 @@
             background: green; 
             width: 0; 
             z-index: 1000;
+            transition: width 0.2s ease;
+        }
+        .testimonial {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .testimonial.show {
+            opacity: 1;
+        }
+        .faq-answer {
+            display: none;
+        }
+        .faq-answer.show {
+            display: block;
+        }
+        .social-icons a {
+            margin: 0 10px;
+            transition: transform 0.3s;
+        }
+        .social-icons a:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -138,34 +161,35 @@
         <div class="dropdown">
             <button>Menu</button>
             <div class="dropdown-content">
-                <a role="button" href="#home" onclick="smoothScroll('#home')">Home</a>
-                <a role="button" href="#about" onclick="smoothScroll('#about')">About</a>
-                <a role="button" href="#gallery" onclick="smoothScroll('#gallery')">Gallery</a>
-                <a role="button" href="#carousel" onclick="smoothScroll('#carousel')">Carousel</a>
-                <a role="button" href="#testimonials" onclick="smoothScroll('#testimonials')">Testimonials</a>
-                <a role="button" href="#contact" onclick="smoothScroll('#contact')">Contact</a>
-                <a role="button" href="#faq" onclick="smoothScroll('#faq')">FAQ</a>
+                <a role="button" onclick="smoothScroll('#home')">Home</a>
+                <a role="button" onclick="smoothScroll('#about')">About</a>
+                <a role="button" onclick="smoothScroll('#gallery')">Gallery</a>
+                <a role="button" onclick="smoothScroll('#carousel')">Carousel</a>
+                <a role="button" onclick="smoothScroll('#testimonials')">Testimonials</a>
+                <a role="button" onclick="smoothScroll('#contact')">Contact</a>
+                <a role="button" onclick="smoothScroll('#faq')">FAQ</a>
             </div>
         </div>
-        <button tabindex="0" id="darkModeButton" onclick="toggleDarkMode()">Switch to Dark Mode</button>
+        <button id="darkModeButton" onclick="toggleDarkMode()">Switch to Dark Mode</button>
+        <button id="changeBackgroundButton" onclick="changeBackground()">Change Background</button>
     </nav>
 </header>
 
 <div id="progressBar"></div>
 
-<section id="home" class="visible" data-aos="fade-up" data-aos-delay="100">
+<section id="home" class="visible">
     <p>This is an interactive website made with HTML, CSS, and JavaScript.</p>
-    <button onclick="addMessages()" class="button-hover">Click Me</button>
+    <button onclick="addMessages()">Click Me</button>
     <div id="messageContainer"></div>
 </section>
 
-<section id="about" class="hidden" data-aos="fade-up" data-aos-delay="100">
+<section id="about" class="hidden">
     <h2>About This Website</h2>
     <p>This website showcases various features and provides a fun interactive experience.</p>
     <p>Feel free to explore the gallery, carousel, testimonials, and more!</p>
 </section>
 
-<section id="gallery" class="hidden" data-aos="fade-up" data-aos-delay="100">
+<section id="gallery" class="hidden">
     <h2>Image Gallery</h2>
     <div class="gallery">
         <img src="https://example.com/image1.jpg" alt="Image 1" onclick="openLightbox(this.src)">
@@ -174,7 +198,7 @@
     </div>
 </section>
 
-<section id="carousel" class="hidden" data-aos="fade-up" data-aos-delay="100">
+<section id="carousel" class="hidden">
     <h2>Image Carousel</h2>
     <div class="carousel">
         <img id="carouselImage" src="https://example.com/image1.jpg" alt="Carousel Image" style="max-width: 100%; height: auto;">
@@ -183,10 +207,10 @@
     </div>
 </section>
 
-<section id="testimonials" class="hidden" data-aos="fade-up" data-aos-delay="100">
+<section id="testimonials" class="hidden">
     <h2>User Testimonials</h2>
     <div class="testimonial-container">
-        <div class="testimonial">
+        <div class="testimonial show">
             <h3>Jane Doe <i class="fas fa-quote-left"></i></h3>
             <p>"This website has been incredibly useful for my projects!"</p>
         </div>
@@ -195,20 +219,20 @@
             <p>"I love the interactive features! It keeps me engaged."</p>
         </div>
     </div>
-    <button onclick="nextTestimonial()" class="button-hover">Next Testimonial</button>
+    <button onclick="nextTestimonial()">Next Testimonial</button>
 </section>
 
-<section id="contact" class="hidden" data-aos="fade-up" data-aos-delay="100">
+<section id="contact" class="hidden">
     <h2>Contact Us</h2>
     <form onsubmit="submitForm(event)">
         <input type="text" placeholder="Your Name" required>
         <input type="email" placeholder="Your Email" required>
         <textarea placeholder="Your Message" required></textarea>
-        <button type="submit" class="button-hover">Send</button>
+        <button type="submit">Send</button>
     </form>
 </section>
 
-<section id="faq" class="hidden" data-aos="fade-up" data-aos-delay="100">
+<section id="faq" class="hidden">
     <h2>Frequently Asked Questions</h2>
     <div class="faq-item" onclick="toggleFAQ('answer1', this)">
         <strong>Q: What is this website about?</strong>
@@ -263,6 +287,12 @@
         {name: "John Smith", quote: "I love the interactive features! It keeps me engaged."}
     ];
 
+    const backgrounds = [
+        'https://example.com/background1.jpg',
+        'https://example.com/background2.jpg',
+        'https://example.com/background3.jpg'
+    ];
+
     function smoothScroll(target) {
         const element = document.querySelector(target);
         element.scrollIntoView({ behavior: 'smooth' });
@@ -281,6 +311,12 @@
         messageContainer.innerHTML = `Button clicked ${clickCount} time(s)!`;
     }
 
+    function changeBackground() {
+        const randomIndex = Math.floor(Math.random() * backgrounds.length);
+        document.body.style.background = `url('${backgrounds[randomIndex]}') no-repeat center center fixed`;
+        document.body.style.backgroundSize = 'cover';
+    }
+
     function openLightbox(src) {
         const lightbox = document.getElementById('lightbox');
         const lightboxImage = document.getElementById('lightboxImage');
@@ -291,6 +327,8 @@
             if (event.key === "Escape") {
                 lightbox.style.display = 'none';
             }
+            if (event.key === "ArrowRight") nextImage();
+            if (event.key === "ArrowLeft") prevImage();
         });
     }
 
@@ -305,10 +343,12 @@
     }
 
     function nextTestimonial() {
-        currentIndex = (currentIndex + 1) % testimonials.length;
         const testimonialContainer = document.querySelector('.testimonial-container');
+        const currentTestimonial = testimonialContainer.querySelector('.testimonial');
+        currentTestimonial.classList.remove('show');
+        currentIndex = (currentIndex + 1) % testimonials.length;
         testimonialContainer.innerHTML = `
-            <div class="testimonial">
+            <div class="testimonial show">
                 <h3>${testimonials[currentIndex].name} <i class="fas fa-quote-left"></i></h3>
                 <p>"${testimonials[currentIndex].quote}"</p>
             </div>
@@ -329,6 +369,9 @@
     }
 
     function toggleFAQ(answerId, element) {
+        document.querySelectorAll('.faq-answer').forEach(answer => {
+            answer.classList.remove('show');
+        });
         const answer = document.getElementById(answerId);
         answer.classList.toggle('show');
     }
@@ -347,8 +390,6 @@
             button.style.display = "none";
         }
     };
-
-    document.querySelectorAll('.faq-answer').forEach(answer => answer.style.display = 'none');
 </script>
 </body>
 </html>
