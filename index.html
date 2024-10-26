@@ -21,12 +21,20 @@
             padding: 0;
             text-align: center;
             color: #333;
+            transition: background 1s, color 1s;
+        }
+        body.dark-mode {
+            background: #121212;
+            color: #ffffff;
         }
         section {
-            transition: all 0.5s ease-in-out;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        section.visible { 
+            opacity: 1; 
         }
         section.hidden { display: none; }
-        section.visible { display: block; }
         header {
             background-color: #4CAF50;
             color: white;
@@ -37,32 +45,22 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s;
         }
-        nav .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: rgba(76, 175, 80, 0.9);
-            min-width: 160px;
-            z-index: 1;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
         footer {
             background-color: #4CAF50; 
             color: white; 
             padding: 1em 0; 
-            z-index: 1;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            position: relative; 
-            gap: 10px;
         }
-        .testimonial-container { 
-            margin: 20px 0; 
-        }
-        .social-icons a:hover {
-            transform: scale(1.2);
-            color: #FFD700;
+        #scrollToTop {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
         }
         #progressBar {
             position: fixed; 
@@ -73,8 +71,25 @@
             width: 0; 
             z-index: 1000;
             transition: width 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+        .lightbox {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+        }
+        .lightbox img:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s;
+        }
+        .faq-answer { display: none; }
+        .faq-answer.show { display: block; }
     </style>
 </head>
 <body>
@@ -82,18 +97,6 @@
 <header>
     <h1>Welcome to My Interactive Website</h1>
     <nav>
-        <div class="dropdown">
-            <button>Menu</button>
-            <div class="dropdown-content">
-                <a role="button" onclick="smoothScroll('#home')">Home</a>
-                <a role="button" onclick="smoothScroll('#about')">About</a>
-                <a role="button" onclick="smoothScroll('#gallery')">Gallery</a>
-                <a role="button" onclick="smoothScroll('#carousel')">Carousel</a>
-                <a role="button" onclick="smoothScroll('#testimonials')">Testimonials</a>
-                <a role="button" onclick="smoothScroll('#contact')">Contact</a>
-                <a role="button" onclick="smoothScroll('#faq')">FAQ</a>
-            </div>
-        </div>
         <button id="darkModeButton" onclick="toggleDarkMode()">Switch to Dark Mode</button>
         <button id="changeBackgroundButton" onclick="changeBackground()">Change Background</button>
     </nav>
@@ -110,7 +113,6 @@
 <section id="about" class="hidden">
     <h2>About This Website</h2>
     <p>This website showcases various features and provides a fun interactive experience.</p>
-    <p>Feel free to explore the gallery, carousel, testimonials, and more!</p>
 </section>
 
 <section id="gallery" class="hidden">
@@ -143,6 +145,7 @@
             <p>"I love the interactive features! It keeps me engaged."</p>
         </div>
     </div>
+    <button onclick="prevTestimonial()">Previous Testimonial</button>
     <button onclick="nextTestimonial()">Next Testimonial</button>
 </section>
 
@@ -174,22 +177,11 @@
 
 <footer>
     <p>My Interactive Website. All rights reserved.</p>
-    <nav class="footer-nav">
-        <a href="#home">Home</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
-    </nav>
-    <div class="social-icons">
-        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
-        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
-    </div>
 </footer>
 
-<div class="lightbox" id="lightbox" onclick="this.style.display='none'" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center;">
+<div class="lightbox" id="lightbox" onclick="this.style.display='none'">
     <button style="position: absolute; top: 10px; right: 20px; background: red; color: white;" onclick="document.getElementById('lightbox').style.display='none'">Close</button>
-    <img id="lightboxImage" src="" alt="Lightbox" style="max-width: 90%; max-height: 90%; transition: transform 0.3s;">
+    <img id="lightboxImage" src="" alt="Lightbox" style="max-width: 90%; max-height: 90%;">
 </div>
 
 <button id="scrollToTop" onclick="scrollToTop()">Top</button>
@@ -198,7 +190,7 @@
 <script>
     AOS.init();
     let clickCount = 0;
-    let currentIndex = 0;
+    let currentTestimonialIndex = 0;
 
     const carouselImages = [
         'https://example.com/image1.jpg',
@@ -217,16 +209,36 @@
         'https://example.com/background3.jpg'
     ];
 
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const button = document.getElementById('darkModeButton');
+        button.textContent = document.body.classList.contains('dark-mode') ? "Switch to Light Mode" : "Switch to Dark Mode";
+    }
+
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => {
+            section.classList.toggle('visible', section.id === sectionId);
+            section.classList.toggle('hidden', section.id !== sectionId);
+        });
+    }
+
     function smoothScroll(target) {
         const element = document.querySelector(target);
         element.scrollIntoView({ behavior: 'smooth' });
         showSection(element.id);
     }
 
-    function showSection(sectionId) {
-        const sections = document.querySelectorAll('section');
-        sections.forEach(section => section.classList.toggle('visible', section.id === sectionId));
-        sections.forEach(section => section.classList.toggle('hidden', section.id !== sectionId));
+    function openLightbox(src) {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        lightboxImage.src = src;
+        lightbox.style.display = 'flex';
+    }
+
+    function changeBackground() {
+        const randomIndex = Math.floor(Math.random() * backgrounds.length);
+        document.body.style.backgroundImage = `url('${backgrounds[randomIndex]}')`;
     }
 
     function addMessages() {
@@ -235,82 +247,45 @@
         messageContainer.innerHTML = `Button clicked ${clickCount} time(s)!`;
     }
 
-    function changeBackground() {
-        const randomIndex = Math.floor(Math.random() * backgrounds.length);
-        document.body.style.background = `url('${backgrounds[randomIndex]}') no-repeat center center fixed`;
-        document.body.style.backgroundSize = 'cover';
-    }
-
-    function openLightbox(src) {
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImage = document.getElementById('lightboxImage');
-        lightboxImage.src = src;
-        lightbox.style.display = 'flex';
-
-        window.addEventListener('keydown', function (event) {
-            if (event.key === "Escape") {
-                lightbox.style.display = 'none';
-            }
-            if (event.key === "ArrowRight") nextImage();
-            if (event.key === "ArrowLeft") prevImage();
-        });
-    }
-
-    function nextImage() {
-        currentIndex = (currentIndex + 1) % carouselImages.length;
-        document.getElementById('carouselImage').src = carouselImages[currentIndex];
-    }
-
-    function prevImage() {
-        currentIndex = (currentIndex - 1 + carouselImages.length) % carouselImages.length;
-        document.getElementById('carouselImage').src = carouselImages[currentIndex];
-    }
-
     function nextTestimonial() {
-        const testimonialContainer = document.querySelector('.testimonial-container');
-        const currentTestimonial = testimonialContainer.querySelector('.testimonial.show');
-        currentTestimonial.classList.remove('show');
-        const allTestimonials = testimonialContainer.querySelectorAll('.testimonial');
-        currentIndex = (currentIndex + 1) % allTestimonials.length;
-        allTestimonials[currentIndex].classList.add('show');
+        const testimonialsList = document.querySelectorAll('.testimonial');
+        testimonialsList[currentTestimonialIndex].classList.remove('show');
+        currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonialsList.length;
+        testimonialsList[currentTestimonialIndex].classList.add('show');
     }
 
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        const button = document.getElementById('darkModeButton');
-        button.textContent = document.body.classList.contains('dark-mode') ? "Switch to Light Mode" : "Switch to Dark Mode";
+    function prevTestimonial() {
+        const testimonialsList = document.querySelectorAll('.testimonial');
+        testimonialsList[currentTestimonialIndex].classList.remove('show');
+        currentTestimonialIndex = (currentTestimonialIndex - 1 + testimonialsList.length) % testimonialsList.length;
+        testimonialsList[currentTestimonialIndex].classList.add('show');
     }
 
     function submitForm(event) {
         event.preventDefault();
         const name = event.target[0].value;
-        document.getElementById('messageContainer').innerHTML = `Thank you, ${name}, for your message!`;
+        const messageContainer = document.getElementById('messageContainer');
+        messageContainer.innerHTML = `Thank you, ${name}, for your message!`;
         event.target.reset();
+        setTimeout(() => { messageContainer.innerHTML = ''; }, 3000);
     }
 
     function toggleFAQ(answerId, element) {
-        document.querySelectorAll('.faq-answer').forEach(answer => {
-            answer.classList.remove('show');
-        });
         const answer = document.getElementById(answerId);
         answer.classList.toggle('show');
     }
 
     window.onscroll = function() {
         const button = document.getElementById("scrollToTop");
+        button.style.display = document.documentElement.scrollTop > 20 ? "block" : "none";
         const scrollTop = document.documentElement.scrollTop;
         const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrollPercentage = (scrollTop / scrollHeight) * 100;
-
-        document.getElementById('progressBar').style.width = scrollPercentage + "%";
-
-        // Toggle scroll to top button visibility
-        if (scrollTop > 20) {
-            button.style.display = "block";
-        } else {
-            button.style.display = "none";
-        }
+        document.getElementById('progressBar').style.width = (scrollTop / scrollHeight * 100) + "%";
     };
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 </script>
 </body>
 </html>
