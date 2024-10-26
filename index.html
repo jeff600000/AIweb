@@ -22,6 +22,11 @@
             text-align: center;
             color: #333;
         }
+        section {
+            transition: all 0.5s ease-in-out;
+        }
+        section.hidden { display: none; }
+        section.visible { display: block; }
         header {
             background-color: #4CAF50;
             color: white;
@@ -32,94 +37,32 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s;
         }
-        nav {
-            position: relative; 
-        }
-        nav .dropdown {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            tabindex: 0;
-        }
-        nav .dropdown:hover .dropdown-content {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
         nav .dropdown-content {
             display: none;
             position: absolute;
-            background-color: #4CAF50;
+            background-color: rgba(76, 175, 80, 0.9);
             min-width: 160px;
             z-index: 1;
             border-radius: 5px;
-        }
-        nav .dropdown-content a {
-            padding: 10px;
-            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
         footer {
             background-color: #4CAF50; 
             color: white; 
             padding: 1em 0; 
             z-index: 1;
-            position: relative; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
+            position: relative; 
+            gap: 10px;
         }
-        footer a {
-            color: white;
-            text-decoration: none;
-            transition: color 0.3s;
-            margin: 0 5px;
+        .testimonial-container { 
+            margin: 20px 0; 
         }
-        section {
-            padding: 20px;
-            opacity: 0; 
-            transition: opacity 0.5s ease-in; 
-        }
-        section.visible {
-            opacity: 1; 
-            animation: slideIn 0.5s ease-out;
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        .dark-mode {
-            background-color: #333;
-            color: #e0e0e0;
-        }
-        button {
-            background-color: #4CAF50; 
-            color: white; 
-            border: 2px solid #4CAF50; 
-            border-radius: 5px; 
-            padding: 10px 20px; 
-            cursor: pointer; 
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-        #scrollToTop {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            display: none; 
+        .social-icons a:hover {
+            transform: scale(1.2);
+            color: #FFD700;
         }
         #progressBar {
             position: fixed; 
@@ -130,26 +73,7 @@
             width: 0; 
             z-index: 1000;
             transition: width 0.2s ease;
-        }
-        .testimonial {
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .testimonial.show {
-            opacity: 1;
-        }
-        .faq-answer {
-            display: none;
-        }
-        .faq-answer.show {
-            display: block;
-        }
-        .social-icons a {
-            margin: 0 10px;
-            transition: transform 0.3s;
-        }
-        .social-icons a:hover {
-            transform: scale(1.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -214,7 +138,7 @@
             <h3>Jane Doe <i class="fas fa-quote-left"></i></h3>
             <p>"This website has been incredibly useful for my projects!"</p>
         </div>
-        <div class="testimonial">
+        <div class="testimonial hidden">
             <h3>John Smith <i class="fas fa-quote-left"></i></h3>
             <p>"I love the interactive features! It keeps me engaged."</p>
         </div>
@@ -344,15 +268,11 @@
 
     function nextTestimonial() {
         const testimonialContainer = document.querySelector('.testimonial-container');
-        const currentTestimonial = testimonialContainer.querySelector('.testimonial');
+        const currentTestimonial = testimonialContainer.querySelector('.testimonial.show');
         currentTestimonial.classList.remove('show');
-        currentIndex = (currentIndex + 1) % testimonials.length;
-        testimonialContainer.innerHTML = `
-            <div class="testimonial show">
-                <h3>${testimonials[currentIndex].name} <i class="fas fa-quote-left"></i></h3>
-                <p>"${testimonials[currentIndex].quote}"</p>
-            </div>
-        `;
+        const allTestimonials = testimonialContainer.querySelectorAll('.testimonial');
+        currentIndex = (currentIndex + 1) % allTestimonials.length;
+        allTestimonials[currentIndex].classList.add('show');
     }
 
     function toggleDarkMode() {
@@ -384,6 +304,7 @@
 
         document.getElementById('progressBar').style.width = scrollPercentage + "%";
 
+        // Toggle scroll to top button visibility
         if (scrollTop > 20) {
             button.style.display = "block";
         } else {
