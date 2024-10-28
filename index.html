@@ -4,135 +4,237 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore an interactive website showcasing modern web development features with images, testimonials, and an FAQ section.">
-    
+
     <link rel="icon" sizes="192x192" href="https://example.com/new-favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
-    
+
     <title>Explore the Wonders of Web Development</title>
     <style>
+        :root {
+            --primary-color: #4CAF50;
+            --background-light: #ffffff;
+            --background-dark: #121212;
+            --text-light: #333333;
+            --text-dark: #ffffff;
+        }
         * { box-sizing: border-box; }
         body {
             font-family: 'Roboto', sans-serif;
-            background: url('https://example.com/new-background.jpg') no-repeat center center fixed;
-            background-size: cover;
+            background-color: var(--background-light);
+            color: var(--text-light);
             margin: 0;
             padding: 0;
             text-align: center;
-            color: #333;
             transition: background 1s, color 1s;
         }
-        body.dark-mode { background: #121212; color: #ffffff; }
+        body.dark-mode { 
+            background-color: var(--background-dark); 
+            color: var(--text-dark); 
+            transition: background 0.5s, color 0.5s; 
+        }
+
+        nav { position: relative; display: inline-block; }
+        .dropdown {
+            display: none;
+            position: absolute;
+            background-color: white;
+            z-index: 1;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        }
+        .dropdown-content {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        .dropdown-content li {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        .dropdown-content li:hover { background-color: #f1f1f1; }
         section { opacity: 0; transition: opacity 0.5s; }
         section.visible { opacity: 1; }
         section.hidden { display: none; }
         header {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
             color: white;
             padding: 1em 0;
             position: sticky;
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s;
         }
-        footer { background-color: #4CAF50; color: white; padding: 1em 0; }
-        #scrollToTop { display: none; position: fixed; bottom: 20px; right: 20px; background-color: #4CAF50; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px; }
+        footer { background-color: var(--primary-color); color: white; padding: 1em 0; }
+        #scrollToTop { 
+            display: none; 
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            background-color: var(--primary-color); 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            cursor: pointer; 
+            border-radius: 5px; 
+        }
         #progressBar { position: fixed; top: 0; left: 0; height: 5px; background: green; width: 0; z-index: 1000; transition: width 0.2s ease; }
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; }
-        .lightbox img:hover { transform: scale(1.05); transition: transform 0.3s; }
         .faq-answer { display: none; }
         .faq-answer.show { display: block; }
         .testimonial-container { position: relative; }
         .testimonial { display: none; padding: 1em; }
         .testimonial.show { display: block; background: #f1f1f1; margin: 1em 0; border-radius: 5px; }
         .faq-item { cursor: pointer; margin: 0.5em 0; }
+        button {
+            font-size: 16px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover, button:focus {
+            background-color: var(--primary-color);
+            color: var(--text-dark);
+            outline: none;
+            transition: transform 0.2s;
+            transform: scale(1.05);
+        }
+        input[type="text"], textarea {
+            width: 80%;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+            }
+            .carousel img {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 <header>
     <h1>Welcome to My Interactive Website</h1>
     <nav>
-        <button id="darkModeButton" onclick="toggleDarkMode()">Switch to Dark Mode</button>
-        <button id="changeBackgroundButton" onclick="changeBackground()">Change Background</button>
+        <label for="themeToggle">Toggle Dark Mode
+            <input type="checkbox" id="themeToggle" onclick="toggleDarkMode()">
+        </label>
+        <button onclick="toggleDropdown()">Sections</button>
+        <ul class="dropdown" id="sectionDropdown" aria-hidden="true">
+            <li onclick="showSection('home')">Home</li>
+            <li onclick="showSection('about')">About</li>
+            <li onclick="showSection('gallery')">Gallery</li>
+            <li onclick="showSection('carousel')">Carousel</li>
+            <li onclick="showSection('testimonials')">Testimonials</li>
+            <li onclick="showSection('contact')">Contact</li>
+            <li onclick="showSection('faq')">FAQ</li>
+        </ul>
     </nav>
 </header>
 
 <div id="progressBar"></div>
 <button id="scrollToTop" onclick="scrollToTop()">Top</button>
 
-<section id="home" class="visible">
-    <p>This is an interactive website made with HTML, CSS, and JavaScript.</p>
-    <button onclick="addMessages()">Click Me</button>
-    <div id="messageContainer"></div>
-</section>
-<section id="about" class="hidden">
-    <h2>About This Website</h2>
-    <p>This website showcases various features and provides a fun interactive experience.</p>
-</section>
-<section id="gallery" class="hidden">
-    <h2>Image Gallery</h2>
-    <div class="gallery">
-        <img src="https://example.com/image1.jpg" alt="Image 1" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image2.jpg" alt="Image 2" onclick="openLightbox(this.src)">
-        <img src="https://example.com/image3.jpg" alt="Image 3" onclick="openLightbox(this.src)">
-    </div>
-</section>
-<section id="carousel" class="hidden">
-    <h2>Image Carousel</h2>
-    <div class="carousel">
-        <img id="carouselImage" src="https://example.com/image1.jpg" alt="Carousel Image" style="max-width: 100%; height: auto;">
-        <button onclick="prevImage()">&#10094;</button>
-        <button onclick="nextImage()">&#10095;</button>
-    </div>
-</section>
-<section id="testimonials" class="hidden">
-    <h2>User Testimonials</h2>
-    <div class="testimonial-container">
-        <div class="testimonial show">
-            <h3>Jane Doe <i class="fas fa-quote-left"></i></h3>
-            <p>"This website has been incredibly useful for my projects!"</p>
+<main>
+    <section id="home" class="visible">
+        <p>This is an interactive website made with HTML, CSS, and JavaScript.</p>
+        <button onclick="addMessages()">Click Me</button>
+        <div id="messageContainer"></div>
+    </section>
+    <section id="about" class="hidden">
+        <h2>About This Website</h2>
+        <p>This website showcases various features and provides a fun interactive experience.</p>
+    </section>
+    <section id="gallery" class="hidden">
+        <h2>Image Gallery</h2>
+        <div class="gallery">
+            <img src="https://example.com/image1.jpg" alt="Image 1" loading="lazy" onclick="openLightbox(this.src)">
+            <img src="https://example.com/image2.jpg" alt="Image 2" loading="lazy" onclick="openLightbox(this.src)">
+            <img src="https://example.com/image3.jpg" alt="Image 3" loading="lazy" onclick="openLightbox(this.src)">
         </div>
-        <div class="testimonial hidden">
-            <h3>John Smith <i class="fas fa-quote-left"></i></h3>
-            <p>"I love the interactive features! It keeps me engaged."</p>
+    </section>
+    <section id="carousel" class="hidden">
+        <h2>Image Carousel</h2>
+        <div class="carousel">
+            <img id="carouselImage" src="https://example.com/image1.jpg" alt="Carousel Image" loading="lazy" style="max-width: 100%; height: auto;">
+            <button onclick="prevImage()">&#10094;</button>
+            <button onclick="nextImage()">&#10095;</button>
         </div>
-    </div>
-    <button onclick="prevTestimonial()">Previous Testimonial</button>
-    <button onclick="nextTestimonial()">Next Testimonial</button>
-</section>
-<section id="contact" class="hidden">
-    <h2>Contact Us</h2>
-    <form onsubmit="submitForm(event)">
-        <input type="text" placeholder="Your Name" required>
-        <input type="email" placeholder="Your Email" required>
-        <textarea placeholder="Your Message" required></textarea>
-        <button type="submit">Send</button>
-    </form>
-</section>
-<section id="faq" class="hidden">
-    <h2>Frequently Asked Questions</h2>
-    <div class="faq-item" onclick="toggleFAQ('answer1', this)">
-        <strong>Q: What is this website about?</strong>
-        <div id="answer1" class="faq-answer"><p>A: It is an interactive demo showcasing various web features.</p></div>
-    </div>
-    <div class="faq-item" onclick="toggleFAQ('answer2', this)">
-        <strong>Q: How can I contact support?</strong>
-        <div id="answer2" class="faq-answer"><p>A: You can contact support via the contact form on this website.</p></div>
-    </div>
-    <div class="faq-item" onclick="toggleFAQ('answer3', this)">
-        <strong>Q: What technologies are used on this site?</strong>
-        <div id="answer3" class="faq-answer"><p>A: The website is built using HTML, CSS, and JavaScript.</p></div>
-    </div>
-</section>
+    </section>
+    <section id="testimonials" class="hidden">
+        <h2>User Testimonials</h2>
+        <div class="testimonial-container">
+            <div class="testimonial show">
+                <h3>Jane Doe <i class="fas fa-quote-left"></i></h3>
+                <p>"This website has been incredibly useful for my projects!"</p>
+            </div>
+            <div class="testimonial hidden">
+                <h3>John Smith <i class="fas fa-quote-left"></i></h3>
+                <p>"I love the interactive features! It keeps me engaged."</p>
+            </div>
+        </div>
+        <button onclick="prevTestimonial()">Previous Testimonial</button>
+        <button onclick="nextTestimonial()">Next Testimonial</button>
+    </section>
+    <section id="contact" class="hidden">
+        <h2>Contact Us</h2>
+        <form onsubmit="submitForm(event)">
+            <input type="text" placeholder="Your Name" required pattern="[A-Za-z ]+">
+            <textarea placeholder="Your Message" required></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </section>
+    <section id="faq" class="hidden">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item" onclick="toggleFAQ('answer1', this)">
+            <strong>Q: What is this website about?</strong>
+            <div id="answer1" class="faq-answer">
+                <p>A: It is an interactive demo showcasing various web features.</p>
+            </div>
+        </div>
+        <div class="faq-item" onclick="toggleFAQ('answer2', this)">
+            <strong>Q: How can I contact support?</strong>
+            <div id="answer2" class="faq-answer">
+                <p>A: You can contact support via the contact form on this website.</p>
+            </div>
+        </div>
+        <div class="faq-item" onclick="toggleFAQ('answer3', this)">
+            <strong>Q: What technologies are used on this site?</strong>
+            <div id="answer3" class="faq-answer">
+                <p>A: The website is built using HTML, CSS, and JavaScript.</p>
+            </div>
+        </div>
+        <div class="faq-item" onclick="toggleFAQ('answer4', this)">
+            <strong>Q: How safe is my data?</strong>
+            <div id="answer4" class="faq-answer">
+                <p>A: We follow stringent data protection measures to ensure your information is safe.</p>
+            </div>
+        </div>
+    </section>
+</main>
 <footer>
-    <p>My Interactive Website. All rights reserved.</p>
+    <p>My Interactive Website.</p>
+    <p>Contact: example@example.com</p>
+    <p>
+        Follow us: 
+        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+    </p>
 </footer>
 
-<div class="lightbox" id="lightbox" onclick="this.style.display='none'">
-    <button style="position: absolute; top: 10px; right: 20px; background: red; color: white;" onclick="document.getElementById('lightbox').style.display='none'">Close</button>
+<div class="lightbox" id="lightbox" aria-hidden="true" onclick="this.style.display='none'">
+    <button id="prevImage" style="position: absolute; left: 20px; background: white;" onclick="navigateLightbox(-1)">&#10094;</button>
+    <button id="nextImage" style="position: absolute; right: 20px; background: white;" onclick="navigateLightbox(1)">&#10095;</button>
+    <button style="position: absolute; top: 10px; right: 20px; background: red; color: white;" onclick="closeLightbox()">Close</button>
     <img id="lightboxImage" src="" alt="Lightbox" style="max-width: 90%; max-height: 90%;">
+</div>
+
+<div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center;">
+    We use cookies to improve user experience. <button onclick="acceptCookies()">Accept</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
@@ -140,28 +242,37 @@
     AOS.init();
     let clickCount = 0;
     let currentTestimonialIndex = 0;
-
+    let currentImageIndex = 0;
     const carouselImages = [
         'https://example.com/image1.jpg',
         'https://example.com/image2.jpg',
         'https://example.com/image3.jpg'
     ];
 
-    const testimonials = [
-        {name: "Jane Doe", quote: "This website has been incredibly useful for my projects!"},
-        {name: "John Smith", quote: "I love the interactive features! It keeps me engaged."}
-    ];
+    const messageHistory = [];
 
-    const backgrounds = [
-        'https://example.com/background1.jpg',
-        'https://example.com/background2.jpg',
-        'https://example.com/background3.jpg'
-    ];
+    function toggleDropdown() {
+        document.getElementById("sectionDropdown").classList.toggle("show");
+        const dropdown = document.getElementById("sectionDropdown");
+        dropdown.setAttribute("aria-hidden", dropdown.getAttribute("aria-hidden") === "true" ? "false" : "true");
+    }
 
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
-        const button = document.getElementById('darkModeButton');
-        button.textContent = document.body.classList.contains('dark-mode') ? "Switch to Light Mode" : "Switch to Dark Mode";
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        updateThemeButton();
+    }
+
+    function setInitialTheme() {
+        const theme = localStorage.getItem('theme') || 'light';
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+        updateThemeButton();
+    }
+
+    function updateThemeButton() {
+        const toggle = document.getElementById('themeToggle');
+        toggle.checked = document.body.classList.contains('dark-mode');
     }
 
     function showSection(sectionId) {
@@ -170,30 +281,50 @@
             section.classList.toggle('visible', section.id === sectionId);
             section.classList.toggle('hidden', section.id !== sectionId);
         });
+
+        document.getElementById("sectionDropdown").classList.remove("show");
+        smoothScroll(`#${sectionId}`);
     }
 
     function smoothScroll(target) {
         const element = document.querySelector(target);
         element.scrollIntoView({ behavior: 'smooth' });
-        showSection(element.id);
     }
 
     function openLightbox(src) {
+        currentImageIndex = carouselImages.indexOf(src);
         const lightbox = document.getElementById('lightbox');
         const lightboxImage = document.getElementById('lightboxImage');
         lightboxImage.src = src;
         lightbox.style.display = 'flex';
+        lightbox.setAttribute("aria-hidden", "false");
     }
 
-    function changeBackground() {
-        const randomIndex = Math.floor(Math.random() * backgrounds.length);
-        document.body.style.backgroundImage = `url('${backgrounds[randomIndex]}')`;
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
+        document.getElementById('lightbox').setAttribute("aria-hidden", "true");
     }
+
+    function navigateLightbox(direction) {
+        currentImageIndex = (currentImageIndex + direction + carouselImages.length) % carouselImages.length;
+        document.getElementById('lightboxImage').src = carouselImages[currentImageIndex];
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'ArrowRight') {
+            navigateLightbox(1);
+        } else if (event.key === 'ArrowLeft') {
+            navigateLightbox(-1);
+        } else if (event.key === 'Escape') {
+            closeLightbox();
+        }
+    });
 
     function addMessages() {
         clickCount++;
         const messageContainer = document.getElementById('messageContainer');
-        messageContainer.innerHTML = `Button clicked ${clickCount} time(s)!`;
+        messageHistory.push(`Button clicked ${clickCount} time(s)!`);
+        messageContainer.innerHTML = messageHistory.join('<br>');
     }
 
     function nextTestimonial() {
@@ -212,17 +343,32 @@
 
     function submitForm(event) {
         event.preventDefault();
-        const name = event.target[0].value;
+        const name = event.target[0].value.trim();
+        const message = event.target[1].value.trim();
+        
+        if (!name || !message) {
+            return;
+        }
+        
+        messageHistory.push(`Thank you, ${name}, for your message!`);
         const messageContainer = document.getElementById('messageContainer');
-        messageContainer.innerHTML = `Thank you, ${name}, for your message!`;
+        messageContainer.innerHTML = messageHistory.join('<br>');
         event.target.reset();
-        setTimeout(() => { messageContainer.innerHTML = ''; }, 3000);
     }
 
     function toggleFAQ(answerId, element) {
         const answer = document.getElementById(answerId);
         answer.classList.toggle('show');
     }
+
+    function acceptCookies() {
+        document.getElementById("cookieConsent").style.display = "none";
+    }
+
+    window.onload = function() {
+        setInitialTheme();
+        document.getElementById("cookieConsent").style.display = "block";
+    };
 
     window.onscroll = function() {
         const button = document.getElementById("scrollToTop");
