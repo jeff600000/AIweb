@@ -34,28 +34,6 @@
             color: var(--text-dark); 
             transition: background 0.5s, color 0.5s; 
         }
-
-        nav { position: relative; display: inline-block; }
-        .dropdown {
-            display: none;
-            position: absolute;
-            background-color: white;
-            z-index: 1;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        }
-        .dropdown-content {
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
-        .dropdown-content li {
-            padding: 8px 16px;
-            cursor: pointer;
-        }
-        .dropdown-content li:hover { background-color: #f1f1f1; }
-        section { opacity: 0; transition: opacity 0.5s; }
-        section.visible { opacity: 1; animation: fadeIn 0.5s forwards; }
-        section.hidden { display: none; }
         header {
             background-color: var(--primary-color);
             color: white;
@@ -65,6 +43,17 @@
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+        #navWrapper { position: relative; }
+        .menu-icon { display: none; cursor: pointer; }
+        .nav-items { display: flex; }
+        nav { display: flex; justify-content: center; align-items: center; }
+        .dropdown { display: none; position: absolute; background-color: white; z-index: 1; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); }
+        .dropdown-content { padding: 0; margin: 0; list-style: none; }
+        .dropdown-content li {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        .dropdown-content li:hover { background-color: #f1f1f1; }
         footer { background-color: var(--primary-color); color: white; padding: 1em 0; }
         #scrollToTop { 
             display: none; 
@@ -78,66 +67,45 @@
             cursor: pointer; 
             border-radius: 5px; 
         }
-        #progressBar { position: fixed; top: 0; left: 0; height: 5px; background: green; width: 0; z-index: 1000; transition: width 0.2s ease; }
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; }
         .faq-answer { display: none; }
         .faq-answer.show { display: block; }
-        .testimonial-container { position: relative; }
-        .testimonial { display: none; padding: 1em; }
-        .testimonial.show { display: block; background: #f1f1f1; margin: 1em 0; border-radius: 5px; }
-        .faq-item { cursor: pointer; margin: 0.5em 0; }
-        button {
-            font-size: 16px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, box-shadow 0.2s ease-in-out;
-        }
-        button:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        input[type="text"], textarea {
-            width: 80%;
-            margin: 10px 0;
-            padding: 10px;
-        }
-        .gallery img:hover {
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
+        section { opacity: 0; transition: opacity 0.5s; }
+        section.visible { opacity: 1; animation: fadeIn 0.5s forwards; }
+        section.hidden { display: none; }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 600px) {
-            header {
-                flex-direction: column;
-            }
-            .carousel img {
-                width: 100%;
-            }
+            .menu-icon { display: block; }
+            .nav-items { display: none; flex-direction: column; }
+            .nav-items.show { display: flex; position: absolute; top: 100%; right: 0; background: white; }
         }
     </style>
 </head>
 <body>
 <header>
     <h1>Welcome to My Interactive Website</h1>
-    <nav>
-        <label for="themeToggle">Toggle Dark Mode
-            <input type="checkbox" id="themeToggle" onclick="toggleDarkMode()">
-        </label>
-        <button onclick="toggleDropdown()">Sections</button>
-        <ul class="dropdown" id="sectionDropdown" aria-hidden="true">
-            <li onclick="showSection('home')">Home</li>
-            <li onclick="showSection('about')">About</li>
-            <li onclick="showSection('gallery')">Gallery</li>
-            <li onclick="showSection('carousel')">Carousel</li>
-            <li onclick="showSection('testimonials')">Testimonials</li>
-            <li onclick="showSection('contact')">Contact</li>
-            <li onclick="showSection('faq')">FAQ</li>
-        </ul>
-    </nav>
+    <div id="navWrapper">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <nav>
+            <label for="themeToggle">Toggle Dark Mode
+                <input type="checkbox" id="themeToggle" onclick="toggleDarkMode()">
+            </label>
+            <button onclick="toggleDropdown()">Sections</button>
+            <ul class="dropdown" id="sectionDropdown" aria-hidden="true">
+                <li onclick="showSection('home')"><i class="fas fa-home"></i> Home</li>
+                <li onclick="showSection('about')"><i class="fas fa-info-circle"></i> About</li>
+                <li onclick="showSection('gallery')"><i class="fas fa-images"></i> Gallery</li>
+                <li onclick="showSection('carousel')"><i class="fas fa-film"></i> Carousel</li>
+                <li onclick="showSection('testimonials')"><i class="fas fa-comments"></i> Testimonials</li>
+                <li onclick="showSection('contact')"><i class="fas fa-envelope"></i> Contact</li>
+                <li onclick="showSection('faq')"><i class="fas fa-question-circle"></i> FAQ</li>
+            </ul>
+        </nav>
+    </div>
 </header>
 
 <div id="progressBar"></div>
@@ -152,14 +120,6 @@
     <section id="about" class="hidden">
         <h2>About This Website</h2>
         <p>This website showcases various features and provides a fun interactive experience.</p>
-    </section>
-    <section id="gallery" class="hidden">
-        <h2>Image Gallery</h2>
-        <div class="gallery">
-            <img src="https://example.com/image1.jpg" alt="Image 1" loading="lazy" onclick="openLightbox(this.src)">
-            <img src="https://example.com/image2.jpg" alt="Image 2" loading="lazy" onclick="openLightbox(this.src)">
-            <img src="https://example.com/image3.jpg" alt="Image 3" loading="lazy" onclick="openLightbox(this.src)">
-        </div>
     </section>
     <section id="carousel" class="hidden">
         <h2>Image Carousel</h2>
@@ -180,9 +140,8 @@
                 <h3>John Smith <i class="fas fa-quote-left"></i></h3>
                 <p>"I love the interactive features! It keeps me engaged."</p>
             </div>
+            <button onclick="showMoreTestimonials()">Show More</button>
         </div>
-        <button onclick="prevTestimonial()">Previous Testimonial</button>
-        <button onclick="nextTestimonial()">Next Testimonial</button>
     </section>
     <section id="contact" class="hidden">
         <h2>Contact Us</h2>
@@ -230,14 +189,11 @@
 </footer>
 
 <div class="lightbox" id="lightbox" aria-hidden="true" onclick="this.style.display='none'">
-    <button id="prevImage" style="position: absolute; left: 20px; background: white;" onclick="navigateLightbox(-1)">&#10094;</button>
-    <button id="nextImage" style="position: absolute; right: 20px; background: white;" onclick="navigateLightbox(1)">&#10095;</button>
-    <button style="position: absolute; top: 10px; right: 20px; background: red; color: white;" onclick="closeLightbox()">Close</button>
     <img id="lightboxImage" src="" alt="Lightbox" style="max-width: 90%; max-height: 90%;">
 </div>
 
 <div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center;">
-    We use cookies to improve user experience. <button onclick="acceptCookies()">Accept</button>
+    We use cookies to improve user experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
@@ -251,8 +207,8 @@
         'https://example.com/image2.jpg',
         'https://example.com/image3.jpg'
     ];
-
     const messageHistory = [];
+    let interval;
 
     function toggleDropdown() {
         document.getElementById("sectionDropdown").classList.toggle("show");
@@ -294,8 +250,24 @@
         element.scrollIntoView({ behavior: 'smooth' });
     }
 
+    function addMessages() {
+        clickCount++;
+        const messageContainer = document.getElementById('messageContainer');
+        messageHistory.push(`Button clicked ${clickCount} time(s)!`);
+        messageContainer.innerHTML = messageHistory.join('<br>');
+    }
+
+    function prevImage() {
+        currentImageIndex = (currentImageIndex - 1 + carouselImages.length) % carouselImages.length;
+        document.getElementById('carouselImage').src = carouselImages[currentImageIndex];
+    }
+
+    function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
+        document.getElementById('carouselImage').src = carouselImages[currentImageIndex];
+    }
+
     function openLightbox(src) {
-        currentImageIndex = carouselImages.indexOf(src);
         const lightbox = document.getElementById('lightbox');
         const lightboxImage = document.getElementById('lightboxImage');
         lightboxImage.src = src;
@@ -308,40 +280,16 @@
         document.getElementById('lightbox').setAttribute("aria-hidden", "true");
     }
 
-    function navigateLightbox(direction) {
-        currentImageIndex = (currentImageIndex + direction + carouselImages.length) % carouselImages.length;
-        document.getElementById('lightboxImage').src = carouselImages[currentImageIndex];
+    function toggleFAQ(answerId, element) {
+        const answer = document.getElementById(answerId);
+        answer.classList.toggle('show');
     }
 
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'ArrowRight') {
-            navigateLightbox(1);
-        } else if (event.key === 'ArrowLeft') {
-            navigateLightbox(-1);
-        } else if (event.key === 'Escape') {
-            closeLightbox();
+    function showMoreTestimonials() {
+        const testimonialsList = document.querySelectorAll('.testimonial');
+        for (let i = 0; i < testimonialsList.length; i++) {
+            testimonialsList[i].classList.remove('hidden');
         }
-    });
-
-    function addMessages() {
-        clickCount++;
-        const messageContainer = document.getElementById('messageContainer');
-        messageHistory.push(`Button clicked ${clickCount} time(s)!`);
-        messageContainer.innerHTML = messageHistory.join('<br>');
-    }
-
-    function nextTestimonial() {
-        const testimonialsList = document.querySelectorAll('.testimonial');
-        testimonialsList[currentTestimonialIndex].classList.remove('show');
-        currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonialsList.length;
-        testimonialsList[currentTestimonialIndex].classList.add('show');
-    }
-
-    function prevTestimonial() {
-        const testimonialsList = document.querySelectorAll('.testimonial');
-        testimonialsList[currentTestimonialIndex].classList.remove('show');
-        currentTestimonialIndex = (currentTestimonialIndex - 1 + testimonialsList.length) % testimonialsList.length;
-        testimonialsList[currentTestimonialIndex].classList.add('show');
     }
 
     function submitForm(event) {
@@ -359,14 +307,19 @@
         event.target.reset();
     }
 
-    function toggleFAQ(answerId, element) {
-        const answer = document.getElementById(answerId);
-        answer.classList.toggle('show');
-    }
-
     function acceptCookies() {
         localStorage.setItem("cookiesAccepted", "true");
         document.getElementById("cookieConsent").style.display = "none";
+    }
+
+    function rejectCookies() {
+        // Implement functionality for rejecting cookies
+        document.getElementById("cookieConsent").style.display = "none";
+    }
+
+    function toggleMenu() {
+        const navItems = document.querySelector('.nav-items');
+        navItems.classList.toggle('show');
     }
 
     window.onload = function() {
@@ -387,6 +340,14 @@
     function scrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    function startCarousel() {
+        interval = setInterval(() => {
+            nextImage();
+        }, 5000); // Change image every 5 seconds
+    }
+    
+    startCarousel();
 </script>
 </body>
 </html>
