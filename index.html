@@ -54,7 +54,7 @@
         }
         .dropdown-content li:hover { background-color: #f1f1f1; }
         section { opacity: 0; transition: opacity 0.5s; }
-        section.visible { opacity: 1; }
+        section.visible { opacity: 1; animation: fadeIn 0.5s forwards; }
         section.hidden { display: none; }
         header {
             background-color: var(--primary-color);
@@ -92,19 +92,23 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, box-shadow 0.2s ease-in-out;
         }
-        button:hover, button:focus {
-            background-color: var(--primary-color);
-            color: var(--text-dark);
-            outline: none;
-            transition: transform 0.2s;
-            transform: scale(1.05);
+        button:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         input[type="text"], textarea {
             width: 80%;
             margin: 10px 0;
             padding: 10px;
+        }
+        .gallery img:hover {
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 600px) {
             header {
@@ -218,7 +222,6 @@
 </main>
 <footer>
     <p>My Interactive Website.</p>
-    <p>Contact: example@example.com</p>
     <p>
         Follow us: 
         <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
@@ -362,12 +365,15 @@
     }
 
     function acceptCookies() {
+        localStorage.setItem("cookiesAccepted", "true");
         document.getElementById("cookieConsent").style.display = "none";
     }
 
     window.onload = function() {
         setInitialTheme();
-        document.getElementById("cookieConsent").style.display = "block";
+        if (!localStorage.getItem("cookiesAccepted")) {
+            document.getElementById("cookieConsent").style.display = "block";
+        }
     };
 
     window.onscroll = function() {
