@@ -21,6 +21,7 @@
             --text-light: #333333;
             --text-dark: #ffffff;
             --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
+            --button-hover: #45a049;
         }
         * { box-sizing: border-box; }
         body {
@@ -32,7 +33,7 @@
             text-align: center;
             transition: background 1s, color 1s;
         }
-        
+
         body.dark-mode {
             background-color: var(--background-dark);
             color: var(--text-dark);
@@ -55,46 +56,26 @@
 
         nav {
             display: flex;
-            justify-content: center;
+            justify-content: space-evenly;
             align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .dropdown {
             position: relative;
         }
 
-        .sidebar {
-            width: 300px;
-            height: 100%;
-            position: fixed;
-            top: 0;
-            left: -300px;
-            background: #fff;
-            transition: left 0.3s;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-            z-index: 1001;
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
         }
 
-        .sidebar.show {
-            left: 0;
-        }
-
-        .menu-icon {
-            cursor: pointer;
-            font-size: 30px;
-            margin: 0 20px;
-        }
-
-        .nav-items {
-            list-style: none;
-            padding: 0;
-        }
-
-        .nav-items li {
-            padding: 15px;
-            cursor: pointer;
-        }
-
-        .nav-items li:hover {
-            background-color: #f1f1f1;
-            transition: background-color 0.3s;
+        .dropdown:hover .dropdown-content {
+            display: block;
         }
 
         .progress {
@@ -118,19 +99,12 @@
 
         section.visible { 
             opacity: 1; 
-            animation: fadeIn 0.5s forwards; 
+            animation: slideIn 0.5s forwards; 
         }
 
-        .testimonial-carousel {
-            position: relative;
-        }
-
-        .testimonial {
-            display: none;
-        }
-
-        .testimonial.active {
-            display: block;
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         footer {
@@ -144,13 +118,25 @@
             gap: 10px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-        
-        @media (max-width: 600px) {
-            .sidebar { width: 100%; }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        @media (max-width: 800px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
 
     </style>
@@ -159,19 +145,21 @@
 <header>
     <h1>Welcome to My Interactive Website</h1>
     <button id="toggleDarkMode" onclick="toggleTheme()">Toggle Theme</button>
-    <span class="menu-icon" onclick="toggleMenu()">&#9776;</span> 
-    <nav class="sidebar" id="sidebar" role="navigation">
-        <ul class="nav-items" aria-label="Main Navigation">
-            <li tabindex="0" onclick="smoothScroll('home')">Home</li>
-            <li tabindex="0" onclick="smoothScroll('about')">About</li>
-            <li tabindex="0" onclick="smoothScroll('services')">Services</li>
-            <li tabindex="0" onclick="smoothScroll('blog')">Blog</li>
-            <li tabindex="0" onclick="smoothScroll('gallery')">Gallery</li>
-            <li tabindex="0" onclick="smoothScroll('carousel')">Carousel</li>
-            <li tabindex="0" onclick="smoothScroll('testimonials')">Testimonials</li>
-            <li tabindex="0" onclick="smoothScroll('contact')">Contact</li>
-            <li tabindex="0" onclick="smoothScroll('faq')">FAQ</li>
-        </ul>
+    <nav>
+        <div class="dropdown">
+            <button class="menu-icon">&#9776;</button>
+            <div class="dropdown-content">
+                <div tabindex="0" onclick="smoothScroll('home')">Home</div>
+                <div tabindex="0" onclick="smoothScroll('about')">About</div>
+                <div tabindex="0" onclick="smoothScroll('services')">Services</div>
+                <div tabindex="0" onclick="smoothScroll('blog')">Blog</div>
+                <div tabindex="0" onclick="smoothScroll('gallery')">Gallery</div>
+                <div tabindex="0" onclick="smoothScroll('carousel')">Carousel</div>
+                <div tabindex="0" onclick="smoothScroll('testimonials')">Testimonials</div>
+                <div tabindex="0" onclick="smoothScroll('contact')">Contact</div>
+                <div tabindex="0" onclick="smoothScroll('faq')">FAQ</div>
+            </div>
+        </div>
     </nav>
 </header>
 
@@ -234,13 +222,13 @@
         <h2>Frequently Asked Questions</h2>
         <div class="faq-item" onclick="toggleFAQ('answer1', this)">
             <strong>Q: What is this website about?</strong>
-            <div id="answer1" class="faq-answer">
+            <div id="answer1" class="faq-answer" style="display: none;">
                 <p>A: It is an interactive demo showcasing various web features.</p>
             </div>
         </div>
         <div class="faq-item" onclick="toggleFAQ('answer2', this)">
             <strong>Q: How can I contact support?</strong>
-            <div id="answer2" class="faq-answer">
+            <div id="answer2" class="faq-answer" style="display: none;">
                 <p>A: You can contact support via the contact form on this website.</p>
             </div>
         </div>
@@ -266,7 +254,8 @@
     let currentIndex = 0;
 
     function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('show');
+        const dropdown = document.querySelector('.dropdown-content');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
 
     function smoothScroll(sectionId) {
@@ -278,7 +267,7 @@
     function showSection(sectionId) {
         const sections = document.querySelectorAll('section');
         sections.forEach(section => section.classList.toggle('visible', section.id === sectionId));
-        document.getElementById('sidebar').classList.remove('show');
+        document.querySelector('.dropdown-content').style.display = 'none';
     }
 
     function addMessages() {
@@ -286,6 +275,7 @@
         const messageContainer = document.getElementById('messageContainer');
         messageHistory.push(`Button clicked ${clickCount} time(s)!`);
         messageContainer.innerHTML = messageHistory.join('<br>');
+        localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
     }
 
     function showNextTestimonial() {
@@ -307,12 +297,13 @@
         }
 
         feedback.innerHTML = `Thank you, ${name}, for your message!`;
+        localStorage.setItem('userMessage', JSON.stringify({ name, message }));
         event.target.reset();
     }
 
     function toggleFAQ(answerId, element) {
         const answer = document.getElementById(answerId);
-        answer.classList.toggle('show');
+        answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
     }
 
     function toggleTheme() {
@@ -323,13 +314,6 @@
         localStorage.setItem('theme', nextTheme);
     }
 
-    window.onload = function() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            document.body.className = savedTheme;
-        }
-    };
-
     function acceptCookies() {
         localStorage.setItem("cookiesAccepted", "true");
         document.getElementById("cookieConsent").style.display = "none";
@@ -338,6 +322,22 @@
     function rejectCookies() {
         document.getElementById("cookieConsent").style.display = "none";
     }
+
+    window.onload = function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.className = savedTheme;
+        }
+        const savedMessages = JSON.parse(localStorage.getItem('messageHistory'));
+        if (savedMessages) {
+            messageHistory.push(...savedMessages);
+        }
+        const savedUserMessage = JSON.parse(localStorage.getItem('userMessage'));
+        if (savedUserMessage) {
+            document.getElementById('formFeedback').innerHTML = `Welcome back! Last message from ${savedUserMessage.name}: ${savedUserMessage.message}`;
+        }
+        setInterval(showNextTestimonial, 5000); // Automatically show next testimonial every 5 seconds
+    };
 </script>
 </body>
 </html>
