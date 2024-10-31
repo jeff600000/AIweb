@@ -31,11 +31,20 @@
             transition: background 1s, color 1s;
         }
         
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
+
         header, footer {
             background: var(--gradient-header);
             color: white;
             padding: 1em 0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header.dark-mode, footer.dark-mode {
+            background: darkslategray;
         }
 
         nav {
@@ -46,11 +55,11 @@
         }
 
         .sidebar {
-            width: 250px;
+            width: 300px;
             height: 100%;
             position: fixed;
             top: 0;
-            left: -250px;
+            left: -300px;
             background: #fff;
             transition: left 0.3s;
             box-shadow: 2px 0 5px rgba(0,0,0,0.5);
@@ -121,22 +130,33 @@
         @media (max-width: 600px) {
             .sidebar { width: 100%; }
         }
-        
+
+        .spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
     </style>
 </head>
 <body>
 <header>
     <h1>Welcome to My Interactive Website</h1>
+    <button id="toggleDarkMode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
     <span class="menu-icon" onclick="toggleMenu()">&#9776;</span> 
     <nav class="sidebar" id="sidebar">
         <ul class="nav-items">
-            <li onclick="showSection('home')"><i class="fas fa-home"></i> Home</li>
-            <li onclick="showSection('about')"><i class="fas fa-info-circle"></i> About</li>
-            <li onclick="showSection('gallery')"><i class="fas fa-images"></i> Gallery</li>
-            <li onclick="showSection('carousel')"><i class="fas fa-film"></i> Carousel</li>
-            <li onclick="showSection('testimonials')"><i class="fas fa-comments"></i> Testimonials</li>
-            <li onclick="showSection('contact')"><i class="fas fa-envelope"></i> Contact</li>
-            <li onclick="showSection('faq')"><i class="fas fa-question-circle"></i> FAQ</li>
+            <li onclick="smoothScroll('home')"><i class="fas fa-home"></i> Home</li>
+            <li onclick="smoothScroll('about')"><i class="fas fa-info-circle"></i> About</li>
+            <li onclick="smoothScroll('services')"><i class="fas fa-concierge-bell"></i> Services</li>
+            <li onclick="smoothScroll('blog')"><i class="fas fa-blog"></i> Blog</li>
+            <li onclick="smoothScroll('gallery')"><i class="fas fa-images"></i> Gallery</li>
+            <li onclick="smoothScroll('carousel')"><i class="fas fa-film"></i> Carousel</li>
+            <li onclick="smoothScroll('testimonials')"><i class="fas fa-comments"></i> Testimonials</li>
+            <li onclick="smoothScroll('contact')"><i class="fas fa-envelope"></i> Contact</li>
+            <li onclick="smoothScroll('faq')"><i class="fas fa-question-circle"></i> FAQ</li>
         </ul>
     </nav>
 </header>
@@ -153,12 +173,32 @@
         <h2>About This Website</h2>
         <p>This site showcases various features and provides an engaging user experience.</p>
     </section>
+    <section id="services" class="hidden">
+        <h2>Our Services</h2>
+        <ul>
+            <li>Web Development</li>
+            <li>Graphic Design</li>
+            <li>SEO Optimization</li>
+        </ul>
+    </section>
+    <section id="blog" class="hidden">
+        <h2>Latest Blog Posts</h2>
+        <article>
+            <h3>The Future of Web Development</h3>
+            <p>Exploring the latest trends...</p>
+        </article>
+        <article>
+            <h3>Accessibility in Modern Design</h3>
+            <p>Why it matters and how to implement it...</p>
+        </article>
+    </section>
     <section id="carousel" class="hidden">
         <h2>Image Carousel</h2>
         <div class="carousel">
             <img id="carouselImage" src="https://example.com/image1.jpg" alt="Carousel Image" loading="lazy" style="max-width: 100%; height: auto;">
             <button onclick="prevImage()">&#10094;</button>
             <button onclick="nextImage()">&#10095;</button>
+            <div class="spinner" id="loadingSpinner">Loading...</div>
         </div>
     </section>
     <section id="testimonials" class="hidden">
@@ -211,7 +251,7 @@
 </div>
 
 <div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center;">
-    We use cookies to improve user experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button> <a href="#" onclick="openPrivacyPolicy()">Learn More</a>
+    We use cookies to improve your experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
@@ -219,9 +259,21 @@
     AOS.init();
     let clickCount = 0;
     const messageHistory = [];
+    let currentIndex = 0;
+    const images = [
+        'https://example.com/image1.jpg',
+        'https://example.com/image2.jpg',
+        'https://example.com/image3.jpg'
+    ];
 
     function toggleMenu() {
         document.getElementById('sidebar').classList.toggle('show');
+    }
+
+    function smoothScroll(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.scrollIntoView({ behavior: 'smooth' });
+        showSection(sectionId);
     }
 
     function showSection(sectionId) {
@@ -237,16 +289,34 @@
         messageContainer.innerHTML = messageHistory.join('<br>');
     }
 
+    function updateCarousel() {
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        loadingSpinner.style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('carouselImage').src = images[currentIndex];
+            loadingSpinner.style.display = 'none';
+        }, 1000);
+    }
+
     function prevImage() {
-        // Implement previous image functionality
+        currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+        updateCarousel();
     }
 
     function nextImage() {
-        // Implement next image functionality
+        currentIndex = (currentIndex + 1) % images.length;
+        updateCarousel();
     }
 
     function showMoreTestimonials() {
-        // Implement showing more testimonials
+        const moreTestimonials = [
+            { name: "John Smith", quote: "An absolutely amazing website!" },
+            { name: "Emily Johnson", quote: "The best tool I've ever used!" }
+        ];
+        const container = document.querySelector('.testimonial-container');
+        moreTestimonials.forEach(testimonial => {
+            container.innerHTML += `<div class='testimonial'><h3>${testimonial.name} <i class='fas fa-quote-left'></i></h3><p>"${testimonial.quote}"</p></div>`;
+        });
     }
 
     function submitForm(event) {
@@ -269,6 +339,19 @@
         answer.classList.toggle('show');
     }
 
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+    }
+
+    window.onload = function() {
+        const darkModeSetting = localStorage.getItem('darkMode') === 'true';
+        if (darkModeSetting) {
+            toggleDarkMode();
+        }
+    };
+
     function acceptCookies() {
         localStorage.setItem("cookiesAccepted", "true");
         document.getElementById("cookieConsent").style.display = "none";
@@ -278,12 +361,8 @@
         document.getElementById("cookieConsent").style.display = "none";
     }
 
-    window.onload = function() {
-        // Initial setups
-    }
-    
     window.onscroll = function() {
-        // Scroll handling logic
+        // Scroll handling logic can be added here if needed
     };
 </script>
 </body>
