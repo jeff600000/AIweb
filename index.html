@@ -14,8 +14,10 @@
     <style>
         :root {
             --primary-color: #4CAF50;
+            --secondary-color: #008CBA;
             --background-light: #ffffff;
             --background-dark: #121212;
+            --background-blue: #e0f7fa;
             --text-light: #333333;
             --text-dark: #ffffff;
             --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
@@ -36,15 +38,19 @@
             color: var(--text-dark);
         }
 
+        body.blue-mode {
+            background-color: var(--background-blue);
+            color: var(--text-light);
+        }
+
         header, footer {
             background: var(--gradient-header);
             color: white;
             padding: 1em 0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        header.dark-mode, footer.dark-mode {
-            background: darkslategray;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         nav {
@@ -101,25 +107,41 @@
         }
 
         section { 
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 2em;
             opacity: 0; 
             transition: opacity 0.5s; 
         }
-        
+
         section.visible { 
             opacity: 1; 
             animation: fadeIn 0.5s forwards; 
         }
 
-        .lightbox {
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            z-index: 1000; 
-            background: rgba(0,0,0,0.8); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+        .testimonial-carousel {
+            position: relative;
+        }
+
+        .testimonial {
+            display: none;
+        }
+
+        .testimonial.active {
+            display: block;
+        }
+
+        footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
         }
 
         @keyframes fadeIn {
@@ -131,32 +153,24 @@
             .sidebar { width: 100%; }
         }
 
-        .spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
     </style>
 </head>
 <body>
 <header>
     <h1>Welcome to My Interactive Website</h1>
-    <button id="toggleDarkMode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <button id="toggleDarkMode" onclick="toggleTheme()">Toggle Theme</button>
     <span class="menu-icon" onclick="toggleMenu()">&#9776;</span> 
-    <nav class="sidebar" id="sidebar">
-        <ul class="nav-items">
-            <li onclick="smoothScroll('home')"><i class="fas fa-home"></i> Home</li>
-            <li onclick="smoothScroll('about')"><i class="fas fa-info-circle"></i> About</li>
-            <li onclick="smoothScroll('services')"><i class="fas fa-concierge-bell"></i> Services</li>
-            <li onclick="smoothScroll('blog')"><i class="fas fa-blog"></i> Blog</li>
-            <li onclick="smoothScroll('gallery')"><i class="fas fa-images"></i> Gallery</li>
-            <li onclick="smoothScroll('carousel')"><i class="fas fa-film"></i> Carousel</li>
-            <li onclick="smoothScroll('testimonials')"><i class="fas fa-comments"></i> Testimonials</li>
-            <li onclick="smoothScroll('contact')"><i class="fas fa-envelope"></i> Contact</li>
-            <li onclick="smoothScroll('faq')"><i class="fas fa-question-circle"></i> FAQ</li>
+    <nav class="sidebar" id="sidebar" role="navigation">
+        <ul class="nav-items" aria-label="Main Navigation">
+            <li tabindex="0" onclick="smoothScroll('home')">Home</li>
+            <li tabindex="0" onclick="smoothScroll('about')">About</li>
+            <li tabindex="0" onclick="smoothScroll('services')">Services</li>
+            <li tabindex="0" onclick="smoothScroll('blog')">Blog</li>
+            <li tabindex="0" onclick="smoothScroll('gallery')">Gallery</li>
+            <li tabindex="0" onclick="smoothScroll('carousel')">Carousel</li>
+            <li tabindex="0" onclick="smoothScroll('testimonials')">Testimonials</li>
+            <li tabindex="0" onclick="smoothScroll('contact')">Contact</li>
+            <li tabindex="0" onclick="smoothScroll('faq')">FAQ</li>
         </ul>
     </nav>
 </header>
@@ -183,14 +197,7 @@
     </section>
     <section id="blog" class="hidden">
         <h2>Latest Blog Posts</h2>
-        <article>
-            <h3>The Future of Web Development</h3>
-            <p>Exploring the latest trends...</p>
-        </article>
-        <article>
-            <h3>Accessibility in Modern Design</h3>
-            <p>Why it matters and how to implement it...</p>
-        </article>
+        <div id="loadingBlog">Loading Blog Posts...</div>
     </section>
     <section id="carousel" class="hidden">
         <h2>Image Carousel</h2>
@@ -198,18 +205,20 @@
             <img id="carouselImage" src="https://example.com/image1.jpg" alt="Carousel Image" loading="lazy" style="max-width: 100%; height: auto;">
             <button onclick="prevImage()">&#10094;</button>
             <button onclick="nextImage()">&#10095;</button>
-            <div class="spinner" id="loadingSpinner">Loading...</div>
         </div>
     </section>
     <section id="testimonials" class="hidden">
         <h2>User Testimonials</h2>
-        <div class="testimonial-container">
-            <div class="testimonial show">
+        <div class="testimonial-carousel">
+            <div class="testimonial active">
                 <h3>Jane Doe <i class="fas fa-quote-left"></i></h3>
                 <p>"This website has been incredibly useful for my projects!"</p>
-                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></div>
             </div>
-            <button onclick="showMoreTestimonials()">Show More</button>
+            <div class="testimonial">
+                <h3>John Smith <i class="fas fa-quote-left"></i></h3>
+                <p>"An absolutely amazing website!"</p>
+            </div>
+            <button onclick="showNextTestimonial()">Next</button>
         </div>
     </section>
     <section id="contact" class="hidden">
@@ -239,16 +248,11 @@
 </main>
 <footer>
     <p>My Interactive Website.</p>
-    <div>
-        Follow us: 
-        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+    <div class="social-icons">
+        <a href="https://twitter.com" target="_blank" aria-label="Visit our Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://facebook.com" target="_blank" aria-label="Visit our Facebook"><i class="fab fa-facebook-f"></i></a>
     </div>
 </footer>
-
-<div class="lightbox" id="lightbox" aria-hidden="true" onclick="this.style.display='none'">
-    <img id="lightboxImage" src="" alt="Lightbox" style="max-width: 90%; max-height: 90%;">
-</div>
 
 <div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center;">
     We use cookies to improve your experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button>
@@ -260,11 +264,6 @@
     let clickCount = 0;
     const messageHistory = [];
     let currentIndex = 0;
-    const images = [
-        'https://example.com/image1.jpg',
-        'https://example.com/image2.jpg',
-        'https://example.com/image3.jpg'
-    ];
 
     function toggleMenu() {
         document.getElementById('sidebar').classList.toggle('show');
@@ -289,34 +288,11 @@
         messageContainer.innerHTML = messageHistory.join('<br>');
     }
 
-    function updateCarousel() {
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        loadingSpinner.style.display = 'block';
-        setTimeout(() => {
-            document.getElementById('carouselImage').src = images[currentIndex];
-            loadingSpinner.style.display = 'none';
-        }, 1000);
-    }
-
-    function prevImage() {
-        currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
-        updateCarousel();
-    }
-
-    function nextImage() {
-        currentIndex = (currentIndex + 1) % images.length;
-        updateCarousel();
-    }
-
-    function showMoreTestimonials() {
-        const moreTestimonials = [
-            { name: "John Smith", quote: "An absolutely amazing website!" },
-            { name: "Emily Johnson", quote: "The best tool I've ever used!" }
-        ];
-        const container = document.querySelector('.testimonial-container');
-        moreTestimonials.forEach(testimonial => {
-            container.innerHTML += `<div class='testimonial'><h3>${testimonial.name} <i class='fas fa-quote-left'></i></h3><p>"${testimonial.quote}"</p></div>`;
-        });
+    function showNextTestimonial() {
+        const testimonials = document.querySelectorAll('.testimonial');
+        const activeTestimonial = Array.from(testimonials).findIndex(testimonial => testimonial.classList.contains('active'));
+        testimonials[activeTestimonial].classList.remove('active');
+        testimonials[(activeTestimonial + 1) % testimonials.length].classList.add('active');
     }
 
     function submitForm(event) {
@@ -324,12 +300,12 @@
         const name = event.target[0].value.trim();
         const message = event.target[1].value.trim();
         const feedback = document.getElementById('formFeedback');
-        
+
         if (!name || !message) {
             feedback.innerHTML = 'Please fill in all fields.';
             return;
         }
-        
+
         feedback.innerHTML = `Thank you, ${name}, for your message!`;
         event.target.reset();
     }
@@ -339,16 +315,18 @@
         answer.classList.toggle('show');
     }
 
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkMode);
+    function toggleTheme() {
+        const themes = ['light', 'dark', 'blue'];
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        const nextTheme = themes[(themes.indexOf(currentTheme)+1) % themes.length];
+        document.body.className = nextTheme;
+        localStorage.setItem('theme', nextTheme);
     }
 
     window.onload = function() {
-        const darkModeSetting = localStorage.getItem('darkMode') === 'true';
-        if (darkModeSetting) {
-            toggleDarkMode();
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.className = savedTheme;
         }
     };
 
@@ -360,10 +338,6 @@
     function rejectCookies() {
         document.getElementById("cookieConsent").style.display = "none";
     }
-
-    window.onscroll = function() {
-        // Scroll handling logic can be added here if needed
-    };
 </script>
 </body>
 </html>
