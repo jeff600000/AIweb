@@ -132,6 +132,37 @@
             background-color: var(--button-hover);
         }
 
+        /* Carousel Styles */
+        .carousel {
+            position: relative;
+            overflow: hidden;
+        }
+        .carousel-images {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        .carousel-dots {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .carousel-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #bbb;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .carousel-dot.active {
+            background-color: #4CAF50;
+        }
+
         @media (max-width: 800px) {
             nav {
                 flex-direction: column;
@@ -171,10 +202,12 @@
         <button onclick="addMessages()">Click Me</button>
         <div id="messageContainer"></div>
     </section>
+    
     <section id="about" class="hidden">
         <h2>About This Website</h2>
         <p>This site showcases various features and provides an engaging user experience.</p>
     </section>
+    
     <section id="services" class="hidden">
         <h2>Our Services</h2>
         <ul>
@@ -183,18 +216,28 @@
             <li>SEO Optimization</li>
         </ul>
     </section>
+    
     <section id="blog" class="hidden">
         <h2>Latest Blog Posts</h2>
         <div id="loadingBlog">Loading Blog Posts...</div>
     </section>
+    
     <section id="carousel" class="hidden">
         <h2>Image Carousel</h2>
         <div class="carousel">
-            <img id="carouselImage" src="https://example.com/image1.jpg" alt="Carousel Image" loading="lazy" style="max-width: 100%; height: auto;">
-            <button onclick="prevImage()">&#10094;</button>
-            <button onclick="nextImage()">&#10095;</button>
+            <div class="carousel-images" id="carouselImages">
+                <img src="https://via.placeholder.com/600x400/4CAF50/FFFFFF?text=Image+1" alt="Carousel Image 1">
+                <img src="https://via.placeholder.com/600x400/008CBA/FFFFFF?text=Image+2" alt="Carousel Image 2">
+                <img src="https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Image+3" alt="Carousel Image 3">
+            </div>
+            <div class="carousel-dots">
+                <div class="carousel-dot active" onclick="setCurrentSlide(0)"></div>
+                <div class="carousel-dot" onclick="setCurrentSlide(1)"></div>
+                <div class="carousel-dot" onclick="setCurrentSlide(2)"></div>
+            </div>
         </div>
     </section>
+    
     <section id="testimonials" class="hidden">
         <h2>User Testimonials</h2>
         <div class="testimonial-carousel">
@@ -206,9 +249,11 @@
                 <h3>John Smith <i class="fas fa-quote-left"></i></h3>
                 <p>"An absolutely amazing website!"</p>
             </div>
+            <div class="carousel-dots"></div>
             <button onclick="showNextTestimonial()">Next</button>
         </div>
     </section>
+    
     <section id="contact" class="hidden">
         <h2>Contact Us</h2>
         <form onsubmit="submitForm(event)">
@@ -218,6 +263,7 @@
         </form>
         <div id="formFeedback"></div>
     </section>
+    
     <section id="faq" class="hidden">
         <h2>Frequently Asked Questions</h2>
         <div class="faq-item" onclick="toggleFAQ('answer1', this)">
@@ -234,6 +280,7 @@
         </div>
     </section>
 </main>
+
 <footer>
     <p>My Interactive Website.</p>
     <div class="social-icons">
@@ -242,7 +289,7 @@
     </div>
 </footer>
 
-<div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center;">
+<div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center; transition: opacity 0.5s;">
     We use cookies to improve your experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button>
 </div>
 
@@ -252,6 +299,7 @@
     let clickCount = 0;
     const messageHistory = [];
     let currentIndex = 0;
+    let currentSlide = 0;
 
     function toggleMenu() {
         const dropdown = document.querySelector('.dropdown-content');
@@ -285,6 +333,16 @@
         testimonials[(activeTestimonial + 1) % testimonials.length].classList.add('active');
     }
 
+    function setCurrentSlide(index) {
+        currentSlide = index;
+        const slides = document.getElementById('carouselImages');
+        const dots = document.querySelectorAll('.carousel-dot');
+        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentSlide);
+        });
+    }
+
     function submitForm(event) {
         event.preventDefault();
         const name = event.target[0].value.trim();
@@ -304,6 +362,7 @@
     function toggleFAQ(answerId, element) {
         const answer = document.getElementById(answerId);
         answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+        answer.style.transition = '0.3s ease-in-out';
     }
 
     function toggleTheme() {
@@ -316,11 +375,11 @@
 
     function acceptCookies() {
         localStorage.setItem("cookiesAccepted", "true");
-        document.getElementById("cookieConsent").style.display = "none";
+        document.getElementById("cookieConsent").style.opacity = "0";
     }
 
     function rejectCookies() {
-        document.getElementById("cookieConsent").style.display = "none";
+        document.getElementById("cookieConsent").style.opacity = "0";
     }
 
     window.onload = function() {
@@ -336,7 +395,15 @@
         if (savedUserMessage) {
             document.getElementById('formFeedback').innerHTML = `Welcome back! Last message from ${savedUserMessage.name}: ${savedUserMessage.message}`;
         }
+
+        // Auto rotate testimonials
         setInterval(showNextTestimonial, 5000); // Automatically show next testimonial every 5 seconds
+
+        // Auto rotate images in carousel 
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % 3; // Adjust the count based on the number of images in carousel
+            setCurrentSlide(currentSlide);
+        }, 3000);
     };
 </script>
 </body>
