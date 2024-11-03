@@ -111,7 +111,7 @@
             gap: 10px;
         }
 
-        .carousel {
+        .carousel, .gallery-grid {
             position: relative;
             overflow: hidden;
         }
@@ -121,7 +121,7 @@
             transition: transform 0.5s ease-in-out;
         }
 
-        .carousel img {
+        .carousel img, .gallery-grid img {
             max-width: 100%;
             height: auto;
             display: block;
@@ -136,7 +136,6 @@
             display: block;
         }
 
-        /* Additional styles for enhanced responsiveness and animations */
         #contact {
             max-width: 600px;
             margin: auto;
@@ -147,7 +146,21 @@
             overflow: hidden;
         }
 
-        /* Loading spinner */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .gallery-grid img {
+            transition: transform 0.3s;
+        }
+
+        .gallery-grid img:hover {
+            transform: scale(1.05);
+        }
+
         .loading {
             font-size: 1.2em;
             color: #555;
@@ -210,7 +223,17 @@
         <h2>Latest Blog Posts</h2>
         <div id="loadingBlog" class="loading">Loading Blog Posts...</div>
     </section>
-    
+
+    <section id="gallery" class="hidden">
+        <h2>Gallery</h2>
+        <div class="gallery-grid">
+            <img src="https://via.placeholder.com/300?text=Image+1" alt="Gallery Image 1">
+            <img src="https://via.placeholder.com/300?text=Image+2" alt="Gallery Image 2">
+            <img src="https://via.placeholder.com/300?text=Image+3" alt="Gallery Image 3">
+            <img src="https://via.placeholder.com/300?text=Image+4" alt="Gallery Image 4">
+        </div>
+    </section>
+
     <section id="carousel" class="hidden">
         <h2>Image Carousel</h2>
         <div class="carousel">
@@ -268,7 +291,7 @@
 </main>
 
 <footer>
-    <p>&copy; <span id="currentYear"></span> My Interactive Website.</p>
+    <p>&copy; <span id="currentYear"></span> My Interactive Website. Contact us at info@example.com or call us at (123) 456-7890.</p>
     <div class="social-icons">
         <a href="https://twitter.com" target="_blank" aria-label="Visit our Twitter"><i class="fab fa-twitter"></i></a>
         <a href="https://facebook.com" target="_blank" aria-label="Visit our Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -304,6 +327,12 @@
         messageHistory.push(`Button clicked ${clickCount} time(s)!`);
         messageContainer.innerHTML = messageHistory.join('<br>');
         localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+    }
+
+    function loadBlogPosts() {
+        setTimeout(() => {
+            document.getElementById('loadingBlog').innerHTML = '<p>Blog Post 1</p><p>Blog Post 2</p>';
+        }, 2000);
     }
 
     function showNextTestimonial() {
@@ -394,6 +423,8 @@
             if (e.key === "ArrowRight") nextSlide(); 
             if (e.key === "ArrowLeft") prevSlide(); 
         });
+
+        document.getElementById('blog').addEventListener('click', loadBlogPosts);
     };
 </script>
 </body>
