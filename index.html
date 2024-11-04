@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore an interactive website showcasing modern web development features with images, testimonials, and an FAQ section.">
+    <meta name="description" content="Explore an interactive web development showcase.">
+    <meta name="twitter:description" content="Explore an interactive web development showcase.">
+    <meta property="og:title" content="Explore the Wonders of Web Development">
+    <meta property="og:description" content="Explore an interactive web development showcase.">
+    <meta property="og:image" content="https://via.placeholder.com/600x400?text=Open+Graph+Image">
 
     <link rel="icon" sizes="192x192" href="https://example.com/new-favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -12,9 +16,6 @@
 
     <title>Explore the Wonders of Web Development</title>
     <style>
-        html, body {
-            overflow-x: hidden;
-        }
         :root {
             --primary-color: #4CAF50;
             --secondary-color: #008CBA;
@@ -26,6 +27,7 @@
             --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
             --button-hover: #45a049;
         }
+
         * {
             box-sizing: border-box;
         }
@@ -75,14 +77,12 @@
             position: absolute;
             background-color: #f9f9f9;
             min-width: 200px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
             z-index: 1;
-            transition: opacity 0.2s;
         }
 
         .dropdown:hover .dropdown-content {
             display: block;
-            opacity: 1; /* Add fade effect */
         }
 
         button {
@@ -140,7 +140,7 @@
             max-width: 600px;
             margin: auto;
         }
-        
+
         .faq-answer {
             transition: height 0.3s ease;
             overflow: hidden;
@@ -166,7 +166,6 @@
             color: #555;
             margin: 20px;
         }
-
         @media (max-width: 800px) {
             nav {
                 flex-direction: column;
@@ -183,7 +182,7 @@
     <nav>
         <div class="dropdown">
             <button class="menu-icon">&#9776;</button>
-            <div class="dropdown-content">
+            <div class="dropdown-content" role="menu">
                 <div role="menuitem" tabindex="0" onclick="smoothScroll('home')">Home</div>
                 <div role="menuitem" tabindex="0" onclick="smoothScroll('about')">About</div>
                 <div role="menuitem" tabindex="0" onclick="smoothScroll('services')">Services</div>
@@ -198,20 +197,21 @@
     </nav>
 </header>
 
-<main>
-    <section id="home" class="visible">
+<main role="main">
+    <section id="home" class="visible" aria-labelledby="home-header">
+        <h2 id="home-header">Welcome to My Interactive Website</h2>
         <p>This is an interactive website showcasing modern web features.</p>
         <button onclick="addMessages()">Click Me</button>
         <div id="messageContainer"></div>
     </section>
     
-    <section id="about" class="hidden">
-        <h2>About This Website</h2>
+    <section id="about" class="hidden" aria-labelledby="about-header">
+        <h2 id="about-header">About This Website</h2>
         <p>This site showcases various features and provides an engaging user experience.</p>
     </section>
     
-    <section id="services" class="hidden">
-        <h2>Our Services</h2>
+    <section id="services" class="hidden" aria-labelledby="services-header">
+        <h2 id="services-header">Our Services</h2>
         <ul>
             <li>Web Development</li>
             <li>Graphic Design</li>
@@ -219,13 +219,13 @@
         </ul>
     </section>
     
-    <section id="blog" class="hidden">
-        <h2>Latest Blog Posts</h2>
+    <section id="blog" class="hidden" aria-labelledby="blog-header">
+        <h2 id="blog-header">Latest Blog Posts</h2>
         <div id="loadingBlog" class="loading">Loading Blog Posts...</div>
     </section>
 
-    <section id="gallery" class="hidden">
-        <h2>Gallery</h2>
+    <section id="gallery" class="hidden" aria-labelledby="gallery-header">
+        <h2 id="gallery-header">Gallery</h2>
         <div class="gallery-grid">
             <img src="https://via.placeholder.com/300?text=Image+1" alt="Gallery Image 1">
             <img src="https://via.placeholder.com/300?text=Image+2" alt="Gallery Image 2">
@@ -234,21 +234,21 @@
         </div>
     </section>
 
-    <section id="carousel" class="hidden">
-        <h2>Image Carousel</h2>
-        <div class="carousel">
+    <section id="carousel" class="hidden" aria-labelledby="carousel-header">
+        <h2 id="carousel-header">Image Carousel</h2>
+        <div class="carousel" aria-label="Photo Carousel">
             <div class="carousel-images" id="carouselImages">
                 <img src="https://via.placeholder.com/600x400/4CAF50/FFFFFF?text=Image+1" alt="Carousel Image 1" loading="lazy">
                 <img src="https://via.placeholder.com/600x400/008CBA/FFFFFF?text=Image+2" alt="Carousel Image 2" loading="lazy">
                 <img src="https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Image+3" alt="Carousel Image 3" loading="lazy">
             </div>
-            <button id="prevBtn" onclick="prevSlide()">&#10094;</button>
-            <button id="nextBtn" onclick="nextSlide()">&#10095;</button>
+            <button id="prevBtn" onclick="prevSlide()" aria-label="Previous Image">&#10094;</button>
+            <button id="nextBtn" onclick="nextSlide()" aria-label="Next Image">&#10095;</button>
         </div>
     </section>
     
-    <section id="testimonials" class="hidden">
-        <h2>User Testimonials</h2>
+    <section id="testimonials" class="hidden" aria-labelledby="testimonials-header">
+        <h2 id="testimonials-header">User Testimonials</h2>
         <div class="testimonial-carousel">
             <div class="testimonial active" aria-live="polite">
                 <h3>Jane Doe <i class="fas fa-quote-left"></i></h3>
@@ -263,8 +263,8 @@
         </div>
     </section>
     
-    <section id="contact" class="hidden">
-        <h2>Contact Us</h2>
+    <section id="contact" class="hidden" aria-labelledby="contact-header">
+        <h2 id="contact-header">Contact Us</h2>
         <form onsubmit="submitForm(event)">
             <input type="text" placeholder="Your Name" required pattern="[A-Za-z ]+" aria-label="Your Name">
             <textarea placeholder="Your Message" required aria-label="Your Message"></textarea>
@@ -273,8 +273,8 @@
         <div id="formFeedback"></div>
     </section>
     
-    <section id="faq" class="hidden">
-        <h2>Frequently Asked Questions</h2>
+    <section id="faq" class="hidden" aria-labelledby="faq-header">
+        <h2 id="faq-header">Frequently Asked Questions</h2>
         <div class="faq-item" onclick="toggleFAQ('answer1', this)">
             <strong>Q: What is this website about?</strong>
             <div id="answer1" class="faq-answer" style="display: none;">
@@ -291,14 +291,14 @@
 </main>
 
 <footer>
-    <p>&copy; <span id="currentYear"></span> My Interactive Website. Contact us at info@example.com or call us at (123) 456-7890.</p>
-    <div class="social-icons">
+    <p>&copy; <span id="currentYear"></span> My Interactive Website. | <a href="/privacy" aria-label="Privacy Policy">Privacy Policy</a> | <a href="/terms" aria-label="Terms of Service">Terms of Service</a></p>
+    <div class="social-icons" role="navigation" aria-label="Social Media Links">
         <a href="https://twitter.com" target="_blank" aria-label="Visit our Twitter"><i class="fab fa-twitter"></i></a>
         <a href="https://facebook.com" target="_blank" aria-label="Visit our Facebook"><i class="fab fa-facebook-f"></i></a>
     </div>
 </footer>
 
-<div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center; transition: opacity 0.5s;">
+<div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center;">
     We use cookies to improve your experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button>
 </div>
 
@@ -330,9 +330,8 @@
     }
 
     function loadBlogPosts() {
-        setTimeout(() => {
-            document.getElementById('loadingBlog').innerHTML = '<p>Blog Post 1</p><p>Blog Post 2</p>';
-        }, 2000);
+        const blogPosts = ['Blog Post 1', 'Blog Post 2', 'Blog Post 3'];
+        document.getElementById('loadingBlog').innerHTML = blogPosts.join('<p></p>');
     }
 
     function showNextTestimonial() {
@@ -352,7 +351,7 @@
     
     function prevSlide() {
         const slides = document.getElementById('carouselImages');
-        currentSlide = (currentSlide - 1 + 3) % 3; // Ensure wrapping around to last index
+        currentSlide = (currentSlide - 1 + 3) % 3;
         slides.style.transform = `translateX(-${currentSlide * 100}%)`;
     }
 
