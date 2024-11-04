@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore an interactive web development showcase.">
-    <meta name="twitter:description" content="Explore an interactive web development showcase.">
-    <meta property="og:title" content="Explore the Wonders of Web Development">
-    <meta property="og:description" content="Explore an interactive web development showcase.">
-    <meta property="og:image" content="https://via.placeholder.com/600x400?text=Open+Graph+Image">
-
-    <link rel="icon" sizes="192x192" href="https://example.com/new-favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <title>Explore the Wonders of Web Development</title>
     <style>
@@ -26,6 +19,7 @@
             --text-dark: #ffffff;
             --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
             --button-hover: #45a049;
+            --font-size: 16px;
         }
 
         * {
@@ -63,26 +57,41 @@
 
         nav {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
         }
 
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-content {
+        .sidebar {
             display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 200px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            z-index: 1000;
+            transition: transform 0.3s;
+            transform: translateX(-100%);
         }
 
-        .dropdown:hover .dropdown-content {
-            display: block;
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        header h1 {
+            margin: 0;
         }
 
         button {
@@ -100,17 +109,6 @@
             transform: scale(1.05);
         }
 
-        footer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 10px;
-        }
-
         .carousel, .gallery-grid {
             position: relative;
             overflow: hidden;
@@ -121,7 +119,8 @@
             transition: transform 0.5s ease-in-out;
         }
 
-        .carousel img, .gallery-grid img {
+        .carousel img,
+        .gallery-grid img {
             max-width: 100%;
             height: auto;
             display: block;
@@ -166,10 +165,13 @@
             color: #555;
             margin: 20px;
         }
+
         @media (max-width: 800px) {
             nav {
-                flex-direction: column;
-                align-items: flex-start;
+                display: none;
+            }
+            .sidebar {
+                display: block;
             }
         }
     </style>
@@ -177,25 +179,23 @@
 <body>
 <header>
     <h1>Welcome to My Interactive Website</h1>
-    <input type="text" id="searchBar" placeholder="Search..." aria-label="Search">
+    <button id="toggleSidebar" onclick="toggleSidebar()">Toggle Menu</button>
     <button id="toggleDarkMode" onclick="toggleTheme()">Toggle Theme</button>
-    <nav>
-        <div class="dropdown">
-            <button class="menu-icon">&#9776;</button>
-            <div class="dropdown-content" role="menu">
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('home')">Home</div>
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('about')">About</div>
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('services')">Services</div>
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('blog')">Blog</div>
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('gallery')">Gallery</div>
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('carousel')">Carousel</div>
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('testimonials')">Testimonials</div>
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('contact')">Contact</div>
-                <div role="menuitem" tabindex="0" onclick="smoothScroll('faq')">FAQ</div>
-            </div>
-        </div>
-    </nav>
 </header>
+
+<nav class="sidebar" id="sidebar">
+    <ul>
+        <li onclick="smoothScroll('home')">Home</li>
+        <li onclick="smoothScroll('about')">About</li>
+        <li onclick="smoothScroll('services')">Services</li>
+        <li onclick="smoothScroll('blog')">Blog</li>
+        <li onclick="smoothScroll('gallery')">Gallery</li>
+        <li onclick="smoothScroll('carousel')">Carousel</li>
+        <li onclick="smoothScroll('testimonials')">Testimonials</li>
+        <li onclick="smoothScroll('contact')">Contact</li>
+        <li onclick="smoothScroll('faq')">FAQ</li>
+    </ul>
+</nav>
 
 <main role="main">
     <section id="home" class="visible" aria-labelledby="home-header">
@@ -227,10 +227,14 @@
     <section id="gallery" class="hidden" aria-labelledby="gallery-header">
         <h2 id="gallery-header">Gallery</h2>
         <div class="gallery-grid">
-            <img src="https://via.placeholder.com/300?text=Image+1" alt="Gallery Image 1">
-            <img src="https://via.placeholder.com/300?text=Image+2" alt="Gallery Image 2">
-            <img src="https://via.placeholder.com/300?text=Image+3" alt="Gallery Image 3">
-            <img src="https://via.placeholder.com/300?text=Image+4" alt="Gallery Image 4">
+            <img src="https://via.placeholder.com/300?text=Image+1" alt="Gallery Image 1" onclick="openLightbox(this.src)">
+            <img src="https://via.placeholder.com/300?text=Image+2" alt="Gallery Image 2" onclick="openLightbox(this.src)">
+            <img src="https://via.placeholder.com/300?text=Image+3" alt="Gallery Image 3" onclick="openLightbox(this.src)">
+            <img src="https://via.placeholder.com/300?text=Image+4" alt="Gallery Image 4" onclick="openLightbox(this.src)">
+        </div>
+        <div id="lightbox" style="display:none;">
+            <span onclick="closeLightbox()" style="cursor:pointer; float:right;">&times;</span>
+            <img id="lightboxImg" src="" style="max-width:100%;">
         </div>
     </section>
 
@@ -291,7 +295,7 @@
 </main>
 
 <footer>
-    <p>&copy; <span id="currentYear"></span> My Interactive Website. | <a href="/privacy" aria-label="Privacy Policy">Privacy Policy</a> | <a href="/terms" aria-label="Terms of Service">Terms of Service</a></p>
+    <p>&copy; <span id="currentYear"></span> My Interactive Website.</p>
     <div class="social-icons" role="navigation" aria-label="Social Media Links">
         <a href="https://twitter.com" target="_blank" aria-label="Visit our Twitter"><i class="fab fa-twitter"></i></a>
         <a href="https://facebook.com" target="_blank" aria-label="Visit our Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -302,9 +306,7 @@
     We use cookies to improve your experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
 <script>
-    AOS.init();
     let clickCount = 0;
     const messageHistory = [];
     let currentSlide = 0;
@@ -316,9 +318,9 @@
     }
 
     function showSection(sectionId) {
-        const sections = document.querySelectorAll('section');
-        sections.forEach(section => section.classList.remove('visible'));
-        document.getElementById(sectionId).classList.add('visible');
+        const sections = document.querySelectorAll('main > section');
+        sections.forEach(section => section.classList.add('hidden'));
+        document.getElementById(sectionId).classList.remove('hidden');
     }
 
     function addMessages() {
@@ -327,6 +329,15 @@
         messageHistory.push(`Button clicked ${clickCount} time(s)!`);
         messageContainer.innerHTML = messageHistory.join('<br>');
         localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+    }
+
+    function openLightbox(src) {
+        document.getElementById('lightboxImg').src = src;
+        document.getElementById('lightbox').style.display = 'block';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
     }
 
     function loadBlogPosts() {
@@ -376,6 +387,11 @@
         answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
     }
 
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('active');
+    }
+
     function toggleTheme() {
         const themes = ['light', 'dark', 'blue'];
         const currentTheme = localStorage.getItem('theme') || 'light';
@@ -417,12 +433,7 @@
         setInterval(() => {
             nextSlide();
         }, 3000);
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "ArrowRight") nextSlide(); 
-            if (e.key === "ArrowLeft") prevSlide(); 
-        });
-
+        
         document.getElementById('blog').addEventListener('click', loadBlogPosts);
     };
 </script>
