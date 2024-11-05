@@ -6,7 +6,6 @@
     <meta name="description" content="Explore an interactive web development showcase.">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <title>Explore the Wonders of Web Development</title>
     <style>
         :root {
@@ -109,6 +108,23 @@
             transform: scale(1.05);
         }
 
+        #backToTop {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        #backToTop.show {
+            display: block;
+        }
+
         .carousel, .gallery-grid {
             position: relative;
             overflow: hidden;
@@ -124,7 +140,6 @@
             max-width: 100%;
             height: auto;
             display: block;
-            loading="lazy";
         }
 
         .testimonial {
@@ -174,6 +189,24 @@
                 display: block;
             }
         }
+
+        button:focus {
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        #lightbox {
+            transition: opacity 0.3s ease;
+        }
+
+        #cookieConsent {
+            position:fixed; 
+            bottom:0; 
+            background-color: #4CAF50; 
+            color: white; 
+            width: 100%; 
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -202,7 +235,7 @@
         <h2 id="home-header">Welcome to My Interactive Website</h2>
         <p>This is an interactive website showcasing modern web features.</p>
         <button onclick="addMessages()">Click Me</button>
-        <div id="messageContainer"></div>
+        <div id="messageContainer" aria-live="polite"></div>
     </section>
     
     <section id="about" class="hidden" aria-labelledby="about-header">
@@ -221,7 +254,7 @@
     
     <section id="blog" class="hidden" aria-labelledby="blog-header">
         <h2 id="blog-header">Latest Blog Posts</h2>
-        <div id="loadingBlog" class="loading">Loading Blog Posts...</div>
+        <div id="loadingBlog" class="loading" aria-live="polite">Loading Blog Posts...</div>
     </section>
 
     <section id="gallery" class="hidden" aria-labelledby="gallery-header">
@@ -232,7 +265,7 @@
             <img src="https://via.placeholder.com/300?text=Image+3" alt="Gallery Image 3" onclick="openLightbox(this.src)">
             <img src="https://via.placeholder.com/300?text=Image+4" alt="Gallery Image 4" onclick="openLightbox(this.src)">
         </div>
-        <div id="lightbox" style="display:none;">
+        <div id="lightbox" style="display:none;" aria-labelledby="lightbox-header">
             <span onclick="closeLightbox()" style="cursor:pointer; float:right;">&times;</span>
             <img id="lightboxImg" src="" style="max-width:100%;">
         </div>
@@ -294,15 +327,16 @@
     </section>
 </main>
 
+<button id="backToTop" onclick="scrollToTop()">Back to Top</button>
+
 <footer>
-    <p>&copy; <span id="currentYear"></span> My Interactive Website.</p>
     <div class="social-icons" role="navigation" aria-label="Social Media Links">
-        <a href="https://twitter.com" target="_blank" aria-label="Visit our Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="https://facebook.com" target="_blank" aria-label="Visit our Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Visit our Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Visit our Facebook"><i class="fab fa-facebook-f"></i></a>
     </div>
 </footer>
 
-<div id="cookieConsent" style="position:fixed; bottom:0; background-color: #4CAF50; color: white; width: 100%; text-align: center;">
+<div id="cookieConsent">
     We use cookies to improve your experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button>
 </div>
 
@@ -373,11 +407,11 @@
         const feedback = document.getElementById('formFeedback');
 
         if (!name || !message) {
-            feedback.innerHTML = 'Please fill in all fields.';
+            feedback.innerHTML = '<span style="color: red;">Please fill in all fields.</span>';
             return;
         }
 
-        feedback.innerHTML = `Thank you, ${name}, for your message!`;
+        feedback.innerHTML = `Thank you, <strong>${name}</strong>, for your message!`;
         localStorage.setItem('userMessage', JSON.stringify({ name, message }));
         event.target.reset();
     }
@@ -395,7 +429,7 @@
     function toggleTheme() {
         const themes = ['light', 'dark', 'blue'];
         const currentTheme = localStorage.getItem('theme') || 'light';
-        const nextTheme = themes[(themes.indexOf(currentTheme)+1) % themes.length];
+        const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
         document.body.className = nextTheme;
         localStorage.setItem('theme', nextTheme);
     }
@@ -409,10 +443,21 @@
         document.getElementById("cookieConsent").style.opacity = "0";
     }
 
-    window.onload = function() {
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    window.onscroll = function () {
+        document.getElementById("backToTop").classList.toggle("show", document.body.scrollTop > 20 || document.documentElement.scrollTop > 20);
+    };
+
+    window.onload = function () {
         const currentYear = new Date().getFullYear();
         document.getElementById('currentYear').textContent = currentYear;
-        
+
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             document.body.className = savedTheme;
@@ -428,12 +473,12 @@
 
         setInterval(() => {
             showNextTestimonial();
-        }, 5000); 
+        }, 5000);
 
         setInterval(() => {
             nextSlide();
         }, 3000);
-        
+
         document.getElementById('blog').addEventListener('click', loadBlogPosts);
     };
 </script>
