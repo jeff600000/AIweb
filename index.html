@@ -13,7 +13,7 @@
             --secondary-color: #008CBA;
             --background-light: #ffffff;
             --background-dark: #121212;
-            --background-blue: #e0f7fa;
+            --background-neutral: #f0f0f0;
             --text-light: #333333;
             --text-dark: #ffffff;
             --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
@@ -39,8 +39,8 @@
             color: var(--text-dark);
         }
 
-        body.blue-mode {
-            background-color: var(--background-blue);
+        body.neutral-mode {
+            background-color: var(--background-neutral);
             color: var(--text-light);
         }
 
@@ -52,6 +52,19 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .nav-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: white;
         }
 
         nav {
@@ -83,14 +96,7 @@
         main {
             display: grid;
             grid-template-columns: 1fr;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        header h1 {
-            margin: 0;
+            padding-bottom: 70px; /* For footer spacing */
         }
 
         button {
@@ -108,7 +114,8 @@
             transform: scale(1.05);
         }
 
-        .carousel, .gallery-grid {
+        /* Carousel Styles */
+        .carousel {
             position: relative;
             overflow: hidden;
         }
@@ -118,61 +125,65 @@
             transition: transform 0.5s ease-in-out;
         }
 
-        .carousel img,
-        .gallery-grid img {
+        .carousel img {
             max-width: 100%;
             height: auto;
             display: block;
         }
 
-        .testimonial {
-            display: none;
+        /* Lightbox Styles */
+        #lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .testimonial.active {
-            display: block;
+        #lightbox img {
+            max-width: 90%;
+            max-height: 90%;
         }
 
-        .faq-answer {
-            display: none;
-            transition: height 0.3s ease;
-            overflow: hidden;
-        }
-
-        .gallery-grid {
+        /* New Team Section Styles */
+        .team-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* New Skills Section Style */
+        .skills-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 10px;
             padding: 20px;
         }
 
-        .gallery-grid img:hover {
-            transform: scale(1.05);
-        }
-
-        #cookieConsent {
-            position:fixed; 
-            bottom:0; 
-            background-color: #4CAF50; 
-            color: white; 
-            width: 100%; 
-            text-align: center;
-        }
-
-        @media (max-width: 800px) {
-            nav {
-                display: none;
-            }
-            .sidebar {
-                display: block;
-            }
+        #backToTop {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            color: white;
         }
     </style>
 </head>
 <body>
 <header>
     <h1>Welcome to My Interactive Website</h1>
-    <button id="toggleSidebar" onclick="toggleSidebar()">Toggle Menu</button>
+    <button class="nav-toggle" id="toggleSidebar" onclick="toggleSidebar()">&#9776;</button>
     <button id="toggleDarkMode" onclick="toggleTheme()">Toggle Theme</button>
     <select id="languageSelect" onchange="changeLanguage()">
         <option value="en">English</option>
@@ -192,6 +203,8 @@
         <li onclick="smoothScroll('contact')">Contact</li>
         <li onclick="smoothScroll('faq')">FAQ</li>
         <li onclick="smoothScroll('news')">News</li>
+        <li onclick="smoothScroll('team')">Team</li>
+        <li onclick="smoothScroll('skills')">Skills</li>
     </ul>
 </nav>
 
@@ -202,7 +215,7 @@
         <button onclick="addMessages()">Click Me</button>
         <div id="messageContainer" aria-live="polite"></div>
     </section>
-    
+
     <section id="about" class="hidden" aria-labelledby="about-header">
         <h2 id="about-header">About This Website</h2>
         <p>This site showcases various features and provides an engaging user experience.</p>
@@ -233,6 +246,8 @@
         <div id="lightbox" style="display:none;" aria-labelledby="lightbox-header">
             <span onclick="closeLightbox()" style="cursor:pointer; float:right;">&times;</span>
             <img id="lightboxImg" src="" style="max-width:100%;">
+            <button onclick="prevImage()" aria-label="Previous Image">&#10094;</button>
+            <button onclick="nextImage()" aria-label="Next Image">&#10095;</button>
         </div>
     </section>
 
@@ -296,9 +311,36 @@
         <div id="newsContent"></div>
         <button onclick="loadNews()">Load News</button>
     </section>
-</main>
 
-<button id="backToTop" onclick="scrollToTop()">Back to Top</button>
+    <section id="team" class="hidden" aria-labelledby="team-header">
+        <h2 id="team-header">Meet Our Team</h2>
+        <div class="team-grid">
+            <div>
+                <img src="https://via.placeholder.com/150" alt="Team Member 1">
+                <h3>Jane Doe</h3>
+                <p>Web Developer</p>
+            </div>
+            <div>
+                <img src="https://via.placeholder.com/150" alt="Team Member 2">
+                <h3>John Smith</h3>
+                <p>Graphic Designer</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="hidden" aria-labelledby="skills-header">
+        <h2 id="skills-header">Our Skills</h2>
+        <div class="skills-list">
+            <div>HTML</div>
+            <div>CSS</div>
+            <div>JavaScript</div>
+            <div>React</div>
+            <div>Node.js</div>
+        </div>
+    </section>
+
+    <button id="backToTop" onclick="scrollToTop()">Back to Top</button>
+</main>
 
 <footer>
     <div class="social-icons" role="navigation" aria-label="Social Media Links">
@@ -315,47 +357,53 @@
 </div>
 
 <script>
-    let clickCount = 0;
-    const messageHistory = [];
+    let messageHistory = [];
     let currentSlide = 0;
 
-    function smoothScroll(sectionId) {
-        const section = document.getElementById(sectionId);
-        section.scrollIntoView({ behavior: 'smooth' });
-        showSection(sectionId);
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('active');
     }
 
-    function showSection(sectionId) {
-        const sections = document.querySelectorAll('main > section');
-        sections.forEach(section => section.classList.add('hidden'));
-        document.getElementById(sectionId).classList.remove('hidden');
+    function toggleTheme() {
+        const themes = ['light', 'dark', 'neutral'];
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+        document.body.className = nextTheme;
+        localStorage.setItem('theme', nextTheme);
     }
 
     function addMessages() {
-        clickCount++;
         const messageContainer = document.getElementById('messageContainer');
-        messageHistory.push(`Button clicked ${clickCount} time(s)!`);
+        messageHistory.push(`Button clicked ${messageHistory.length + 1} time(s)!`);
         messageContainer.innerHTML = messageHistory.join('<br>');
-        localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+        localStorage.setItem('messages', JSON.stringify(messageHistory));
     }
 
     function openLightbox(src) {
-        document.getElementById('lightboxImg').src = src;
-        document.getElementById('lightbox').style.display = 'block';
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        lightboxImg.src = src;
+        lightbox.style.display = 'flex';
+        lightbox.style.opacity = 1; // Show the lightbox
     }
 
     function closeLightbox() {
-        document.getElementById('lightbox').style.display = 'none';
+        const lightbox = document.getElementById('lightbox');
+        lightbox.style.opacity = 0; // Fade out the lightbox
+        setTimeout(() => lightbox.style.display = 'none', 300); // Hide it after fading
     }
 
-    function loadBlogPosts() {
-        const blogPosts = ['Blog Post 1', 'Blog Post 2', 'Blog Post 3'];
-        document.getElementById('loadingBlog').innerHTML = blogPosts.join('<p></p>');
+    function nextImage() {
+        const images = document.querySelectorAll('#gallery img');
+        currentSlide = (currentSlide + 1) % images.length;
+        openLightbox(images[currentSlide].src);
     }
 
-    function loadNews() {
-        const news = ['New features added to the website!', 'Check out our latest blog post!'];
-        document.getElementById('newsContent').innerHTML = news.join('<p></p>');
+    function prevImage() {
+        const images = document.querySelectorAll('#gallery img');
+        currentSlide = (currentSlide - 1 + images.length) % images.length;
+        openLightbox(images[currentSlide].src);
     }
 
     function showNextTestimonial() {
@@ -365,18 +413,6 @@
         const nextIndex = (activeTestimonial + 1) % testimonials.length;
         testimonials[nextIndex].classList.add('active');
         document.getElementById('testimonialProgress').innerText = `${nextIndex + 1} / ${testimonials.length}`;
-    }
-
-    function nextSlide() {
-        const slides = document.getElementById('carouselImages');
-        currentSlide = (currentSlide + 1) % 3;
-        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-    }
-    
-    function prevSlide() {
-        const slides = document.getElementById('carouselImages');
-        currentSlide = (currentSlide - 1 + 3) % 3;
-        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
     }
 
     function submitForm(event) {
@@ -401,38 +437,22 @@
         element.setAttribute('aria-expanded', answer.style.display === 'block');
     }
 
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('active');
+    function loadNews() {
+        const news = ['New features added to the website!', 'Check out our latest blog post!'];
+        document.getElementById('newsContent').innerHTML = news.join('<p></p>');
     }
 
-    function toggleTheme() {
-        const themes = ['light', 'dark', 'blue'];
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
-        document.body.className = nextTheme;
-        localStorage.setItem('theme', nextTheme);
+    function smoothScroll(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.scrollIntoView({ behavior: 'smooth' });
+        showSection(sectionId);
     }
 
-    function changeLanguage() {
-        const selectedLanguage = document.getElementById('languageSelect').value;
-        if (selectedLanguage === 'en') {
-            setEnglish();
-        } else {
-            setSpanish();
-        }
-    }
-
-    function setEnglish() {
-        // Set English Texts
-        document.getElementById('home-header').innerText = 'Welcome to My Interactive Website';
-        // More translations can be added here...
-    }
-
-    function setSpanish() {
-        // Set Spanish Texts
-        document.getElementById('home-header').innerText = 'Bienvenido a Mi Sitio Web Interactivo';
-        // More translations can be added here...
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 
     function acceptCookies() {
@@ -444,32 +464,19 @@
         document.getElementById("cookieConsent").style.opacity = "0";
     }
 
-    function scrollToTop() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    }
-
     window.onscroll = function () {
-        document.getElementById("backToTop").classList.toggle("show", document.body.scrollTop > 20 || document.documentElement.scrollTop > 20);
+        const backToTopButton = document.getElementById("backToTop");
+        backToTopButton.style.display = document.documentElement.scrollTop > 20 ? "block" : "none";
     };
 
     window.onload = function () {
-        const currentYear = new Date().getFullYear();
-        document.getElementById('currentYear').textContent = currentYear;
-
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             document.body.className = savedTheme;
         }
-        const savedMessages = JSON.parse(localStorage.getItem('messageHistory'));
+        const savedMessages = JSON.parse(localStorage.getItem('messages'));
         if (savedMessages) {
             messageHistory.push(...savedMessages);
-        }
-        const savedUserMessage = JSON.parse(localStorage.getItem('userMessage'));
-        if (savedUserMessage) {
-            document.getElementById('formFeedback').innerHTML = `Welcome back! Last message from ${savedUserMessage.name}: ${savedUserMessage.message}`;
         }
     };
 </script>
