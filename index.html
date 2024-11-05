@@ -55,8 +55,9 @@
         }
 
         nav {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            justify-items: center;
             align-items: center;
         }
 
@@ -79,14 +80,13 @@
             transform: translateX(0);
         }
 
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
+        main {
+            display: grid;
+            grid-template-columns: 1fr;
         }
 
-        .sidebar ul li {
-            padding: 10px;
-            cursor: pointer;
+        .hidden {
+            display: none;
         }
 
         header h1 {
@@ -106,23 +106,6 @@
         button:hover {
             background-color: var(--button-hover);
             transform: scale(1.05);
-        }
-
-        #backToTop {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 10px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: none;
-        }
-
-        #backToTop.show {
-            display: block;
         }
 
         .carousel, .gallery-grid {
@@ -150,12 +133,8 @@
             display: block;
         }
 
-        #contact {
-            max-width: 600px;
-            margin: auto;
-        }
-
         .faq-answer {
+            display: none;
             transition: height 0.3s ease;
             overflow: hidden;
         }
@@ -167,36 +146,8 @@
             padding: 20px;
         }
 
-        .gallery-grid img {
-            transition: transform 0.3s;
-        }
-
         .gallery-grid img:hover {
             transform: scale(1.05);
-        }
-
-        .loading {
-            font-size: 1.2em;
-            color: #555;
-            margin: 20px;
-        }
-
-        @media (max-width: 800px) {
-            nav {
-                display: none;
-            }
-            .sidebar {
-                display: block;
-            }
-        }
-
-        button:focus {
-            outline: 2px solid var(--secondary-color);
-            outline-offset: 2px;
-        }
-
-        #lightbox {
-            transition: opacity 0.3s ease;
         }
 
         #cookieConsent {
@@ -207,6 +158,15 @@
             width: 100%; 
             text-align: center;
         }
+
+        @media (max-width: 800px) {
+            nav {
+                display: none;
+            }
+            .sidebar {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
@@ -214,6 +174,10 @@
     <h1>Welcome to My Interactive Website</h1>
     <button id="toggleSidebar" onclick="toggleSidebar()">Toggle Menu</button>
     <button id="toggleDarkMode" onclick="toggleTheme()">Toggle Theme</button>
+    <select id="languageSelect" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+    </select>
 </header>
 
 <nav class="sidebar" id="sidebar">
@@ -227,6 +191,7 @@
         <li onclick="smoothScroll('testimonials')">Testimonials</li>
         <li onclick="smoothScroll('contact')">Contact</li>
         <li onclick="smoothScroll('faq')">FAQ</li>
+        <li onclick="smoothScroll('news')">News</li>
     </ul>
 </nav>
 
@@ -283,7 +248,7 @@
             <button id="nextBtn" onclick="nextSlide()" aria-label="Next Image">&#10095;</button>
         </div>
     </section>
-    
+
     <section id="testimonials" class="hidden" aria-labelledby="testimonials-header">
         <h2 id="testimonials-header">User Testimonials</h2>
         <div class="testimonial-carousel">
@@ -312,18 +277,24 @@
     
     <section id="faq" class="hidden" aria-labelledby="faq-header">
         <h2 id="faq-header">Frequently Asked Questions</h2>
-        <div class="faq-item" onclick="toggleFAQ('answer1', this)">
+        <div class="faq-item" onclick="toggleFAQ('answer1', this)" aria-expanded="false">
             <strong>Q: What is this website about?</strong>
-            <div id="answer1" class="faq-answer" style="display: none;">
+            <div id="answer1" class="faq-answer">
                 <p>A: It is an interactive demo showcasing various web features.</p>
             </div>
         </div>
-        <div class="faq-item" onclick="toggleFAQ('answer2', this)">
+        <div class="faq-item" onclick="toggleFAQ('answer2', this)" aria-expanded="false">
             <strong>Q: How can I contact support?</strong>
-            <div id="answer2" class="faq-answer" style="display: none;">
+            <div id="answer2" class="faq-answer">
                 <p>A: You can contact support via the contact form on this website.</p>
             </div>
         </div>
+    </section>
+
+    <section id="news" class="hidden" aria-labelledby="news-header">
+        <h2 id="news-header">Latest News</h2>
+        <div id="newsContent"></div>
+        <button onclick="loadNews()">Load News</button>
     </section>
 </main>
 
@@ -333,6 +304,9 @@
     <div class="social-icons" role="navigation" aria-label="Social Media Links">
         <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Visit our Twitter"><i class="fab fa-twitter"></i></a>
         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Visit our Facebook"><i class="fab fa-facebook-f"></i></a>
+    </div>
+    <div>
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <button onclick="subscribe()">Subscribe</button>
     </div>
 </footer>
 
@@ -379,6 +353,11 @@
         document.getElementById('loadingBlog').innerHTML = blogPosts.join('<p></p>');
     }
 
+    function loadNews() {
+        const news = ['New features added to the website!', 'Check out our latest blog post!'];
+        document.getElementById('newsContent').innerHTML = news.join('<p></p>');
+    }
+
     function showNextTestimonial() {
         const testimonials = document.querySelectorAll('.testimonial');
         const activeTestimonial = Array.from(testimonials).findIndex(testimonial => testimonial.classList.contains('active'));
@@ -419,6 +398,7 @@
     function toggleFAQ(answerId, element) {
         const answer = document.getElementById(answerId);
         answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+        element.setAttribute('aria-expanded', answer.style.display === 'block');
     }
 
     function toggleSidebar() {
@@ -432,6 +412,27 @@
         const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
         document.body.className = nextTheme;
         localStorage.setItem('theme', nextTheme);
+    }
+
+    function changeLanguage() {
+        const selectedLanguage = document.getElementById('languageSelect').value;
+        if (selectedLanguage === 'en') {
+            setEnglish();
+        } else {
+            setSpanish();
+        }
+    }
+
+    function setEnglish() {
+        // Set English Texts
+        document.getElementById('home-header').innerText = 'Welcome to My Interactive Website';
+        // More translations can be added here...
+    }
+
+    function setSpanish() {
+        // Set Spanish Texts
+        document.getElementById('home-header').innerText = 'Bienvenido a Mi Sitio Web Interactivo';
+        // More translations can be added here...
     }
 
     function acceptCookies() {
@@ -470,16 +471,6 @@
         if (savedUserMessage) {
             document.getElementById('formFeedback').innerHTML = `Welcome back! Last message from ${savedUserMessage.name}: ${savedUserMessage.message}`;
         }
-
-        setInterval(() => {
-            showNextTestimonial();
-        }, 5000);
-
-        setInterval(() => {
-            nextSlide();
-        }, 3000);
-
-        document.getElementById('blog').addEventListener('click', loadBlogPosts);
     };
 </script>
 </body>
