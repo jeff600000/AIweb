@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore an interactive web development showcase.">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Explore the Wonders of Web Development</title>
     <style>
@@ -58,47 +58,6 @@
             margin: 0;
         }
 
-        .nav-toggle {
-            display: none;
-            cursor: pointer;
-            font-size: 24px;
-            background: none;
-            border: none;
-            color: white;
-        }
-
-        nav {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            justify-items: center;
-            align-items: center;
-        }
-
-        .sidebar {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 250px;
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            z-index: 1000;
-            transition: transform 0.3s;
-            transform: translateX(-100%);
-        }
-
-        .sidebar.active {
-            transform: translateX(0);
-        }
-
-        main {
-            display: grid;
-            grid-template-columns: 1fr;
-            padding-bottom: 70px; /* For footer spacing */
-        }
-
         button {
             padding: 10px 20px;
             border: none;
@@ -114,24 +73,47 @@
             transform: scale(1.05);
         }
 
-        /* Carousel Styles */
-        .carousel {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .carousel-images {
+        nav {
             display: flex;
-            transition: transform 0.5s ease-in-out;
+            flex-direction: column;
         }
 
-        .carousel img {
-            max-width: 100%;
-            height: auto;
-            display: block;
+        nav ul {
+            list-style: none;
+            padding: 0;
         }
 
-        /* Lightbox Styles */
+        nav li {
+            cursor: pointer;
+            padding: 10px;
+            transition: background 0.3s;
+        }
+
+        nav li:hover {
+            background: var(--secondary-color);
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 20px;
+        }
+        
+        .hidden { display: none; }
+        .visible { display: block; }
+
         #lightbox {
             position: fixed;
             top: 0;
@@ -144,39 +126,12 @@
             align-items: center;
             opacity: 0;
             transition: opacity 0.3s;
+            z-index: 1001;
         }
 
         #lightbox img {
             max-width: 90%;
             max-height: 90%;
-        }
-
-        /* New Team Section Styles */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        /* New Skills Section Style */
-        .skills-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            padding: 20px;
-        }
-
-        #backToTop {
-            display: none;
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--primary-color);
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            color: white;
         }
     </style>
 </head>
@@ -185,135 +140,84 @@
     <h1>Welcome to My Interactive Website</h1>
     <button class="nav-toggle" id="toggleSidebar" onclick="toggleSidebar()">&#9776;</button>
     <button id="toggleDarkMode" onclick="toggleTheme()">Toggle Theme</button>
-    <select id="languageSelect" onchange="changeLanguage()">
-        <option value="en">English</option>
-        <option value="es">Español</option>
-    </select>
 </header>
 
-<nav class="sidebar" id="sidebar">
+<nav class="sidebar" id="sidebar" aria-label="Main Navigation">
     <ul>
         <li onclick="smoothScroll('home')">Home</li>
         <li onclick="smoothScroll('about')">About</li>
         <li onclick="smoothScroll('services')">Services</li>
-        <li onclick="smoothScroll('blog')">Blog</li>
         <li onclick="smoothScroll('gallery')">Gallery</li>
-        <li onclick="smoothScroll('carousel')">Carousel</li>
         <li onclick="smoothScroll('testimonials')">Testimonials</li>
         <li onclick="smoothScroll('contact')">Contact</li>
         <li onclick="smoothScroll('faq')">FAQ</li>
-        <li onclick="smoothScroll('news')">News</li>
         <li onclick="smoothScroll('team')">Team</li>
-        <li onclick="smoothScroll('skills')">Skills</li>
     </ul>
 </nav>
 
 <main role="main">
-    <section id="home" class="visible" aria-labelledby="home-header">
-        <h2 id="home-header">Welcome to My Interactive Website</h2>
+    <section id="home" class="visible">
+        <h2>Welcome to My Interactive Website</h2>
         <p>This is an interactive website showcasing modern web features.</p>
-        <button onclick="addMessages()">Click Me</button>
-        <div id="messageContainer" aria-live="polite"></div>
     </section>
 
-    <section id="about" class="hidden" aria-labelledby="about-header">
-        <h2 id="about-header">About This Website</h2>
+    <section id="about" class="hidden">
+        <h2>About This Website</h2>
         <p>This site showcases various features and provides an engaging user experience.</p>
     </section>
-    
-    <section id="services" class="hidden" aria-labelledby="services-header">
-        <h2 id="services-header">Our Services</h2>
+
+    <section id="services" class="hidden">
+        <h2>Our Services</h2>
         <ul>
             <li>Web Development</li>
             <li>Graphic Design</li>
             <li>SEO Optimization</li>
         </ul>
     </section>
-    
-    <section id="blog" class="hidden" aria-labelledby="blog-header">
-        <h2 id="blog-header">Latest Blog Posts</h2>
-        <div id="loadingBlog" class="loading" aria-live="polite">Loading Blog Posts...</div>
-    </section>
 
-    <section id="gallery" class="hidden" aria-labelledby="gallery-header">
-        <h2 id="gallery-header">Gallery</h2>
+    <section id="gallery" class="hidden">
+        <h2>Gallery</h2>
         <div class="gallery-grid">
             <img src="https://via.placeholder.com/300?text=Image+1" alt="Gallery Image 1" onclick="openLightbox(this.src)">
             <img src="https://via.placeholder.com/300?text=Image+2" alt="Gallery Image 2" onclick="openLightbox(this.src)">
             <img src="https://via.placeholder.com/300?text=Image+3" alt="Gallery Image 3" onclick="openLightbox(this.src)">
-            <img src="https://via.placeholder.com/300?text=Image+4" alt="Gallery Image 4" onclick="openLightbox(this.src)">
         </div>
-        <div id="lightbox" style="display:none;" aria-labelledby="lightbox-header">
-            <span onclick="closeLightbox()" style="cursor:pointer; float:right;">&times;</span>
-            <img id="lightboxImg" src="" style="max-width:100%;">
-            <button onclick="prevImage()" aria-label="Previous Image">&#10094;</button>
-            <button onclick="nextImage()" aria-label="Next Image">&#10095;</button>
+        <div id="lightbox" style="display:none;">
+            <span onclick="closeLightbox()" style="cursor:pointer;">&times;</span>
+            <img id="lightboxImg" src="">
         </div>
     </section>
 
-    <section id="carousel" class="hidden" aria-labelledby="carousel-header">
-        <h2 id="carousel-header">Image Carousel</h2>
-        <div class="carousel" aria-label="Photo Carousel">
-            <div class="carousel-images" id="carouselImages">
-                <img src="https://via.placeholder.com/600x400/4CAF50/FFFFFF?text=Image+1" alt="Carousel Image 1" loading="lazy">
-                <img src="https://via.placeholder.com/600x400/008CBA/FFFFFF?text=Image+2" alt="Carousel Image 2" loading="lazy">
-                <img src="https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Image+3" alt="Carousel Image 3" loading="lazy">
-            </div>
-            <button id="prevBtn" onclick="prevSlide()" aria-label="Previous Image">&#10094;</button>
-            <button id="nextBtn" onclick="nextSlide()" aria-label="Next Image">&#10095;</button>
+    <section id="testimonials" class="hidden">
+        <h2>User Testimonials</h2>
+        <div>
+            <p>"This website has been incredibly useful for my projects!" - Jane Doe</p>
+            <p>"An absolutely amazing website!" - John Smith</p>
         </div>
     </section>
 
-    <section id="testimonials" class="hidden" aria-labelledby="testimonials-header">
-        <h2 id="testimonials-header">User Testimonials</h2>
-        <div class="testimonial-carousel">
-            <div class="testimonial active" aria-live="polite">
-                <h3>Jane Doe <i class="fas fa-quote-left"></i></h3>
-                <p>"This website has been incredibly useful for my projects!"</p>
-            </div>
-            <div class="testimonial">
-                <h3>John Smith <i class="fas fa-quote-left"></i></h3>
-                <p>"An absolutely amazing website!"</p>
-            </div>
-            <button onclick="showNextTestimonial()">Next</button>
-            <div id="testimonialProgress">1 / 2</div>
-        </div>
-    </section>
-    
-    <section id="contact" class="hidden" aria-labelledby="contact-header">
-        <h2 id="contact-header">Contact Us</h2>
+    <section id="contact" class="hidden">
+        <h2>Contact Us</h2>
         <form onsubmit="submitForm(event)">
-            <input type="text" placeholder="Your Name" required pattern="[A-Za-z ]+" aria-label="Your Name">
-            <textarea placeholder="Your Message" required aria-label="Your Message"></textarea>
+            <input type="text" placeholder="Your Name" required>
+            <textarea placeholder="Your Message" required></textarea>
             <button type="submit">Send</button>
         </form>
         <div id="formFeedback"></div>
     </section>
-    
-    <section id="faq" class="hidden" aria-labelledby="faq-header">
-        <h2 id="faq-header">Frequently Asked Questions</h2>
-        <div class="faq-item" onclick="toggleFAQ('answer1', this)" aria-expanded="false">
+
+    <section id="faq" class="hidden">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item" onclick="toggleFAQ(this)">
             <strong>Q: What is this website about?</strong>
-            <div id="answer1" class="faq-answer">
+            <div class="faq-answer">
                 <p>A: It is an interactive demo showcasing various web features.</p>
             </div>
         </div>
-        <div class="faq-item" onclick="toggleFAQ('answer2', this)" aria-expanded="false">
-            <strong>Q: How can I contact support?</strong>
-            <div id="answer2" class="faq-answer">
-                <p>A: You can contact support via the contact form on this website.</p>
-            </div>
-        </div>
     </section>
 
-    <section id="news" class="hidden" aria-labelledby="news-header">
-        <h2 id="news-header">Latest News</h2>
-        <div id="newsContent"></div>
-        <button onclick="loadNews()">Load News</button>
-    </section>
-
-    <section id="team" class="hidden" aria-labelledby="team-header">
-        <h2 id="team-header">Meet Our Team</h2>
+    <section id="team" class="hidden">
+        <h2>Meet Our Team</h2>
         <div class="team-grid">
             <div>
                 <img src="https://via.placeholder.com/150" alt="Team Member 1">
@@ -327,57 +231,33 @@
             </div>
         </div>
     </section>
-
-    <section id="skills" class="hidden" aria-labelledby="skills-header">
-        <h2 id="skills-header">Our Skills</h2>
-        <div class="skills-list">
-            <div>HTML</div>
-            <div>CSS</div>
-            <div>JavaScript</div>
-            <div>React</div>
-            <div>Node.js</div>
-        </div>
-    </section>
-
-    <button id="backToTop" onclick="scrollToTop()">Back to Top</button>
 </main>
 
 <footer>
-    <div class="social-icons" role="navigation" aria-label="Social Media Links">
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Visit our Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Visit our Facebook"><i class="fab fa-facebook-f"></i></a>
-    </div>
-    <div>
-        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <button onclick="subscribe()">Subscribe</button>
+    <p>Find us on social media:</p>
+    <div class="social-icons">
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
     </div>
 </footer>
 
-<div id="cookieConsent">
-    We use cookies to improve your experience. <button onclick="acceptCookies()">Accept</button> <button onclick="rejectCookies()">Opt-Out</button>
-</div>
-
 <script>
-    let messageHistory = [];
-    let currentSlide = 0;
-
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.toggle('active');
     }
 
     function toggleTheme() {
-        const themes = ['light', 'dark', 'neutral'];
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
-        document.body.className = nextTheme;
-        localStorage.setItem('theme', nextTheme);
+        const currentTheme = document.body.className;
+        document.body.className = currentTheme === 'dark-mode' ? '' : 'dark-mode';
     }
 
-    function addMessages() {
-        const messageContainer = document.getElementById('messageContainer');
-        messageHistory.push(`Button clicked ${messageHistory.length + 1} time(s)!`);
-        messageContainer.innerHTML = messageHistory.join('<br>');
-        localStorage.setItem('messages', JSON.stringify(messageHistory));
+    function smoothScroll(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.scrollIntoView({ behavior: 'smooth' });
+        const sections = document.querySelectorAll('main > section');
+        sections.forEach(sec => sec.classList.add('hidden'));
+        section.classList.remove('hidden');
     }
 
     function openLightbox(src) {
@@ -385,99 +265,35 @@
         const lightboxImg = document.getElementById('lightboxImg');
         lightboxImg.src = src;
         lightbox.style.display = 'flex';
-        lightbox.style.opacity = 1; // Show the lightbox
+        requestAnimationFrame(() => {
+            lightbox.style.opacity = 1;
+        });
     }
 
     function closeLightbox() {
         const lightbox = document.getElementById('lightbox');
-        lightbox.style.opacity = 0; // Fade out the lightbox
-        setTimeout(() => lightbox.style.display = 'none', 300); // Hide it after fading
-    }
-
-    function nextImage() {
-        const images = document.querySelectorAll('#gallery img');
-        currentSlide = (currentSlide + 1) % images.length;
-        openLightbox(images[currentSlide].src);
-    }
-
-    function prevImage() {
-        const images = document.querySelectorAll('#gallery img');
-        currentSlide = (currentSlide - 1 + images.length) % images.length;
-        openLightbox(images[currentSlide].src);
-    }
-
-    function showNextTestimonial() {
-        const testimonials = document.querySelectorAll('.testimonial');
-        const activeTestimonial = Array.from(testimonials).findIndex(testimonial => testimonial.classList.contains('active'));
-        testimonials[activeTestimonial].classList.remove('active');
-        const nextIndex = (activeTestimonial + 1) % testimonials.length;
-        testimonials[nextIndex].classList.add('active');
-        document.getElementById('testimonialProgress').innerText = `${nextIndex + 1} / ${testimonials.length}`;
+        lightbox.style.opacity = 0;
+        setTimeout(() => lightbox.style.display = 'none', 300);
     }
 
     function submitForm(event) {
         event.preventDefault();
-        const name = event.target[0].value.trim();
-        const message = event.target[1].value.trim();
         const feedback = document.getElementById('formFeedback');
-
-        if (!name || !message) {
-            feedback.innerHTML = '<span style="color: red;">Please fill in all fields.</span>';
-            return;
-        }
-
-        feedback.innerHTML = `Thank you, <strong>${name}</strong>, for your message!`;
-        localStorage.setItem('userMessage', JSON.stringify({ name, message }));
-        event.target.reset();
+        feedback.textContent = 'Thank you for your message!';
     }
 
-    function toggleFAQ(answerId, element) {
-        const answer = document.getElementById(answerId);
+    function toggleFAQ(element) {
+        const answer = element.querySelector('.faq-answer');
         answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
-        element.setAttribute('aria-expanded', answer.style.display === 'block');
     }
 
-    function loadNews() {
-        const news = ['New features added to the website!', 'Check out our latest blog post!'];
-        document.getElementById('newsContent').innerHTML = news.join('<p></p>');
-    }
-
-    function smoothScroll(sectionId) {
-        const section = document.getElementById(sectionId);
-        section.scrollIntoView({ behavior: 'smooth' });
-        showSection(sectionId);
-    }
-
-    function scrollToTop() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    window.onload = function() {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.addEventListener('transitionend', () => {
+            if (lightbox.style.opacity === '0') {
+                lightbox.style.display = 'none';
+            }
         });
-    }
-
-    function acceptCookies() {
-        localStorage.setItem("cookiesAccepted", "true");
-        document.getElementById("cookieConsent").style.opacity = "0";
-    }
-
-    function rejectCookies() {
-        document.getElementById("cookieConsent").style.opacity = "0";
-    }
-
-    window.onscroll = function () {
-        const backToTopButton = document.getElementById("backToTop");
-        backToTopButton.style.display = document.documentElement.scrollTop > 20 ? "block" : "none";
-    };
-
-    window.onload = function () {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            document.body.className = savedTheme;
-        }
-        const savedMessages = JSON.parse(localStorage.getItem('messages'));
-        if (savedMessages) {
-            messageHistory.push(...savedMessages);
-        }
     };
 </script>
 </body>
