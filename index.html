@@ -39,11 +39,6 @@
             color: var(--text-dark);
         }
 
-        body.neutral-mode {
-            background-color: var(--background-neutral);
-            color: var(--text-light);
-        }
-
         header, footer {
             background: var(--gradient-header);
             color: white;
@@ -76,6 +71,21 @@
         nav {
             display: flex;
             flex-direction: column;
+            width: 200px;
+            position: absolute;
+            left: 0;
+            top: 50px;
+            background-color: var(--background-light);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        nav.active {
+            transform: translateX(0);
+        }
+
+        nav.inactive {
+            transform: translateX(-100%);
         }
 
         nav ul {
@@ -95,6 +105,8 @@
 
         main {
             padding: 20px;
+            margin-left: 220px;
+            transition: margin-left 0.3s ease;
         }
 
         .team-grid {
@@ -127,22 +139,27 @@
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 1001;
+            pointer-events: none;
         }
 
         #lightbox img {
             max-width: 90%;
             max-height: 90%;
         }
+
+        .faq-answer {
+            display: none;
+        }
     </style>
 </head>
 <body>
 <header>
     <h1>Welcome to My Interactive Website</h1>
-    <button class="nav-toggle" id="toggleSidebar" onclick="toggleSidebar()">&#9776;</button>
+    <button class="nav-toggle" id="toggleSidebar">&#9776;</button>
     <button id="toggleDarkMode" onclick="toggleTheme()">Toggle Theme</button>
 </header>
 
-<nav class="sidebar" id="sidebar" aria-label="Main Navigation">
+<nav class="sidebar inactive" id="sidebar" aria-label="Main Navigation">
     <ul>
         <li onclick="smoothScroll('home')">Home</li>
         <li onclick="smoothScroll('about')">About</li>
@@ -183,7 +200,7 @@
             <img src="https://via.placeholder.com/300?text=Image+3" alt="Gallery Image 3" onclick="openLightbox(this.src)">
         </div>
         <div id="lightbox" style="display:none;">
-            <span onclick="closeLightbox()" style="cursor:pointer;">&times;</span>
+            <span onclick="closeLightbox()" style="cursor:pointer; color:white;">&times;</span>
             <img id="lightboxImg" src="">
         </div>
     </section>
@@ -242,11 +259,16 @@
 </footer>
 
 <script>
+    document.getElementById('toggleSidebar').addEventListener('click', toggleSidebar);
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
+        const main = document.querySelector('main');
+        sidebar.classList.toggle('inactive');
         sidebar.classList.toggle('active');
+        main.style.marginLeft = sidebar.classList.contains('active') ? '220px' : '20px';
     }
 
+    document.getElementById('toggleDarkMode').addEventListener('click', toggleTheme);
     function toggleTheme() {
         const currentTheme = document.body.className;
         document.body.className = currentTheme === 'dark-mode' ? '' : 'dark-mode';
@@ -267,12 +289,14 @@
         lightbox.style.display = 'flex';
         requestAnimationFrame(() => {
             lightbox.style.opacity = 1;
+            lightbox.style.pointerEvents = 'auto';
         });
     }
 
     function closeLightbox() {
         const lightbox = document.getElementById('lightbox');
         lightbox.style.opacity = 0;
+        lightbox.style.pointerEvents = 'none';
         setTimeout(() => lightbox.style.display = 'none', 300);
     }
 
