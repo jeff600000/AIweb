@@ -214,8 +214,8 @@
 <header>
     <img src="https://via.placeholder.com/50?text=Logo" alt="Site Logo">
     <h1>Welcome to My Interactive Website</h1>
-    <button class="nav-toggle" id="toggleSidebar">&#9776;</button>
-    <button id="toggleDarkMode">Toggle Theme</button>
+    <button class="nav-toggle" id="toggleSidebar" aria-haspopup="true">☰</button>
+    <button id="toggleDarkMode" aria-pressed="false">Toggle Theme</button>
 </header>
 
 <nav class="sidebar inactive" id="sidebar" aria-label="Main Navigation">
@@ -272,7 +272,7 @@
 
     <section id="testimonials" class="hidden">
         <h2>User Testimonials</h2>
-        <div id="testimonialsContainer">
+        <div id="testimonialsContainer" role="article">
             <!-- Testimonials will be auto-rotated -->
         </div>
     </section>
@@ -285,8 +285,8 @@
             <input type="tel" placeholder="Your Phone (optional)">
             <textarea placeholder="Your Message" required></textarea>
             <button type="submit">Send</button>
+            <div id="formFeedback" class="toast">Thank you for your message!</div>
         </form>
-        <div id="formFeedback" class="toast">Thank you for your message!</div>
     </section>
 
     <section id="faq" class="hidden">
@@ -307,19 +307,24 @@
 
     <section id="team" class="hidden">
         <h2>Meet Our Team</h2>
-        <div id="teamContainer" class="team-grid">
+        <aside id="teamContainer" class="team-grid" role="contentinfo">
             <!-- Team members will be loaded here -->
-        </div>
+        </aside>
     </section>
 </main>
 
 <footer>
     <p>Find us on social media:</p>
     <div class="social-icons">
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Twitter" title="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="Facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="LinkedIn" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
     </div>
-    <p>&copy; <span id="currentYear"></span> Your Company Name - <a href="#" style="color: white;">Terms of Service</a> | <a href="#" style="color: white;">Privacy Policy</a></p>
+    <p>&copy; <span id="currentYear"></span> Your Company Name - 
+        <a href="#" style="color: white;">Terms of Service</a> | 
+        <a href="#" style="color: white;">Privacy Policy</a>
+    </p>
 </footer>
 
 <script>
@@ -333,6 +338,7 @@
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme) {
             document.body.classList.toggle('dark-mode', currentTheme === 'dark');
+            document.getElementById('toggleDarkMode').setAttribute('aria-pressed', currentTheme === 'dark');
         }
         loadTestimonials();
         loadTeamMembers();
@@ -355,6 +361,7 @@
         const newTheme = currentTheme === 'dark-mode' ? '' : 'dark-mode';
         body.className = newTheme;
         localStorage.setItem('theme', newTheme === 'dark-mode' ? 'dark' : 'light');
+        document.getElementById('toggleDarkMode').setAttribute('aria-pressed', newTheme === 'dark-mode');
     }
 
     function smoothScroll(sectionId) {
