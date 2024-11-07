@@ -203,6 +203,9 @@
                 width: 100%;
                 grid-template-columns: 1fr;
             }
+            main {
+                margin-left: 0; 
+            }
             header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -316,15 +319,12 @@
 <footer>
     <p>Find us on social media:</p>
     <div class="social-icons">
-        <a href="#" aria-label="Twitter" title="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="#" aria-label="Facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" aria-label="Instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" aria-label="LinkedIn" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
     </div>
-    <p>&copy; <span id="currentYear"></span> Your Company Name - 
-        <a href="#" style="color: white;">Terms of Service</a> | 
-        <a href="#" style="color: white;">Privacy Policy</a>
-    </p>
+    <p>&copy; <span id="currentYear"></span> Your Company Name</p>
 </footer>
 
 <script>
@@ -386,8 +386,10 @@
         }
 
         lightbox.style.display = 'flex';
-        lightbox.style.opacity = 1;
-        lightbox.style.pointerEvents = 'auto';
+        setTimeout(() => {
+            lightbox.style.opacity = 1;
+            lightbox.style.pointerEvents = 'auto';
+        }, 10);
     }
 
     function closeLightbox() {
@@ -457,16 +459,24 @@
     function startTestimonialRotation() {
         const items = document.querySelectorAll('#testimonialsContainer p');
         let currentIndex = 0;
+        items[currentIndex].classList.add('active');
+
         setInterval(() => {
             items[currentIndex].classList.remove('active');
             currentIndex = (currentIndex + 1) % items.length;
             items[currentIndex].classList.add('active');
-        }, 3000);
+        }, 5000);
     }
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeLightbox();
+        }
+        if (e.key === 'ArrowRight') {
+            nextImage();
+        }
+        if (e.key === 'ArrowLeft') {
+            prevImage();
         }
     });
 
