@@ -11,6 +11,8 @@
         :root {
             --primary-color: #4CAF50;
             --secondary-color: #008CBA;
+            --primary-text-color: #444444;
+            --secondary-text-color: #bbbbbb;
             --tooltip-bg: rgba(0, 0, 0, 0.75);
             --background-light: #ffffff;
             --background-dark: #121212;
@@ -123,37 +125,16 @@
             transition: margin-left 0.3s ease;
         }
 
+        section {
+            padding: 40px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
         .gallery-grid, .team-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 10px;
             padding: 20px;
-        }
-
-        #lightbox {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1001;
-            pointer-events: none;
-        }
-
-        #lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-        }
-
-        .faq-answer {
-            display: none;
         }
 
         .toast {
@@ -185,17 +166,8 @@
             color: white;
         }
 
-        #lightbox .lightbox-nav {
-            position: absolute;
-            top: 50%;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            transform: translateY(-50%);
-        }
-
-        .active {
-            opacity: 1;
+        .faq-answer {
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -225,6 +197,7 @@
     <ul>
         <li onclick="smoothScroll('home')">Home</li>
         <li onclick="smoothScroll('about')">About</li>
+        <li onclick="smoothScroll('products')">Products</li>
         <li onclick="smoothScroll('services')">Services</li>
         <li onclick="smoothScroll('gallery')">Gallery</li>
         <li onclick="smoothScroll('testimonials')">Testimonials</li>
@@ -243,6 +216,11 @@
     <section id="about" class="hidden">
         <h2>About This Website</h2>
         <p>This site showcases various features and provides an engaging user experience, focusing on modern design and interactive elements.</p>
+    </section>
+
+    <section id="products" class="hidden">
+        <h2>Our Products</h2>
+        <div class="gallery-grid" id="productsContainer"></div>
     </section>
 
     <section id="services" class="hidden">
@@ -266,18 +244,12 @@
         <div id="lightbox">
             <span onclick="closeLightbox()" style="cursor:pointer;color:white;">&times;</span>
             <img id="lightboxImg" src="">
-            <div class="lightbox-nav">
-                <button onclick="prevImage()">&#10094;</button>
-                <button onclick="nextImage()">&#10095;</button>
-            </div>
         </div>
     </section>
 
     <section id="testimonials" class="hidden">
         <h2>User Testimonials</h2>
-        <div id="testimonialsContainer" role="article">
-            <!-- Testimonials will be auto-rotated -->
-        </div>
+        <div class="testimonials-list" id="testimonialsContainer" role="article"></div>
     </section>
 
     <section id="contact" class="hidden">
@@ -310,9 +282,7 @@
 
     <section id="team" class="hidden">
         <h2>Meet Our Team</h2>
-        <aside id="teamContainer" class="team-grid" role="contentinfo">
-            <!-- Team members will be loaded here -->
-        </aside>
+        <aside id="teamContainer" class="team-grid" role="contentinfo"></aside>
     </section>
 </main>
 
@@ -324,25 +294,25 @@
         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
     </div>
-    <p>&copy; <span id="currentYear"></span> Your Company Name</p>
 </footer>
 
 <script>
     const currentYear = new Date().getFullYear();
-    document.getElementById('currentYear').innerText = currentYear;
-
-    let currentImageIndex = 0;
-    const imagesArray = [];
+    const testimonials = [
+        { quote: "This website has been incredibly useful for my projects!", author: "Jane Doe" },
+        { quote: "An absolutely amazing website!", author: "John Smith" },
+        { quote: "I love the design and user experience!", author: "Alice Johnson" },
+    ];
+    const products = [
+        { img: "https://via.placeholder.com/300?text=Product+1", name: "Product 1" },
+        { img: "https://via.placeholder.com/300?text=Product+2", name: "Product 2" },
+        { img: "https://via.placeholder.com/300?text=Product+3", name: "Product 3" }
+    ];
 
     window.onload = function() {
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme) {
-            document.body.classList.toggle('dark-mode', currentTheme === 'dark');
-            document.getElementById('toggleDarkMode').setAttribute('aria-pressed', currentTheme === 'dark');
-        }
+        document.getElementById('currentYear').innerText = currentYear;
+        loadProducts();
         loadTestimonials();
-        loadTeamMembers();
-        startTestimonialRotation();
     };
 
     document.getElementById('toggleSidebar').addEventListener('click', toggleSidebar);
@@ -366,47 +336,26 @@
 
     function smoothScroll(sectionId) {
         const section = document.getElementById(sectionId);
-        section.scrollIntoView({ behavior: 'smooth' });
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         const sections = document.querySelectorAll('main > section');
         sections.forEach(sec => sec.classList.add('hidden'));
         section.classList.remove('hidden');
-
-        const navItems = document.querySelectorAll('nav li');
-        navItems.forEach(navItem => navItem.classList.remove('active'));
-        navItems[Array.from(sections).indexOf(section)].classList.add('active');
     }
 
     function openLightbox(src) {
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightboxImg');
         lightboxImg.src = src;
-        currentImageIndex = imagesArray.indexOf(src);
-        if (!imagesArray.includes(src)) {
-            imagesArray.push(src);
-        }
-
         lightbox.style.display = 'flex';
         setTimeout(() => {
             lightbox.style.opacity = 1;
-            lightbox.style.pointerEvents = 'auto';
         }, 10);
     }
 
     function closeLightbox() {
         const lightbox = document.getElementById('lightbox');
         lightbox.style.opacity = 0;
-        lightbox.style.pointerEvents = 'none';
         setTimeout(() => lightbox.style.display = 'none', 300);
-    }
-
-    function prevImage() {
-        currentImageIndex = (currentImageIndex > 0) ? currentImageIndex - 1 : imagesArray.length - 1;
-        document.getElementById('lightboxImg').src = imagesArray[currentImageIndex];
-    }
-
-    function nextImage() {
-        currentImageIndex = (currentImageIndex < imagesArray.length - 1) ? currentImageIndex + 1 : 0;
-        document.getElementById('lightboxImg').src = imagesArray[currentImageIndex];
     }
 
     function submitForm(event) {
@@ -423,60 +372,29 @@
     }
 
     function loadTestimonials() {
-        const testimonials = [
-            { quote: "This website has been incredibly useful for my projects!", author: "Jane Doe" },
-            { quote: "An absolutely amazing website!", author: "John Smith" },
-            { quote: "I love the design and user experience!", author: "Alice Johnson" },
-        ];
         const container = document.getElementById('testimonialsContainer');
         testimonials.forEach(testimonial => {
-            const p = document.createElement('p');
-            p.textContent = `"${testimonial.quote}" - ${testimonial.author}`;
-            container.appendChild(p);
-            imagesArray.push(testimonial.quote);
+            const div = document.createElement('div');
+            div.innerHTML = `<p>"${testimonial.quote}" - ${testimonial.author}</p>`;
+            container.appendChild(div);
         });
-        startTestimonialRotation();
     }
 
-    function loadTeamMembers() {
-        const teamMembers = [
-            { name: "Jane Doe", role: "Web Developer", img: "https://via.placeholder.com/150" },
-            { name: "John Smith", role: "Graphic Designer", img: "https://via.placeholder.com/150" },
-            { name: "Alice Johnson", role: "Project Manager", img: "https://via.placeholder.com/150" }
-        ];
-        const container = document.getElementById('teamContainer');
-        teamMembers.forEach(member => {
-            const memberDiv = document.createElement('div');
-            memberDiv.innerHTML = `
-                <img src="${member.img}" alt="${member.name}" style="border-radius: 50%; width: 100px; height: 100px;">
-                <h3>${member.name}</h3>
-                <p>${member.role}</p>
+    function loadProducts() {
+        const container = document.getElementById('productsContainer');
+        products.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.innerHTML = `
+                <img src="${product.img}" alt="${product.name}">
+                <h3>${product.name}</h3>
             `;
-            container.appendChild(memberDiv);
+            container.appendChild(productDiv);
         });
-    }
-
-    function startTestimonialRotation() {
-        const items = document.querySelectorAll('#testimonialsContainer p');
-        let currentIndex = 0;
-        items[currentIndex].classList.add('active');
-
-        setInterval(() => {
-            items[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex + 1) % items.length;
-            items[currentIndex].classList.add('active');
-        }, 5000);
     }
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeLightbox();
-        }
-        if (e.key === 'ArrowRight') {
-            nextImage();
-        }
-        if (e.key === 'ArrowLeft') {
-            prevImage();
         }
     });
 
