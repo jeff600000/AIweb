@@ -44,6 +44,8 @@
         header {
             background: var(--gradient-header);
             color: white;
+            display: flex;
+            justify-content: space-between;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             position: sticky;
@@ -62,7 +64,7 @@
             font-size: 24px;
         }
 
-        button, a {
+        button {
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
@@ -73,7 +75,7 @@
             transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
         }
 
-        button:hover, button:focus, a:hover, a:focus {
+        button:hover, button:focus {
             background-color: var(--button-hover);
             transform: scale(1.05);
             box-shadow: 0 0 5px #000;
@@ -147,6 +149,7 @@
         #lightbox img {
             max-width: 90%;
             max-height: 90%;
+            border-radius: 10px;
         }
 
         .faq-answer {
@@ -181,9 +184,29 @@
             background-color: var(--gradient-header);
             color: white;
         }
-        
-        a.social-icons {
-            margin-left: 5px;
+
+        #lightbox .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .active {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                width: 100%;
+                grid-template-columns: 1fr;
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -192,7 +215,7 @@
     <img src="https://via.placeholder.com/50?text=Logo" alt="Site Logo">
     <h1>Welcome to My Interactive Website</h1>
     <button class="nav-toggle" id="toggleSidebar">&#9776;</button>
-    <button id="toggleDarkMode" onclick="toggleTheme()">Toggle Theme</button>
+    <button id="toggleDarkMode">Toggle Theme</button>
 </header>
 
 <nav class="sidebar inactive" id="sidebar" aria-label="Main Navigation">
@@ -237,16 +260,20 @@
             <img src="https://via.placeholder.com/300?text=Image+2" alt="Gallery Image 2" onclick="openLightbox(this.src)">
             <img src="https://via.placeholder.com/300?text=Image+3" alt="Gallery Image 3" onclick="openLightbox(this.src)">
         </div>
-        <div id="lightbox" style="display:none;">
-            <span onclick="closeLightbox()" style="cursor:pointer; color:white;">&times;</span>
+        <div id="lightbox">
+            <span onclick="closeLightbox()" style="cursor:pointer;color:white;">&times;</span>
             <img id="lightboxImg" src="">
+            <div class="lightbox-nav">
+                <button onclick="prevImage()">&#10094;</button>
+                <button onclick="nextImage()">&#10095;</button>
+            </div>
         </div>
     </section>
 
     <section id="testimonials" class="hidden">
         <h2>User Testimonials</h2>
         <div id="testimonialsContainer">
-            <!-- Testimonials will be loaded here -->
+            <!-- Testimonials will be auto-rotated -->
         </div>
     </section>
 
@@ -292,10 +319,16 @@
         <a href="#"><i class="fab fa-twitter"></i></a>
         <a href="#"><i class="fab fa-facebook-f"></i></a>
     </div>
-    <p>&copy; 2023 Your Company Name - <a href="#" style="color: white;">Terms of Service</a> | <a href="#" style="color: white;">Privacy Policy</a></p>
+    <p>&copy; <span id="currentYear"></span> Your Company Name - <a href="#" style="color: white;">Terms of Service</a> | <a href="#" style="color: white;">Privacy Policy</a></p>
 </footer>
 
 <script>
+    const currentYear = new Date().getFullYear();
+    document.getElementById('currentYear').innerText = currentYear;
+
+    let currentImageIndex = 0;
+    const imagesArray = [];
+
     window.onload = function() {
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme) {
@@ -303,6 +336,7 @@
         }
         loadTestimonials();
         loadTeamMembers();
+        startTestimonialRotation();
     };
 
     document.getElementById('toggleSidebar').addEventListener('click', toggleSidebar);
@@ -330,7 +364,6 @@
         sections.forEach(sec => sec.classList.add('hidden'));
         section.classList.remove('hidden');
 
-        // Highlight active nav
         const navItems = document.querySelectorAll('nav li');
         navItems.forEach(navItem => navItem.classList.remove('active'));
         navItems[Array.from(sections).indexOf(section)].classList.add('active');
@@ -340,11 +373,14 @@
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightboxImg');
         lightboxImg.src = src;
+        currentImageIndex = imagesArray.indexOf(src);
+        if (!imagesArray.includes(src)) {
+            imagesArray.push(src);
+        }
+
         lightbox.style.display = 'flex';
-        requestAnimationFrame(() => {
-            lightbox.style.opacity = 1;
-            lightbox.style.pointerEvents = 'auto';
-        });
+        lightbox.style.opacity = 1;
+        lightbox.style.pointerEvents = 'auto';
     }
 
     function closeLightbox() {
@@ -352,6 +388,16 @@
         lightbox.style.opacity = 0;
         lightbox.style.pointerEvents = 'none';
         setTimeout(() => lightbox.style.display = 'none', 300);
+    }
+
+    function prevImage() {
+        currentImageIndex = (currentImageIndex > 0) ? currentImageIndex - 1 : imagesArray.length - 1;
+        document.getElementById('lightboxImg').src = imagesArray[currentImageIndex];
+    }
+
+    function nextImage() {
+        currentImageIndex = (currentImageIndex < imagesArray.length - 1) ? currentImageIndex + 1 : 0;
+        document.getElementById('lightboxImg').src = imagesArray[currentImageIndex];
     }
 
     function submitForm(event) {
@@ -378,7 +424,9 @@
             const p = document.createElement('p');
             p.textContent = `"${testimonial.quote}" - ${testimonial.author}`;
             container.appendChild(p);
+            imagesArray.push(testimonial.quote);
         });
+        startTestimonialRotation();
     }
 
     function loadTeamMembers() {
@@ -391,12 +439,22 @@
         teamMembers.forEach(member => {
             const memberDiv = document.createElement('div');
             memberDiv.innerHTML = `
-                <img src="${member.img}" alt="${member.name}">
+                <img src="${member.img}" alt="${member.name}" style="border-radius: 50%; width: 100px; height: 100px;">
                 <h3>${member.name}</h3>
                 <p>${member.role}</p>
             `;
             container.appendChild(memberDiv);
         });
+    }
+
+    function startTestimonialRotation() {
+        const items = document.querySelectorAll('#testimonialsContainer p');
+        let currentIndex = 0;
+        setInterval(() => {
+            items[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % items.length;
+            items[currentIndex].classList.add('active');
+        }, 3000);
     }
 
     document.addEventListener('keydown', (e) => {
