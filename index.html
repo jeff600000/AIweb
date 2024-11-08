@@ -104,8 +104,28 @@
             background: var(--secondary-color);
         }
 
+        nav li ul {
+            display: none;
+        }
+
+        nav li:hover ul {
+            display: block;
+            position: absolute;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav li ul li {
+            white-space: nowrap;
+            padding: 10px;
+            background: white;
+        }
+
         main {
             padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
 
         section {
@@ -123,12 +143,37 @@
 
         .faq-answer {
             display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .faq-answer.show {
+            display: block;
+            opacity: 1;
         }
 
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
+        }
+
+        #lightbox {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #lightbox img {
+            max-width: 80%;
+            max-height: 80%;
         }
 
         .toast {
@@ -153,6 +198,33 @@
             opacity: 1;
             transition: opacity 0.5s linear;
         }
+
+        .team-member {
+            text-align: center;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .social-icons a {
+            margin: 0 10px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                width: 100%;
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -167,15 +239,22 @@
 
 <nav class="sidebar" id="sidebar">
     <ul>
-        <li onclick="smoothScroll('home')">Home</li>
-        <li onclick="smoothScroll('about')">About</li>
+        <li>
+            <a href="#home">Home</a>
+        </li>
+        <li>
+            About
+            <ul>
+                <li onclick="smoothScroll('team')">Our Team</li>
+                <li onclick="smoothScroll('history')">Our History</li>
+            </ul>
+        </li>
         <li onclick="smoothScroll('products')">Products</li>
         <li onclick="smoothScroll('services')">Services</li>
         <li onclick="smoothScroll('gallery')">Gallery</li>
         <li onclick="smoothScroll('testimonials')">Testimonials</li>
         <li onclick="smoothScroll('contact')">Contact</li>
         <li onclick="smoothScroll('faq')">FAQ</li>
-        <li onclick="smoothScroll('team')">Team</li>
     </ul>
 </nav>
 
@@ -213,9 +292,11 @@
             <img src="https://via.placeholder.com/300" alt="Gallery Image 2" onclick="openLightbox(this.src)">
             <img src="https://via.placeholder.com/300" alt="Gallery Image 3" onclick="openLightbox(this.src)">
         </div>
-        <div id="lightbox" style="display:none;" onclick="closeLightbox()">
+        <div id="lightbox" onclick="closeLightbox()">
             <span style="cursor:pointer;color:white;">&times;</span>
+            <button onclick="prevImage()">&#8678;</button>
             <img id="lightboxImg" src="">
+            <button onclick="nextImage()">&#8680;</button>
         </div>
     </section>
 
@@ -259,10 +340,10 @@
 <footer>
     <p>Find us on social media:</p>
     <div class="social-icons">
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-linkedin"></i></a>
+        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
     </div>
 </footer>
 
@@ -277,8 +358,19 @@
         { img: "https://via.placeholder.com/300?text=Product+2", name: "Product 2" },
         { img: "https://via.placeholder.com/300?text=Product+3", name: "Product 3" }
     ];
+    const imagesArray = [
+        "https://via.placeholder.com/300?text=Image+1",
+        "https://via.placeholder.com/300?text=Image+2",
+        "https://via.placeholder.com/300?text=Image+3"
+    ];
+
+    let currentImageIndex = 0;
 
     window.onload = function() {
+        const theme = localStorage.getItem('theme');
+        if (theme) {
+            document.body.classList.toggle('dark-mode', theme === 'dark');
+        }
         loadProducts();
         loadTestimonials();
     };
@@ -303,12 +395,28 @@
     function openLightbox(src) {
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightboxImg');
+        currentImageIndex = imagesArray.indexOf(src);
         lightboxImg.src = src;
         lightbox.style.display = 'flex';
     }
 
     function closeLightbox() {
         document.getElementById('lightbox').style.display = 'none';
+    }
+
+    function prevImage() {
+        currentImageIndex = (currentImageIndex - 1 + imagesArray.length) % imagesArray.length;
+        updateLightboxImage();
+    }
+
+    function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % imagesArray.length;
+        updateLightboxImage();
+    }
+
+    function updateLightboxImage() {
+        const lightboxImg = document.getElementById('lightboxImg');
+        lightboxImg.src = imagesArray[currentImageIndex];
     }
 
     function submitForm(event) {
@@ -320,7 +428,7 @@
 
     function toggleFAQ(element) {
         const answer = element.querySelector('.faq-answer');
-        answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+        answer.classList.toggle('show');
     }
 
     function loadTestimonials() {
@@ -349,6 +457,28 @@
             closeLightbox();
         }
     });
+
+    const teamMembers = [
+        { image: "https://via.placeholder.com/150?text=Member+1", name: "John Doe", position: "CEO" },
+        { image: "https://via.placeholder.com/150?text=Member+2", name: "Jane Smith", position: "CTO" },
+        { image: "https://via.placeholder.com/150?text=Member+3", name: "Alice Brown", position: "CFO" }
+    ];
+
+    function loadTeam() {
+        const container = document.getElementById('teamContainer');
+        teamMembers.forEach(member => {
+            const memberDiv = document.createElement('div');
+            memberDiv.className = "team-member";
+            memberDiv.innerHTML = `
+                <img src="${member.image}" alt="${member.name}">
+                <h3>${member.name}</h3>
+                <p>${member.position}</p>
+            `;
+            container.appendChild(memberDiv);
+        });
+    }
+
+    loadTeam();
 </script>
 </body>
 </html>
