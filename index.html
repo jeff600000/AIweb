@@ -11,16 +11,10 @@
         :root {
             --primary-color: #4CAF50;
             --secondary-color: #008CBA;
-            --primary-text-color: #444444;
-            --secondary-text-color: #bbbbbb;
             --tooltip-bg: rgba(0, 0, 0, 0.75);
             --background-light: #ffffff;
             --background-dark: #121212;
-            --background-neutral: #f0f0f0;
-            --text-light: #333333;
-            --text-dark: #ffffff;
             --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
-            --button-hover: #45a049;
             --font-size: 16px;
         }
 
@@ -31,16 +25,14 @@
         body {
             font-family: 'Roboto', sans-serif;
             background-color: var(--background-light);
-            color: var(--text-light);
+            color: black;
             margin: 0;
-            padding: 0;
-            text-align: center;
             transition: background 0.5s, color 0.5s;
         }
 
         body.dark-mode {
             background-color: var(--background-dark);
-            color: var(--text-dark);
+            color: white;
         }
 
         header {
@@ -49,7 +41,6 @@
             display: flex;
             justify-content: space-between;
             padding: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -60,10 +51,8 @@
             vertical-align: middle;
         }
 
-        header h1 {
-            margin: 0; 
-            display: inline-block; 
-            font-size: 24px;
+        .nav-links {
+            margin-left: auto;
         }
 
         button {
@@ -72,35 +61,31 @@
             border-radius: 5px;
             color: white;
             background-color: var(--primary-color);
-            text-decoration: none;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            transition: background-color 0.3s;
         }
 
-        button:hover, button:focus {
-            background-color: var(--button-hover);
-            transform: scale(1.05);
-            box-shadow: 0 0 5px #000;
+        button:hover {
+            background-color: #45a049;
         }
 
         nav {
             display: grid;
+            background-color: var(--background-light);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
             grid-template-columns: 1fr;
-            width: 200px;
+            padding: 20px;
             position: absolute;
             left: 0;
             top: 60px;
-            background-color: var(--background-light);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            transform: translateX(-100%);
             transition: transform 0.3s ease;
         }
 
         nav.active {
             transform: translateX(0);
-        }
-        
-        nav.inactive {
-            transform: translateX(-100%);
         }
 
         nav ul {
@@ -121,20 +106,29 @@
 
         main {
             padding: 20px;
-            margin-left: 220px;
-            transition: margin-left 0.3s ease;
         }
 
         section {
-            padding: 40px;
-            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
         }
 
-        .gallery-grid, .team-grid {
+        footer {
+            background-color: var(--gradient-header);
+            color: white;
+            padding: 10px;
+        }
+
+        .faq-answer {
+            display: none;
+        }
+
+        .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
-            padding: 20px;
         }
 
         .toast {
@@ -159,41 +153,19 @@
             opacity: 1;
             transition: opacity 0.5s linear;
         }
-
-        footer {
-            padding: 10px;
-            background-color: var(--gradient-header);
-            color: white;
-        }
-
-        .faq-answer {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            nav {
-                width: 100%;
-                grid-template-columns: 1fr;
-            }
-            main {
-                margin-left: 0; 
-            }
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
     </style>
 </head>
 <body>
 <header>
-    <img src="https://via.placeholder.com/50?text=Logo" alt="Site Logo">
     <h1>Welcome to My Interactive Website</h1>
-    <button class="nav-toggle" id="toggleSidebar" aria-haspopup="true">☰</button>
-    <button id="toggleDarkMode" aria-pressed="false">Toggle Theme</button>
+    <img src="https://via.placeholder.com/50?text=Logo" alt="Site Logo">
+    <div class="nav-links">
+        <button class="toggle">Toggle Dark Mode</button>
+        <button class="toggle-sidebar">Toggle Sidebar</button>
+    </div>
 </header>
 
-<nav class="sidebar inactive" id="sidebar" aria-label="Main Navigation">
+<nav class="sidebar" id="sidebar">
     <ul>
         <li onclick="smoothScroll('home')">Home</li>
         <li onclick="smoothScroll('about')">About</li>
@@ -208,22 +180,22 @@
 </nav>
 
 <main role="main">
-    <section id="home" class="visible">
+    <section id="home">
         <h2>Welcome to My Interactive Website</h2>
         <p>This is an interactive website showcasing modern web features.</p>
     </section>
 
-    <section id="about" class="hidden">
+    <section id="about">
         <h2>About This Website</h2>
-        <p>This site showcases various features and provides an engaging user experience, focusing on modern design and interactive elements.</p>
+        <p>This site showcases various features and provides an engaging user experience.</p>
     </section>
 
-    <section id="products" class="hidden">
+    <section id="products">
         <h2>Our Products</h2>
         <div class="gallery-grid" id="productsContainer"></div>
     </section>
 
-    <section id="services" class="hidden">
+    <section id="services">
         <h2>Our Services</h2>
         <ul>
             <li>Web Development</li>
@@ -234,37 +206,35 @@
         </ul>
     </section>
 
-    <section id="gallery" class="hidden">
+    <section id="gallery">
         <h2>Gallery</h2>
         <div class="gallery-grid">
-            <img src="https://via.placeholder.com/300?text=Image+1" alt="Gallery Image 1" onclick="openLightbox(this.src)">
-            <img src="https://via.placeholder.com/300?text=Image+2" alt="Gallery Image 2" onclick="openLightbox(this.src)">
-            <img src="https://via.placeholder.com/300?text=Image+3" alt="Gallery Image 3" onclick="openLightbox(this.src)">
+            <img src="https://via.placeholder.com/300" alt="Gallery Image 1" onclick="openLightbox(this.src)">
+            <img src="https://via.placeholder.com/300" alt="Gallery Image 2" onclick="openLightbox(this.src)">
+            <img src="https://via.placeholder.com/300" alt="Gallery Image 3" onclick="openLightbox(this.src)">
         </div>
-        <div id="lightbox">
-            <span onclick="closeLightbox()" style="cursor:pointer;color:white;">&times;</span>
+        <div id="lightbox" style="display:none;" onclick="closeLightbox()">
+            <span style="cursor:pointer;color:white;">&times;</span>
             <img id="lightboxImg" src="">
         </div>
     </section>
 
-    <section id="testimonials" class="hidden">
+    <section id="testimonials">
         <h2>User Testimonials</h2>
-        <div class="testimonials-list" id="testimonialsContainer" role="article"></div>
+        <div class="testimonials-list" id="testimonialsContainer"></div>
     </section>
 
-    <section id="contact" class="hidden">
+    <section id="contact">
         <h2>Contact Us</h2>
         <form id="contactForm" onsubmit="submitForm(event)">
             <input type="text" placeholder="Your Name" required>
-            <input type="email" placeholder="Your Email" required>
-            <input type="tel" placeholder="Your Phone (optional)">
             <textarea placeholder="Your Message" required></textarea>
             <button type="submit">Send</button>
             <div id="formFeedback" class="toast">Thank you for your message!</div>
         </form>
     </section>
 
-    <section id="faq" class="hidden">
+    <section id="faq">
         <h2>Frequently Asked Questions</h2>
         <div class="faq-item" onclick="toggleFAQ(this)">
             <strong>Q: What is this website about?</strong>
@@ -280,7 +250,7 @@
         </div>
     </section>
 
-    <section id="team" class="hidden">
+    <section id="team">
         <h2>Meet Our Team</h2>
         <aside id="teamContainer" class="team-grid" role="contentinfo"></aside>
     </section>
@@ -289,15 +259,14 @@
 <footer>
     <p>Find us on social media:</p>
     <div class="social-icons">
-        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
     </div>
 </footer>
 
 <script>
-    const currentYear = new Date().getFullYear();
     const testimonials = [
         { quote: "This website has been incredibly useful for my projects!", author: "Jane Doe" },
         { quote: "An absolutely amazing website!", author: "John Smith" },
@@ -310,36 +279,25 @@
     ];
 
     window.onload = function() {
-        document.getElementById('currentYear').innerText = currentYear;
         loadProducts();
         loadTestimonials();
     };
 
-    document.getElementById('toggleSidebar').addEventListener('click', toggleSidebar);
+    document.querySelector('.toggle-sidebar').addEventListener('click', toggleSidebar);
     function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const main = document.querySelector('main');
-        sidebar.classList.toggle('inactive');
-        sidebar.classList.toggle('active');
-        main.style.marginLeft = sidebar.classList.contains('active') ? '220px' : '20px';
+        document.getElementById('sidebar').classList.toggle('active');
     }
 
-    document.getElementById('toggleDarkMode').addEventListener('click', toggleTheme);
+    document.querySelector('.toggle').addEventListener('click', toggleTheme);
     function toggleTheme() {
         const body = document.body;
-        const currentTheme = body.className;
-        const newTheme = currentTheme === 'dark-mode' ? '' : 'dark-mode';
-        body.className = newTheme;
-        localStorage.setItem('theme', newTheme === 'dark-mode' ? 'dark' : 'light');
-        document.getElementById('toggleDarkMode').setAttribute('aria-pressed', newTheme === 'dark-mode');
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
 
     function smoothScroll(sectionId) {
         const section = document.getElementById(sectionId);
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const sections = document.querySelectorAll('main > section');
-        sections.forEach(sec => sec.classList.add('hidden'));
-        section.classList.remove('hidden');
     }
 
     function openLightbox(src) {
@@ -347,22 +305,16 @@
         const lightboxImg = document.getElementById('lightboxImg');
         lightboxImg.src = src;
         lightbox.style.display = 'flex';
-        setTimeout(() => {
-            lightbox.style.opacity = 1;
-        }, 10);
     }
 
     function closeLightbox() {
-        const lightbox = document.getElementById('lightbox');
-        lightbox.style.opacity = 0;
-        setTimeout(() => lightbox.style.display = 'none', 300);
+        document.getElementById('lightbox').style.display = 'none';
     }
 
     function submitForm(event) {
         event.preventDefault();
-        const feedback = document.getElementById('formFeedback');
-        feedback.classList.add('show');
-        setTimeout(() => feedback.classList.remove('show'), 3000);
+        document.getElementById('formFeedback').classList.add('show');
+        setTimeout(() => document.getElementById('formFeedback').classList.remove('show'), 3000);
         document.getElementById('contactForm').reset();
     }
 
@@ -395,13 +347,6 @@
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeLightbox();
-        }
-    });
-
-    const lightbox = document.getElementById('lightbox');
-    lightbox.addEventListener('transitionend', () => {
-        if (lightbox.style.opacity === '0') {
-            lightbox.style.display = 'none';
         }
     });
 </script>
