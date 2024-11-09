@@ -49,6 +49,15 @@
 
         .nav-links {
             margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        #searchBar {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
         }
 
         button {
@@ -124,6 +133,18 @@
             background-color: var(--gradient-header);
             color: white;
             padding: 10px;
+            text-align: center;
+        }
+
+        footer .social-icons a {
+            margin: 0 10px;
+            font-size: 24px;
+            color: white;
+            transition: color 0.3s;
+        }
+
+        footer .social-icons a:hover {
+            color: #50b3d8;
         }
 
         .gallery-grid {
@@ -154,6 +175,15 @@
             nav {
                 width: 100%;
             }
+
+            header {
+                flex-direction: column;
+            }
+
+            #searchBar {
+                width: 90%;
+                margin: 10px 0;
+            }
         }
 
         #subscribeForm input {
@@ -179,11 +209,34 @@
 
         .team-member {
             text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
             transition: transform 0.3s;
         }
 
         .team-member:hover {
+            background-color: var(--secondary-color);
+            color: white;
             transform: scale(1.05);
+        }
+
+        .faq-item {
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .faq-item:hover .faq-answer {
+            display: block;
         }
     </style>
 </head>
@@ -192,6 +245,7 @@
     <h1>Welcome to My Interactive Website</h1>
     <img src="https://via.placeholder.com/50?text=Logo" alt="Site Logo">
     <div class="nav-links">
+        <input type="text" id="searchBar" placeholder="Search...">
         <button class="toggle">Toggle Dark Mode</button>
         <button class="toggle-sidebar">Toggle Sidebar</button>
     </div>
@@ -269,7 +323,7 @@
             <input type="text" placeholder="Your Name" required>
             <textarea placeholder="Your Message" required></textarea>
             <button type="submit">Send</button>
-            <div id="formFeedback" class="toast">Thank you for your message!</div>
+            <div id="formFeedback" class="toast" style="display:none;">Thank you for your message!</div>
         </form>
     </section>
 
@@ -305,6 +359,10 @@
         <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
     </div>
+    <p>
+        <a href="/privacy-policy">Privacy Policy</a> | 
+        <a href="/terms-of-service">Terms of Service</a>
+    </p>
     <form id="subscribeForm" onsubmit="subscribe(event)">
         <input type="email" placeholder="Enter your email" required>
         <button type="submit">Subscribe</button>
@@ -340,6 +398,7 @@
         loadProducts();
         loadTestimonials();
         loadTeam();
+
         // Adding visibility to sections on page load.
         const sections = document.querySelectorAll('main section');
         sections.forEach((section, index) => {
@@ -395,16 +454,14 @@
 
     function submitForm(event) {
         event.preventDefault();
-        document.getElementById('formFeedback').classList.add('show');
-        setTimeout(() => document.getElementById('formFeedback').classList.remove('show'), 3000);
+        document.getElementById('formFeedback').style.display = 'block';
+        setTimeout(() => document.getElementById('formFeedback').style.display = 'none', 3000);
         document.getElementById('contactForm').reset();
     }
 
     function toggleFAQ(element) {
         const answer = element.querySelector('.faq-answer');
-        const icon = element.querySelector('.faq-icon');
-        answer.classList.toggle('show');
-        icon.classList.toggle('rotate');
+        answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
     }
 
     function loadTestimonials() {
@@ -412,10 +469,7 @@
         testimonials.forEach(testimonial => {
             const div = document.createElement('div');
             div.innerHTML = `<p>"${testimonial.quote}" - ${testimonial.author}</p>`;
-            div.style.opacity = 0;
             container.appendChild(div);
-            // Adding fade-in effect
-            setTimeout(() => div.style.opacity = 1, 500);
         });
     }
 
@@ -456,7 +510,6 @@
         const subscribeForm = document.getElementById('subscribeForm');
         subscribeForm.classList.add('success');
         setTimeout(() => {
-            alert('Thank you for subscribing!');
             subscribeForm.reset();
             subscribeForm.classList.remove('success');
         }, 1000);
@@ -471,11 +524,7 @@
     const inputFields = document.querySelectorAll('input, textarea');
     inputFields.forEach(input => {
         input.addEventListener('input', () => {
-            if (input.validity.valid) {
-                input.style.borderColor = '#4CAF50';
-            } else {
-                input.style.borderColor = 'red';
-            }
+            input.style.borderColor = input.validity.valid ? '#4CAF50' : 'red';
         });
     });
 </script>
