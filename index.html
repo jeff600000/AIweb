@@ -15,7 +15,6 @@
             --background-light: #ffffff;
             --background-dark: #121212;
             --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
-            --font-size: 16px;
         }
 
         * {
@@ -62,10 +61,11 @@
             color: white;
             background-color: var(--primary-color);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         button:hover {
+            transform: scale(1.05);
             background-color: #45a049;
         }
 
@@ -82,10 +82,13 @@
             width: 200px;
             transform: translateX(-100%);
             transition: transform 0.3s ease;
+            opacity: 0;
         }
 
         nav.active {
             transform: translateX(0);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 1;
         }
 
         nav ul {
@@ -150,6 +153,21 @@
         .faq-answer.show {
             display: block;
             opacity: 1;
+        }
+
+        .faq-item {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .faq-icon {
+            margin-left: 10px;
+            transition: transform 0.3s;
+        }
+
+        .faq-icon.rotate {
+            transform: rotate(90deg);
         }
 
         .gallery-grid {
@@ -225,6 +243,13 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
@@ -237,7 +262,7 @@
     </div>
 </header>
 
-<nav class="sidebar" id="sidebar">
+<nav role="navigation" class="sidebar" id="sidebar">
     <ul>
         <li onclick="smoothScroll('home')">Home</li>
         <li>
@@ -317,12 +342,14 @@
         <h2>Frequently Asked Questions</h2>
         <div class="faq-item" onclick="toggleFAQ(this)">
             <strong>Q: What is this website about?</strong>
+            <span class="faq-icon">&#x25B6;</span>
             <div class="faq-answer">
                 <p>A: It is an interactive demo showcasing various web features.</p>
             </div>
         </div>
         <div class="faq-item" onclick="toggleFAQ(this)">
             <strong>Q: How can I contact support?</strong>
+            <span class="faq-icon">&#x25B6;</span>
             <div class="faq-answer">
                 <p>A: You can contact us through the contact form provided.</p>
             </div>
@@ -343,6 +370,10 @@
         <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
     </div>
+    <form id="subscribeForm" onsubmit="subscribe(event)">
+        <input type="email" placeholder="Enter your email" required>
+        <button type="submit">Subscribe</button>
+    </form>
 </footer>
 
 <script>
@@ -427,7 +458,9 @@
 
     function toggleFAQ(element) {
         const answer = element.querySelector('.faq-answer');
+        const icon = element.querySelector('.faq-icon');
         answer.classList.toggle('show');
+        icon.classList.toggle('rotate');
     }
 
     function loadTestimonials() {
@@ -470,11 +503,28 @@
             container.appendChild(memberDiv);
         });
     }
-    
+
+    function subscribe(event) {
+        event.preventDefault();
+        alert('Thank you for subscribing!');
+        document.getElementById('subscribeForm').reset();
+    }
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeLightbox();
         }
+    });
+
+    const inputFields = document.querySelectorAll('input, textarea');
+    inputFields.forEach(input => {
+        input.addEventListener('input', () => {
+            if (input.validity.valid) {
+                input.style.borderColor = '#4CAF50';
+            } else {
+                input.style.borderColor = 'red';
+            }
+        });
     });
 </script>
 </body>
