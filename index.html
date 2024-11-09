@@ -7,18 +7,14 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Explore the Wonders of Web Development</title>
+    
     <style>
         :root {
             --primary-color: #4CAF50;
             --secondary-color: #008CBA;
-            --tooltip-bg: rgba(0, 0, 0, 0.75);
             --background-light: #ffffff;
             --background-dark: #121212;
             --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
-        }
-
-        * {
-            box-sizing: border-box;
         }
 
         body {
@@ -43,6 +39,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            transition: padding 0.3s ease;
         }
 
         header img {
@@ -71,23 +68,20 @@
 
         nav {
             display: grid;
+            grid-template-columns: 1fr;
             background-color: var(--background-light);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            grid-template-columns: 1fr;
-            padding: 20px;
             position: absolute;
             left: 0;
             top: 60px;
             width: 200px;
             transform: translateX(-100%);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease;
             opacity: 0;
         }
 
         nav.active {
             transform: translateX(0);
-            transition: transform 0.3s ease, opacity 0.3s ease;
             opacity: 1;
         }
 
@@ -98,30 +92,12 @@
         }
 
         nav li {
-            cursor: pointer;
             padding: 10px;
             transition: background 0.3s;
         }
 
         nav li:hover {
             background: var(--secondary-color);
-        }
-
-        nav li ul {
-            display: none;
-        }
-
-        nav li:hover ul {
-            display: block;
-            position: absolute;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        nav li ul li {
-            white-space: nowrap;
-            padding: 10px;
-            background: white;
         }
 
         main {
@@ -136,38 +112,18 @@
             border: 1px solid #ddd;
             padding: 20px;
             border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        section.visible {
+            opacity: 1;
         }
 
         footer {
             background-color: var(--gradient-header);
             color: white;
             padding: 10px;
-        }
-
-        .faq-answer {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .faq-answer.show {
-            display: block;
-            opacity: 1;
-        }
-
-        .faq-item {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        .faq-icon {
-            margin-left: 10px;
-            transition: transform 0.3s;
-        }
-
-        .faq-icon.rotate {
-            transform: rotate(90deg);
         }
 
         .gallery-grid {
@@ -194,61 +150,40 @@
             max-height: 80%;
         }
 
-        .toast {
-            visibility: hidden;
-            min-width: 250px;
-            margin-left: -125px;
-            background-color: #333;
-            color: white;
-            text-align: center;
-            border-radius: 2px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1;
-            left: 50%;
-            bottom: 30px;
-            font-size: 17px;
-            transition: visibility 0s, opacity 0.5s linear;
+        @media (max-width: 768px) {
+            nav {
+                width: 100%;
+            }
         }
 
-        .toast.show {
-            visibility: visible;
-            opacity: 1;
-            transition: opacity 0.5s linear;
+        #subscribeForm input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #subscribeForm button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #subscribeForm.success {
+            border-color: #4CAF50;
+        }
+
+        #subscribeForm.error {
+            border-color: red;
         }
 
         .team-member {
             text-align: center;
+            transition: transform 0.3s;
         }
 
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-        }
-
-        .social-icons a {
-            margin: 0 10px;
-            color: white;
-            text-decoration: none;
-        }
-
-        .social-icons a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 768px) {
-            nav {
-                width: 100%;
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .team-member:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -264,30 +199,30 @@
 
 <nav role="navigation" class="sidebar" id="sidebar">
     <ul>
-        <li onclick="smoothScroll('home')">Home</li>
+        <li onclick="smoothScroll('home')"><i class="fas fa-home"></i> Home</li>
         <li>
-            About
+            <i class="fas fa-info-circle"></i> About
             <ul>
                 <li onclick="smoothScroll('team')">Our Team</li>
                 <li onclick="smoothScroll('history')">Our History</li>
             </ul>
         </li>
-        <li onclick="smoothScroll('products')">Products</li>
-        <li onclick="smoothScroll('services')">Services</li>
-        <li onclick="smoothScroll('gallery')">Gallery</li>
-        <li onclick="smoothScroll('testimonials')">Testimonials</li>
-        <li onclick="smoothScroll('contact')">Contact</li>
-        <li onclick="smoothScroll('faq')">FAQ</li>
+        <li onclick="smoothScroll('products')"><i class="fas fa-box"></i> Products</li>
+        <li onclick="smoothScroll('services')"><i class="fas fa-cogs"></i> Services</li>
+        <li onclick="smoothScroll('gallery')"><i class="fas fa-images"></i> Gallery</li>
+        <li onclick="smoothScroll('testimonials')"><i class="fas fa-comments"></i> Testimonials</li>
+        <li onclick="smoothScroll('contact')"><i class="fas fa-envelope"></i> Contact</li>
+        <li onclick="smoothScroll('faq')"><i class="fas fa-question-circle"></i> FAQ</li>
     </ul>
 </nav>
 
 <main role="main">
-    <section id="home">
+    <section id="home" class="visible">
         <h2>Welcome to My Interactive Website</h2>
         <p>This is an interactive website showcasing modern web features.</p>
     </section>
-
-    <section id="about">
+    
+    <section id="about" class="visible">
         <h2>About This Website</h2>
         <p>This site showcases various features and provides an engaging user experience.</p>
     </section>
@@ -382,11 +317,13 @@
         { quote: "An absolutely amazing website!", author: "John Smith" },
         { quote: "I love the design and user experience!", author: "Alice Johnson" },
     ];
+
     const products = [
         { img: "https://via.placeholder.com/300?text=Product+1", name: "Product 1" },
         { img: "https://via.placeholder.com/300?text=Product+2", name: "Product 2" },
         { img: "https://via.placeholder.com/300?text=Product+3", name: "Product 3" }
     ];
+
     const imagesArray = [
         "https://via.placeholder.com/300?text=Image+1",
         "https://via.placeholder.com/300?text=Image+2",
@@ -403,6 +340,13 @@
         loadProducts();
         loadTestimonials();
         loadTeam();
+        // Adding visibility to sections on page load.
+        const sections = document.querySelectorAll('main section');
+        sections.forEach((section, index) => {
+            setTimeout(() => {
+                section.classList.add('visible');
+            }, index * 200); // Staggered fade-in
+        });
     };
 
     document.querySelector('.toggle-sidebar').addEventListener('click', toggleSidebar);
@@ -468,7 +412,10 @@
         testimonials.forEach(testimonial => {
             const div = document.createElement('div');
             div.innerHTML = `<p>"${testimonial.quote}" - ${testimonial.author}</p>`;
+            div.style.opacity = 0;
             container.appendChild(div);
+            // Adding fade-in effect
+            setTimeout(() => div.style.opacity = 1, 500);
         });
     }
 
@@ -506,8 +453,13 @@
 
     function subscribe(event) {
         event.preventDefault();
-        alert('Thank you for subscribing!');
-        document.getElementById('subscribeForm').reset();
+        const subscribeForm = document.getElementById('subscribeForm');
+        subscribeForm.classList.add('success');
+        setTimeout(() => {
+            alert('Thank you for subscribing!');
+            subscribeForm.reset();
+            subscribeForm.classList.remove('success');
+        }, 1000);
     }
 
     document.addEventListener('keydown', (e) => {
