@@ -239,9 +239,7 @@
 
 <nav class="sidebar" id="sidebar">
     <ul>
-        <li>
-            <a href="#home">Home</a>
-        </li>
+        <li onclick="smoothScroll('home')">Home</li>
         <li>
             About
             <ul>
@@ -373,6 +371,7 @@
         }
         loadProducts();
         loadTestimonials();
+        loadTeam();
     };
 
     document.querySelector('.toggle-sidebar').addEventListener('click', toggleSidebar);
@@ -452,12 +451,6 @@
         });
     }
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeLightbox();
-        }
-    });
-
     const teamMembers = [
         { image: "https://via.placeholder.com/150?text=Member+1", name: "John Doe", position: "CEO" },
         { image: "https://via.placeholder.com/150?text=Member+2", name: "Jane Smith", position: "CTO" },
@@ -477,8 +470,12 @@
             container.appendChild(memberDiv);
         });
     }
-
-    loadTeam();
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
 </script>
 </body>
 </html>
