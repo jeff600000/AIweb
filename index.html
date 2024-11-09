@@ -171,6 +171,15 @@
             max-height: 80%;
         }
 
+        #formFeedback {
+            display: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
         @media (max-width: 768px) {
             nav {
                 width: 100%;
@@ -184,27 +193,6 @@
                 width: 90%;
                 margin: 10px 0;
             }
-        }
-
-        #subscribeForm input {
-            width: 70%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        #subscribeForm button {
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-
-        #subscribeForm.success {
-            border-color: #4CAF50;
-        }
-
-        #subscribeForm.error {
-            border-color: red;
         }
 
         .team-member {
@@ -247,11 +235,11 @@
     <div class="nav-links">
         <input type="text" id="searchBar" placeholder="Search...">
         <button class="toggle">Toggle Dark Mode</button>
-        <button class="toggle-sidebar">Toggle Sidebar</button>
+        <button class="toggle-sidebar" aria-label="Toggle Sidebar" onclick="toggleSidebar()">☰</button>
     </div>
 </header>
 
-<nav role="navigation" class="sidebar" id="sidebar">
+<nav role="navigation" class="sidebar" id="sidebar" aria-label="Sidebar Navigation">
     <ul>
         <li onclick="smoothScroll('home')"><i class="fas fa-home"></i> Home</li>
         <li>
@@ -323,7 +311,7 @@
             <input type="text" placeholder="Your Name" required>
             <textarea placeholder="Your Message" required></textarea>
             <button type="submit">Send</button>
-            <div id="formFeedback" class="toast" style="display:none;">Thank you for your message!</div>
+            <div id="formFeedback" class="toast"></div>
         </form>
     </section>
 
@@ -359,10 +347,6 @@
         <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
     </div>
-    <p>
-        <a href="/privacy-policy">Privacy Policy</a> | 
-        <a href="/terms-of-service">Terms of Service</a>
-    </p>
     <form id="subscribeForm" onsubmit="subscribe(event)">
         <input type="email" placeholder="Enter your email" required>
         <button type="submit">Subscribe</button>
@@ -399,21 +383,18 @@
         loadTestimonials();
         loadTeam();
 
-        // Adding visibility to sections on page load.
         const sections = document.querySelectorAll('main section');
         sections.forEach((section, index) => {
             setTimeout(() => {
                 section.classList.add('visible');
-            }, index * 200); // Staggered fade-in
+            }, index * 200);
         });
     };
 
-    document.querySelector('.toggle-sidebar').addEventListener('click', toggleSidebar);
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
     }
 
-    document.querySelector('.toggle').addEventListener('click', toggleTheme);
     function toggleTheme() {
         const body = document.body;
         body.classList.toggle('dark-mode');
@@ -454,8 +435,14 @@
 
     function submitForm(event) {
         event.preventDefault();
-        document.getElementById('formFeedback').style.display = 'block';
-        setTimeout(() => document.getElementById('formFeedback').style.display = 'none', 3000);
+        const formFeedback = document.getElementById('formFeedback');
+        formFeedback.innerText = "Thank you for your message!";
+        formFeedback.style.display = 'block';
+
+        setTimeout(() => {
+            formFeedback.style.display = 'none';
+        }, 3000);
+        
         document.getElementById('contactForm').reset();
     }
 
@@ -527,6 +514,9 @@
             input.style.borderColor = input.validity.valid ? '#4CAF50' : 'red';
         });
     });
+
+    document.querySelector('.toggle-sidebar').addEventListener('click', toggleSidebar);
+    document.querySelector('.toggle').addEventListener('click', toggleTheme);
 </script>
 </body>
 </html>
