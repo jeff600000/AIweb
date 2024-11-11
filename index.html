@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Explore the Wonders of Web Development</title>
-    
+
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -76,10 +76,10 @@
         }
 
         main {
-            padding: 20px;
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            padding: 20px;
         }
 
         section {
@@ -99,9 +99,39 @@
             transition: transform 0.5s;
         }
 
-        #map {
+        .dots-pagination {
+            text-align: center;
+        }
+
+        .dots {
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            background-color: #bbb;
+        }
+
+        .active-dot {
+            background-color: #717171;
+        }
+
+        #lightbox {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 450px;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 90%;
         }
 
         footer {
@@ -111,15 +141,42 @@
             text-align: center;
         }
 
-        footer .footer-menu {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
+        footer .social-icons a {
+            font-size: 24px;
+            margin: 0 10px;
+            transition: transform 0.3s;
         }
 
-        footer .footer-menu a {
+        footer .social-icons a:hover {
+            transform: scale(1.2);
+        }
+
+        .search-suggestions {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            display: none;
+            z-index: 1000;
+        }
+
+        .search-suggestions div {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .search-suggestions div:hover {
+            background-color: #f0f0f0;
+        }
+
+        .toast {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
             color: white;
-            margin: 0 5px;
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -128,14 +185,15 @@
     <h1>Welcome to My Interactive Website</h1>
     <img src="https://via.placeholder.com/50?text=Logo" alt="Site Logo">
     <div class="nav-links">
-        <input type="text" id="searchBar" placeholder="Search...">
+        <input type="text" id="searchBar" oninput="showSuggestions()" placeholder="Search...">
+        <div class="search-suggestions" id="searchSuggestions"></div>
         <button class="toggle">Toggle Dark Mode</button>
         <button class="toggle-sidebar" aria-label="Toggle Sidebar" onclick="toggleSidebar()">Menu</button>
         <button id="backToTop" style="display:none;">Back to Top</button>
     </div>
 </header>
 
-<nav role="navigation" class="sidebar" id="sidebar" aria-label="Sidebar Navigation">
+<nav role="navigation" aria-label="Sidebar Navigation" id="sidebar">
     <ul>
         <li onclick="smoothScroll('home'); closeSidebar();">Home</li>
         <li onclick="smoothScroll('about'); closeSidebar();">About</li>
@@ -193,6 +251,7 @@
     <section id="testimonials">
         <h2>User Testimonials</h2>
         <div class="testimonial-carousel" id="testimonialCarousel"></div>
+        <div class="dots-pagination" id="dotsPagination"></div>
         <button onclick="prevTestimonial()">Previous</button>
         <button onclick="nextTestimonial()">Next</button>
     </section>
@@ -217,14 +276,14 @@
         <div class="faq-item" onclick="toggleFAQ(this)">
             <strong>Q: What is this website about?</strong>
             <span class="faq-icon">&#x25B6;</span>
-            <div class="faq-answer">
+            <div class="faq-answer" style="display:none;">
                 <p>A: It is an interactive demo showcasing various web features.</p>
             </div>
         </div>
         <div class="faq-item" onclick="toggleFAQ(this)">
             <strong>Q: How can I contact support?</strong>
             <span class="faq-icon">&#x25B6;</span>
-            <div class="faq-answer">
+            <div class="faq-answer" style="display:none;">
                 <p>A: You can contact us through the contact form provided.</p>
             </div>
         </div>
@@ -309,19 +368,32 @@
 
     function loadTestimonials() {
         const carouselContainer = document.getElementById('testimonialCarousel');
+        const dotsContainer = document.getElementById('dotsPagination');
         testimonials.forEach((testimonial, index) => {
             const div = document.createElement('div');
             div.className = 'testimonial';
             div.innerHTML = `<p>"${testimonial.quote}" - <small>${testimonial.author}</small></p>`;
             carouselContainer.appendChild(div);
+
+            const dot = document.createElement('span');
+            dot.className = 'dots';
+            dot.onclick = () => {
+                currentTestimonialIndex = index;
+                showTestimonial(currentTestimonialIndex);
+            };
+            dotsContainer.appendChild(dot);
         });
         showTestimonial(currentTestimonialIndex);
     }
 
     function showTestimonial(index) {
         const testimonialDivs = document.querySelectorAll('.testimonial');
+        const dots = document.querySelectorAll('.dots');
         testimonialDivs.forEach((testimonial, i) => {
             testimonial.style.transform = `translateX(${(i - index) * 100}%)`;
+        });
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active-dot', i === index);
         });
     }
 
@@ -344,6 +416,31 @@
 
     function closeLightbox() {
         document.getElementById('lightbox').style.display = 'none';
+    }
+
+    function showSuggestions() {
+        const suggestions = document.getElementById('searchSuggestions');
+        const input = document.getElementById('searchBar').value.toLowerCase();
+        suggestions.innerHTML = '';
+        const sections = ['home', 'about', 'products', 'services', 'gallery', 'testimonials', 'contact', 'faq'];
+        sections.forEach(section => {
+            if (section.includes(input)) {
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.innerText = section.charAt(0).toUpperCase() + section.slice(1);
+                suggestionDiv.onclick = () => { smoothScroll(section); suggestions.style.display = 'none'; };
+                suggestions.appendChild(suggestionDiv);
+            }
+        });
+        suggestions.style.display = suggestions.innerHTML ? 'block' : 'none';
+    }
+
+    function submitForm(event) {
+        event.preventDefault();
+        document.getElementById('formFeedback').innerText = "Message sent successfully!";
+        document.getElementById('formFeedback').style.display = "block";
+        setTimeout(() => {
+            document.getElementById('formFeedback').style.display = "none";
+        }, 3000);
     }
 
     document.querySelector('.toggle').addEventListener('click', toggleTheme);
