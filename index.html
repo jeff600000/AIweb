@@ -9,10 +9,11 @@
     <title>Explore the Wonders of Web Development</title>
     <style>
         :root {
-            --primary-color: #4CAF50;
-            --background-light: #ffffff;
-            --background-dark: #121212;
-            --gradient-header: linear-gradient(90deg, #4CAF50, #650ABC);
+            --primary-color: #28a745;
+            --secondary-color: #0056b3;
+            --background-light: #f8f9fa;
+            --background-dark: #343a40;
+            --gradient-header: linear-gradient(90deg, #28a745, #650ABC);
             --transition-speed: 0.4s;
         }
 
@@ -32,11 +33,10 @@
         header {
             background: var(--gradient-header);
             color: white;
-            padding: 10px;
+            padding: 15px;
             position: sticky;
             top: 0;
             z-index: 1000;
-            transition: background var(--transition-speed);
         }
 
         button {
@@ -51,34 +51,20 @@
 
         button:hover {
             transform: scale(1.05);
-            background-color: #45a049;
-        }
-
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: #218838;
         }
 
         nav {
-            display: none; /* Initially hidden until toggle */
+            display: flex; 
+            flex-direction: column;
+            margin-top: 10px;
         }
 
         .toggle-menu {
             display: none;
         }
 
-        .menu-active {
-            display: block;
-            position: absolute;
-            background: white;
-            top: 60px;
-            left: 0;
-            width: 100%;
-            z-index: 100;
-        }
-
-        @media(max-width: 768px) {
+        @media (max-width: 768px) {
             .toggle-menu {
                 display: block;
             }
@@ -86,6 +72,28 @@
             nav {
                 display: none;
             }
+            .menu-active {
+                display: block;
+                position: absolute;
+                background: white;
+                top: 60px;
+                left: 0;
+                width: 100%;
+            }
+        }
+
+        /* Testimonial Styles */
+        .testimonial-carousel {
+            display: flex;
+            overflow: hidden;
+            transition: transform var(--transition-speed);
+        }
+
+        .testimonial {
+            min-width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+            text-align: center;
         }
 
         /* Newsletter Modal */
@@ -97,8 +105,16 @@
             transform: translate(-50%, -50%);
             background: white;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             z-index: 2000;
+            transition: opacity var(--transition-speed);
+        }
+
+        .footer {
+            background: #343a40;
+            padding: 20px;
+            color: white;
+            text-align: center;
         }
     </style>
 </head>
@@ -107,7 +123,7 @@
     <div class="nav-bar">
         <h1>My Interactive Website</h1>
         <img src="https://via.placeholder.com/50?text=Logo" alt="Site Logo">
-        <button class="toggle-menu" aria-label="Toggle Navigation" onclick="toggleMenu()">☰</button>
+        <button class="toggle-menu" aria-label="Toggle Navigation" aria-expanded="false" onclick="toggleMenu()">☰</button>
     </div>
     <nav id="sidebar">
         <ul>
@@ -137,9 +153,13 @@
 
     <section id="testimonials">
         <h2>User Testimonials</h2>
-        <div class="testimonial-carousel" id="testimonialCarousel"></div>
-        <button id="prevBtn" aria-label="Previous Testimonial">Previous</button>
-        <button id="nextBtn" aria-label="Next Testimonial">Next</button>
+        <div class="testimonial-carousel" id="testimonialCarousel">
+            <div class="testimonial">"An amazing experience!" - User A</div>
+            <div class="testimonial">"Very informative and well presented." - User B</div>
+            <div class="testimonial">"I learned a lot from this site!" - User C</div>
+        </div>
+        <button id="prevBtn" aria-label="Previous Testimonial" onclick="prevTestimonial()">Previous</button>
+        <button id="nextBtn" aria-label="Next Testimonial" onclick="nextTestimonial()">Next</button>
     </section>
 
     <section id="contact">
@@ -151,10 +171,14 @@
         </form>
     </section>
 
-    <footer>
+    <footer class="footer">
         <div class="newsletter">
             <h3>Subscribe to Our Newsletter</h3>
             <button onclick="showNewsletterModal()">Subscribe</button>
+        </div>
+        <div>
+            &copy; 2023 Breadsmp. All rights reserved. <br>
+            <a href="#" style="color: white;">Privacy Policy</a> | <a href="#" style="color: white;">Terms of Service</a>
         </div>
     </footer>
 
@@ -169,8 +193,31 @@
 </main>
 
 <script>
+    let currentTestimonialIndex = 0;
+
+    const testimonials = document.querySelectorAll('.testimonial');
+    const totalTestimonials = testimonials.length;
+
+    function nextTestimonial() {
+        currentTestimonialIndex = (currentTestimonialIndex + 1) % totalTestimonials;
+        updateTestimonialDisplay();
+    }
+
+    function prevTestimonial() {
+        currentTestimonialIndex = (currentTestimonialIndex - 1 + totalTestimonials) % totalTestimonials;
+        updateTestimonialDisplay();
+    }
+
+    function updateTestimonialDisplay() {
+        document.getElementById('testimonialCarousel').style.transform = `translateX(-${currentTestimonialIndex * 100}%)`;
+    }
+
     function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('menu-active');
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('menu-active');
+        const toggleButton = document.querySelector('.toggle-menu');
+        const isActive = sidebar.classList.contains('menu-active');
+        toggleButton.setAttribute('aria-expanded', isActive);
     }
 
     function showNewsletterModal() {
@@ -188,12 +235,12 @@
 
     function submitForm(event) {
         event.preventDefault();
-        // Handle form submission and feedback
+        alert('Form submitted!');
     }
 
     function subscribe(event) {
         event.preventDefault();
-        // Handle subscription
+        alert('Subscribed to newsletter!');
     }
 </script>
 </body>
