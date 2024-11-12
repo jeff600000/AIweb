@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore an interactive web development showcase.">
+    <meta name="description" content="Explore an interactive web development showcase with modern aesthetics and functionality.">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Explore the Wonders of Web Development</title>
     <style>
         :root {
-            --primary-color: #28a745;
-            --secondary-color: #0056b3;
-            --background-light: #f8f9fa;
+            --primary-color: #ff6f61;
+            --secondary-color: #6f61ff;
+            --background-light: #f7f9fc;
             --background-dark: #343a40;
-            --gradient-header: linear-gradient(90deg, #28a745, #650ABC);
             --transition-speed: 0.4s;
         }
 
@@ -25,13 +23,8 @@
             transition: background var(--transition-speed), color var(--transition-speed);
         }
 
-        body.dark-mode {
-            background-color: var(--background-dark);
-            color: white;
-        }
-
         header {
-            background: var(--gradient-header);
+            background: var(--secondary-color);
             color: white;
             padding: 15px;
             position: sticky;
@@ -39,64 +32,71 @@
             z-index: 1000;
         }
 
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            background-color: var(--primary-color);
-            cursor: pointer;
-            transition: background-color var(--transition-speed), transform var(--transition-speed);
-        }
-
-        button:hover {
-            transform: scale(1.05);
-            background-color: #218838;
-        }
-
         nav {
-            display: flex; 
-            flex-direction: column;
-            margin-top: 10px;
-        }
-
-        .toggle-menu {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .toggle-menu {
-                display: block;
-            }
-
-            nav {
-                display: none;
-            }
-            .menu-active {
-                display: block;
-                position: absolute;
-                background: white;
-                top: 60px;
-                left: 0;
-                width: 100%;
-            }
-        }
-
-        /* Testimonial Styles */
-        .testimonial-carousel {
             display: flex;
-            overflow: hidden;
-            transition: transform var(--transition-speed);
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: relative;
+        }
+
+        nav ul li {
+            display: inline-block;
+            position: relative;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        nav ul .dropdown {
+            display: none;
+            position: absolute;
+            background-color: white;
+            color: black;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            margin-top: 5px;
+            z-index: 100;
+        }
+
+        nav ul li:hover .dropdown {
+            display: block;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
         }
 
         .testimonial {
-            min-width: 100%;
-            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+            transition: transform var(--transition-speed);
+        }
+
+        .testimonial:hover {
+            transform: scale(1.05);
+        }
+
+        footer {
+            background: #343a40;
             padding: 20px;
+            color: white;
             text-align: center;
         }
 
-        /* Newsletter Modal */
+        footer .newsletter {
+            margin: 20px 0;
+        }
+
         .newsletter-modal {
             display: none;
             position: fixed;
@@ -107,117 +107,72 @@
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             z-index: 2000;
-            transition: opacity var(--transition-speed);
-        }
-
-        .footer {
-            background: #343a40;
-            padding: 20px;
-            color: white;
-            text-align: center;
         }
     </style>
 </head>
 <body>
 <header>
-    <div class="nav-bar">
-        <h1>My Interactive Website</h1>
-        <img src="https://via.placeholder.com/50?text=Logo" alt="Site Logo">
-        <button class="toggle-menu" aria-label="Toggle Navigation" aria-expanded="false" onclick="toggleMenu()">☰</button>
-    </div>
-    <nav id="sidebar">
+    <h1>Breadsmp.com</h1>
+    <nav>
         <ul>
-            <li onclick="smoothScroll('home'); closeSidebar();"><i class="fas fa-home"></i> Home</li>
-            <li onclick="smoothScroll('about'); closeSidebar();"><i class="fas fa-info"></i> About</li>
-            <li onclick="smoothScroll('products'); closeSidebar();"><i class="fas fa-box"></i> Products
-                <ul>
-                    <li onclick="smoothScroll('product1'); closeSidebar();">Product 1</li>
-                    <li onclick="smoothScroll('product2'); closeSidebar();">Product 2</li>
+            <li>Products
+                <ul class="dropdown">
+                    <li onclick="smoothScroll('product1')">Product 1</li>
+                    <li onclick="smoothScroll('product2')">Product 2</li>
                 </ul>
             </li>
-            <li onclick="smoothScroll('services'); closeSidebar();"><i class="fas fa-cogs"></i> Services</li>
+            <li>Services
+                <ul class="dropdown">
+                    <li onclick="smoothScroll('service1')">Service 1</li>
+                    <li onclick="smoothScroll('service2')">Service 2</li>
+                </ul>
+            </li>
         </ul>
     </nav>
 </header>
 
-<main role="main">
-    <section id="home">
-        <h2>Welcome to My Interactive Website</h2>
-        <p>This is an interactive website showcasing modern web features.</p>
+<main>
+    <section id="blog">
+        <h2>Blog Section</h2>
+        <p>Latest articles and updates will be displayed here.</p>
     </section>
 
-    <section id="about">
-        <h2>About This Website</h2>
-        <p>This site showcases various features and provides an engaging user experience.</p>
+    <section id="faq">
+        <h2>FAQ Section</h2>
+        <p>Common questions and answers are listed here.</p>
     </section>
 
     <section id="testimonials">
         <h2>User Testimonials</h2>
-        <div class="testimonial-carousel" id="testimonialCarousel">
+        <div class="testimonial-grid" id="testimonialGrid">
             <div class="testimonial">"An amazing experience!" - User A</div>
             <div class="testimonial">"Very informative and well presented." - User B</div>
             <div class="testimonial">"I learned a lot from this site!" - User C</div>
+            <div class="testimonial">"Exceeded my expectations!" - User D</div>
         </div>
-        <button id="prevBtn" aria-label="Previous Testimonial" onclick="prevTestimonial()">Previous</button>
-        <button id="nextBtn" aria-label="Next Testimonial" onclick="nextTestimonial()">Next</button>
     </section>
-
-    <section id="contact">
-        <h2>Contact Us</h2>
-        <form id="contactForm" onsubmit="submitForm(event)">
-            <input type="text" placeholder="Your Name" required>
-            <textarea placeholder="Your Message" required></textarea>
-            <button type="submit">Send</button>
-        </form>
-    </section>
-
-    <footer class="footer">
-        <div class="newsletter">
-            <h3>Subscribe to Our Newsletter</h3>
-            <button onclick="showNewsletterModal()">Subscribe</button>
-        </div>
-        <div>
-            &copy; 2023 Breadsmp. All rights reserved. <br>
-            <a href="#" style="color: white;">Privacy Policy</a> | <a href="#" style="color: white;">Terms of Service</a>
-        </div>
-    </footer>
-
-    <div class="newsletter-modal" id="newsletterModal" role="dialog" aria-labelledby="newsletterLabel" aria-hidden="true">
-        <h3 id="newsletterLabel">Subscribe to Our Newsletter</h3>
-        <form id="subscribeForm" onsubmit="subscribe(event)">
-            <input type="email" placeholder="Enter your email" required>
-            <button type="submit">Subscribe</button>
-        </form>
-        <button onclick="hideModal()" aria-label="Close Modal">Close</button>
-    </div>
 </main>
 
+<footer>
+    <div class="newsletter">
+        <h3>Subscribe to Our Newsletter</h3>
+        <button onclick="showNewsletterModal()">Subscribe</button>
+    </div>
+</footer>
+
+<div class="newsletter-modal" id="newsletterModal">
+    <h3>Subscribe to Our Newsletter</h3>
+    <form id="subscribeForm" onsubmit="subscribe(event)">
+        <input type="email" placeholder="Enter your email" required>
+        <button type="submit">Subscribe</button>
+    </form>
+    <button onclick="hideModal()">Close</button>
+</div>
+
 <script>
-    let currentTestimonialIndex = 0;
-
-    const testimonials = document.querySelectorAll('.testimonial');
-    const totalTestimonials = testimonials.length;
-
-    function nextTestimonial() {
-        currentTestimonialIndex = (currentTestimonialIndex + 1) % totalTestimonials;
-        updateTestimonialDisplay();
-    }
-
-    function prevTestimonial() {
-        currentTestimonialIndex = (currentTestimonialIndex - 1 + totalTestimonials) % totalTestimonials;
-        updateTestimonialDisplay();
-    }
-
-    function updateTestimonialDisplay() {
-        document.getElementById('testimonialCarousel').style.transform = `translateX(-${currentTestimonialIndex * 100}%)`;
-    }
-
-    function toggleMenu() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('menu-active');
-        const toggleButton = document.querySelector('.toggle-menu');
-        const isActive = sidebar.classList.contains('menu-active');
-        toggleButton.setAttribute('aria-expanded', isActive);
+    function smoothScroll(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function showNewsletterModal() {
@@ -228,20 +183,29 @@
         document.getElementById('newsletterModal').style.display = 'none';
     }
 
-    function smoothScroll(sectionId) {
-        const section = document.getElementById(sectionId);
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    function submitForm(event) {
-        event.preventDefault();
-        alert('Form submitted!');
-    }
-
     function subscribe(event) {
         event.preventDefault();
         alert('Subscribed to newsletter!');
+        hideModal();
     }
+
+    let currentTestimonialIndex = 0;
+    const testimonials = document.querySelectorAll('.testimonial');
+    const totalTestimonials = testimonials.length;
+
+    function autoSlideTestimonials() {
+        currentTestimonialIndex = (currentTestimonialIndex + 1) % totalTestimonials;
+        updateTestimonialDisplay();
+    }
+
+    function updateTestimonialDisplay() {
+        testimonials.forEach((testimonial, index) => {
+            testimonial.style.display = index === currentTestimonialIndex ? 'block' : 'none';
+        });
+    }
+
+    setInterval(autoSlideTestimonials, 3000); // Auto slide every 3 seconds
+    updateTestimonialDisplay();
 </script>
 </body>
 </html>
