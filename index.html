@@ -12,15 +12,22 @@
             --secondary-color: #6f61ff;
             --background-light: #f7f9fc;
             --background-dark: #343a40;
+            --text-light: #ffffff;
+            --text-dark: #000000;
             --transition-speed: 0.4s;
         }
 
         body {
             font-family: 'Roboto', sans-serif;
             background-color: var(--background-light);
-            color: black;
+            color: var(--text-dark);
             margin: 0;
             transition: background var(--transition-speed), color var(--transition-speed);
+        }
+
+        .dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-light);
         }
 
         header {
@@ -59,7 +66,6 @@
             color: black;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 10px;
-            margin-top: 5px;
             z-index: 100;
         }
 
@@ -68,9 +74,9 @@
         }
 
         .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px 0;
         }
 
@@ -79,11 +85,24 @@
             border-radius: 8px;
             padding: 15px;
             background: white;
-            transition: transform var(--transition-speed);
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            display: none;
         }
 
-        .testimonial:hover {
-            transform: scale(1.05);
+        .testimonial.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .controls button {
+            margin: 0 10px;
         }
 
         footer {
@@ -115,6 +134,7 @@
     <h1>Breadsmp.com</h1>
     <nav>
         <ul>
+            <li onclick="smoothScroll('home')">Home</li>
             <li>Products
                 <ul class="dropdown">
                     <li onclick="smoothScroll('product1')">Product 1</li>
@@ -128,10 +148,16 @@
                 </ul>
             </li>
         </ul>
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
     </nav>
 </header>
 
 <main>
+    <section id="home">
+        <h2>Welcome to Breadsmp.com!</h2>
+        <p>Discover our products and services designed to elevate your experience.</p>
+    </section>
+  
     <section id="blog">
         <h2>Blog Section</h2>
         <p>Latest articles and updates will be displayed here.</p>
@@ -145,10 +171,14 @@
     <section id="testimonials">
         <h2>User Testimonials</h2>
         <div class="testimonial-grid" id="testimonialGrid">
-            <div class="testimonial">"An amazing experience!" - User A</div>
+            <div class="testimonial active">"An amazing experience!" - User A</div>
             <div class="testimonial">"Very informative and well presented." - User B</div>
             <div class="testimonial">"I learned a lot from this site!" - User C</div>
             <div class="testimonial">"Exceeded my expectations!" - User D</div>
+        </div>
+        <div class="controls">
+            <button onclick="prevTestimonial()">Previous</button>
+            <button onclick="nextTestimonial()">Next</button>
         </div>
     </section>
 </main>
@@ -157,6 +187,10 @@
     <div class="newsletter">
         <h3>Subscribe to Our Newsletter</h3>
         <button onclick="showNewsletterModal()">Subscribe</button>
+    </div>
+    <div>
+        <a href="#" style="color:white;">Terms of Service</a> | 
+        <a href="#" style="color:white;">Privacy Policy</a>
     </div>
 </footer>
 
@@ -170,6 +204,30 @@
 </div>
 
 <script>
+    let currentTestimonialIndex = 0;
+    const testimonials = document.querySelectorAll('.testimonial');
+    const totalTestimonials = testimonials.length;
+
+    function showCurrentTestimonial() {
+        testimonials.forEach((testimonial, index) => {
+            testimonial.classList.toggle('active', index === currentTestimonialIndex);
+        });
+    }
+
+    function nextTestimonial() {
+        currentTestimonialIndex = (currentTestimonialIndex + 1) % totalTestimonials;
+        showCurrentTestimonial();
+    }
+
+    function prevTestimonial() {
+        currentTestimonialIndex = (currentTestimonialIndex - 1 + totalTestimonials) % totalTestimonials;
+        showCurrentTestimonial();
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+    }
+
     function smoothScroll(sectionId) {
         const section = document.getElementById(sectionId);
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -189,23 +247,7 @@
         hideModal();
     }
 
-    let currentTestimonialIndex = 0;
-    const testimonials = document.querySelectorAll('.testimonial');
-    const totalTestimonials = testimonials.length;
-
-    function autoSlideTestimonials() {
-        currentTestimonialIndex = (currentTestimonialIndex + 1) % totalTestimonials;
-        updateTestimonialDisplay();
-    }
-
-    function updateTestimonialDisplay() {
-        testimonials.forEach((testimonial, index) => {
-            testimonial.style.display = index === currentTestimonialIndex ? 'block' : 'none';
-        });
-    }
-
-    setInterval(autoSlideTestimonials, 3000); // Auto slide every 3 seconds
-    updateTestimonialDisplay();
+    showCurrentTestimonial();
 </script>
 </body>
 </html>
