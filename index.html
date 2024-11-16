@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore an interactive web development showcase with modern aesthetics and functionality.">
+    <meta name="description" content="Explore Breadsmp.com, your ultimate destination for web development resources.">
+    <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-    <title>Explore the Wonders of Web Development</title>
+    <title>Welcome to Breadsmp.com</title>
     <style>
         :root {
             --primary-color: #ff6f61;
@@ -121,36 +122,31 @@
             background-color: var(--secondary-color);
         }
 
-        .testimonial-grid {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .blog-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
             padding: 20px 0;
         }
 
-        .testimonial {
+        .blog-card {
             border: 1px solid #ddd;
             border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .blog-card:hover {
+            transform: scale(1.02);
+        }
+
+        .blog-card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .blog-card h3 {
             padding: 15px;
-            background: white;
-            opacity: 0;
-            transition: opacity var(--transition-speed);
-            display: none;
-        }
-
-        .testimonial.active {
-            display: block;
-            opacity: 1;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
-        }
-
-        .controls .button {
-            margin: 0 10px;
         }
 
         footer {
@@ -184,7 +180,6 @@
             border: 1px solid var(--secondary-color);
             border-radius: 5px;
             margin: 5px 0;
-            cursor: pointer;
         }
 
         .faq-item.active .answer {
@@ -196,37 +191,16 @@
             padding: 10px;
             background: #f9f9f9;
         }
-        
-        .blog-card {
-            border: 1px solid #ddd;
-            margin: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: transform 0.2s;
+
+        .loading {
+            font-size: 24px;
+            text-align: center;
+            margin: 20px 0;
         }
 
-        .blog-card:hover {
-            transform: scale(1.02);
-        }
-
-        .blog-card img {
-            width: 100%;
-            height: auto;
-        }
-
-        .blog-card h3 {
-            padding: 15px;
-        }
-
-        @media (max-width: 1024px) {
-            nav ul {
-                flex-direction: column;
-                padding: 0;
-            }
-
-            .faq-item h4 {
-                font-size: 1.1em;
-            }
+        #social-media {
+            text-align: center;
+            margin: 20px 0;
         }
         
     </style>
@@ -264,18 +238,21 @@
         <h2>Welcome to Breadsmp.com!</h2>
         <p>Discover our products and services designed to elevate your experience.</p>
     </section>
-  
+
     <section id="blog">
         <h2>Blog Section</h2>
-        <div class="blog-card">
-            <img src="https://via.placeholder.com/400x200" alt="Blog Image">
-            <h3>Blog Post Title 1</h3>
-            <p>Snippet of the blog post that details the topic...</p>
-        </div>
-        <div class="blog-card">
-            <img src="https://via.placeholder.com/400x200" alt="Blog Image">
-            <h3>Blog Post Title 2</h3>
-            <p>Snippet of the blog post that details the topic...</p>
+        <div class="loading">Loading Blogs...</div>
+        <div class="blog-section">
+            <div class="blog-card">
+                <img src="https://via.placeholder.com/400x200" alt="Blog Image">
+                <h3>Blog Post Title 1</h3>
+                <p>Snippet of the blog post that details the topic...</p>
+            </div>
+            <div class="blog-card">
+                <img src="https://via.placeholder.com/400x200" alt="Blog Image">
+                <h3>Blog Post Title 2</h3>
+                <p>Snippet of the blog post that details the topic...</p>
+            </div>
         </div>
     </section>
 
@@ -310,11 +287,18 @@
     <section id="contact">
         <h2>Contact Us</h2>
         <form id="contactForm" onsubmit="submitForm(event);">
-            <input type="text" placeholder="Your Name" required>
-            <input type="email" placeholder="Your Email" required>
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
             <textarea placeholder="Your Message" required></textarea>
             <button class="button" type="submit">Send Message</button>
         </form>
+    </section>
+
+    <section id="social-media">
+        <h2>Follow Us</h2>
+        <a href="https://twitter.com/breadsmp" target="_blank">Twitter</a> |
+        <a href="https://facebook.com/breadsmp" target="_blank">Facebook</a> |
+        <a href="https://instagram.com/breadsmp" target="_blank">Instagram</a>
     </section>
 </main>
 
@@ -345,7 +329,8 @@
 
     function showCurrentTestimonial() {
         testimonials.forEach((testimonial, index) => {
-            testimonial.classList.toggle('active', index === currentTestimonialIndex);
+            testimonial.style.opacity = (index === currentTestimonialIndex) ? 1 : 0;
+            testimonial.style.transition = 'opacity 0.5s ease-in-out';
         });
     }
 
@@ -393,16 +378,30 @@
 
     function submitForm(event) {
         event.preventDefault();
-        document.getElementById('contactForm').reset();
+        const name = document.getElementById('contactForm').elements['name'].value;
+        const email = document.getElementById('contactForm').elements['email'].value;
+        if (name && validateEmail(email)) {
+            // proceed with form submission
+            document.getElementById('contactForm').reset();
+        } else {
+            // Show validation error
+        }
+    }
+
+    function validateEmail(email) {
+        const re = /^([\w-]+(?:\.[\w-]+)*)@((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7})$/;
+        return re.test(String(email).toLowerCase());
     }
 
     showCurrentTestimonial();
     setInterval(nextTestimonial, 5000); // Auto transition for testimonials
 
     // Load dark mode preference
-    if (localStorage.getItem('darkMode') === 'true') {
-        toggleDarkMode();
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('darkMode') === 'true') {
+            toggleDarkMode();
+        }
+    });
 </script>
 </body>
 </html>
