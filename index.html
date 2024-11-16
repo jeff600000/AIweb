@@ -49,8 +49,7 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            position: relative;
-            display: flex; 
+            display: flex;
         }
 
         .hamburger {
@@ -108,6 +107,20 @@
             display: block;
         }
 
+        .button {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+        }
+
         .testimonial-grid {
             display: flex;
             justify-content: center;
@@ -136,7 +149,7 @@
             margin: 10px 0;
         }
 
-        .controls button {
+        .controls .button {
             margin: 0 10px;
         }
 
@@ -204,6 +217,17 @@
         .blog-card h3 {
             padding: 15px;
         }
+
+        @media (max-width: 1024px) {
+            nav ul {
+                flex-direction: column;
+                padding: 0;
+            }
+
+            .faq-item h4 {
+                font-size: 1.1em;
+            }
+        }
         
     </style>
 </head>
@@ -231,7 +255,7 @@
                 </ul>
             </li>
         </ul>
-        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        <button class="button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
     </nav>
 </header>
 
@@ -278,8 +302,8 @@
             <div class="testimonial">"Exceeded my expectations!" - User D</div>
         </div>
         <div class="controls">
-            <button onclick="prevTestimonial()">Previous</button>
-            <button onclick="nextTestimonial()">Next</button>
+            <button class="button" onclick="prevTestimonial()">Previous</button>
+            <button class="button" onclick="nextTestimonial()">Next</button>
         </div>
     </section>
 
@@ -289,7 +313,7 @@
             <input type="text" placeholder="Your Name" required>
             <input type="email" placeholder="Your Email" required>
             <textarea placeholder="Your Message" required></textarea>
-            <button type="submit">Send Message</button>
+            <button class="button" type="submit">Send Message</button>
         </form>
     </section>
 </main>
@@ -297,7 +321,7 @@
 <footer>
     <div class="newsletter">
         <h3>Subscribe to Our Newsletter</h3>
-        <button onclick="showNewsletterModal()">Subscribe</button>
+        <button class="button" onclick="showNewsletterModal()">Subscribe</button>
     </div>
     <div>
         <span style="color:white;">Terms of Service</span> | 
@@ -309,9 +333,9 @@
     <h3>Subscribe to Our Newsletter</h3>
     <form id="subscribeForm" onsubmit="subscribe(event)">
         <input type="email" placeholder="Enter your email" required>
-        <button type="submit">Subscribe</button>
+        <button class="button" type="submit">Subscribe</button>
     </form>
-    <button onclick="hideModal()">Close</button>
+    <button class="button" onclick="hideModal()">Close</button>
 </div>
 
 <script>
@@ -337,6 +361,7 @@
 
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     }
 
     function smoothScroll(sectionId) {
@@ -359,8 +384,7 @@
 
     function subscribe(event) {
         event.preventDefault();
-        alert('Subscribed to newsletter!');
-        hideModal();
+        document.getElementById('newsletterModal').style.display = 'none';
     }
 
     function toggleFaq(faqItem) {
@@ -369,12 +393,16 @@
 
     function submitForm(event) {
         event.preventDefault();
-        alert('Thank you for contacting us!');
         document.getElementById('contactForm').reset();
     }
 
     showCurrentTestimonial();
     setInterval(nextTestimonial, 5000); // Auto transition for testimonials
+
+    // Load dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        toggleDarkMode();
+    }
 </script>
 </body>
 </html>
