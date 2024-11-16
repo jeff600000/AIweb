@@ -50,6 +50,41 @@
             padding: 0;
             margin: 0;
             position: relative;
+            display: flex; 
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .bar {
+            height: 3px;
+            width: 25px;
+            background-color: white;
+            margin: 4px 0;
+            transition: 0.4s;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                background-color: var(--secondary-color);
+                width: 100%;
+                top: 60px;
+                left: 0;
+            }
+
+            nav ul.active {
+                display: flex; 
+            }
+
+            .hamburger {
+                display: flex;
+            }
         }
 
         nav ul li {
@@ -127,13 +162,61 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             z-index: 2000;
         }
+
+        .faq {
+            margin: 20px 0;
+        }
+
+        .faq-item {
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        .faq-item.active .answer {
+            display: block;
+        }
+
+        .answer {
+            display: none;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        
+        .blog-card {
+            border: 1px solid #ddd;
+            margin: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .blog-card:hover {
+            transform: scale(1.02);
+        }
+
+        .blog-card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .blog-card h3 {
+            padding: 15px;
+        }
+        
     </style>
 </head>
 <body>
 <header>
     <h1>Breadsmp.com</h1>
     <nav>
-        <ul>
+        <div class="hamburger" onclick="toggleNav();">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <ul id="navList">
             <li onclick="smoothScroll('home')">Home</li>
             <li>Products
                 <ul class="dropdown">
@@ -160,12 +243,30 @@
   
     <section id="blog">
         <h2>Blog Section</h2>
-        <p>Latest articles and updates will be displayed here.</p>
+        <div class="blog-card">
+            <img src="https://via.placeholder.com/400x200" alt="Blog Image">
+            <h3>Blog Post Title 1</h3>
+            <p>Snippet of the blog post that details the topic...</p>
+        </div>
+        <div class="blog-card">
+            <img src="https://via.placeholder.com/400x200" alt="Blog Image">
+            <h3>Blog Post Title 2</h3>
+            <p>Snippet of the blog post that details the topic...</p>
+        </div>
     </section>
 
     <section id="faq">
         <h2>FAQ Section</h2>
-        <p>Common questions and answers are listed here.</p>
+        <div class="faq">
+            <div class="faq-item" onclick="toggleFaq(this);">
+                <h4>What is Breadsmp?</h4>
+                <div class="answer">Breadsmp is your go-to resource for web development...</div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this);">
+                <h4>How can I contact support?</h4>
+                <div class="answer">You can contact us via our support page...</div>
+            </div>
+        </div>
     </section>
 
     <section id="testimonials">
@@ -181,6 +282,16 @@
             <button onclick="nextTestimonial()">Next</button>
         </div>
     </section>
+
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <form id="contactForm" onsubmit="submitForm(event);">
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Your Email" required>
+            <textarea placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
 </main>
 
 <footer>
@@ -189,8 +300,8 @@
         <button onclick="showNewsletterModal()">Subscribe</button>
     </div>
     <div>
-        <a href="#" style="color:white;">Terms of Service</a> | 
-        <a href="#" style="color:white;">Privacy Policy</a>
+        <span style="color:white;">Terms of Service</span> | 
+        <span style="color:white;">Privacy Policy</span>
     </div>
 </footer>
 
@@ -233,6 +344,11 @@
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    function toggleNav() {
+        const navList = document.getElementById('navList');
+        navList.classList.toggle('active');
+    }
+
     function showNewsletterModal() {
         document.getElementById('newsletterModal').style.display = 'block';
     }
@@ -247,7 +363,18 @@
         hideModal();
     }
 
+    function toggleFaq(faqItem) {
+        faqItem.classList.toggle('active');
+    }
+
+    function submitForm(event) {
+        event.preventDefault();
+        alert('Thank you for contacting us!');
+        document.getElementById('contactForm').reset();
+    }
+
     showCurrentTestimonial();
+    setInterval(nextTestimonial, 5000); // Auto transition for testimonials
 </script>
 </body>
 </html>
