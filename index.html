@@ -31,6 +31,13 @@
             --transition-speed: 0.4s;
         }
 
+        /* Reset styles */
+        body, h1, h2, h3, p, ul, li {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             background-color: var(--background-light);
@@ -128,6 +135,12 @@
             bottom: 0;
         }
 
+        .blog-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
         .testimonial-carousel {
             display: flex;
             overflow: hidden;
@@ -144,6 +157,11 @@
             opacity: 1;
         }
 
+        .stars {
+            color: gold;
+            font-size: 1.2em;
+        }
+
         .toast {
             position: fixed;
             bottom: 20px;
@@ -154,6 +172,14 @@
             border-radius: 5px;
             display: none; 
             transition: opacity 0.5s;
+        }
+
+        .loader {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
         
     </style>
@@ -210,12 +236,21 @@
         <div class="testimonial-carousel" id="testimonial-carousel">
             <div class="testimonial active">
                 <p>"An amazing experience!"<span class="subtitle"> - User A</span></p>
+                <div class="stars">
+                    <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span>
+                </div>
             </div>
             <div class="testimonial">
                 <p>"Very informative and well presented."<span class="subtitle"> - User B</span></p>
+                <div class="stars">
+                    <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span><span>&#9734;</span>
+                </div>
             </div>
             <div class="testimonial">
                 <p>"I learned a lot from this site!"<span class="subtitle"> - User C</span></p>
+                <div class="stars">
+                    <span>&#9733;</span><span>&#9733;</span><span>&#9734;</span><span>&#9734;</span><span>&#9734;</span>
+                </div>
             </div>
         </div>
         <div class="controls">
@@ -267,6 +302,8 @@
     <button class="button" onclick="hideModal()">Close</button>
 </div>
 
+<div id="loader" class="loader">Loading...</div>
+
 <script>
     let currentTestimonialIndex = 0;
     const testimonials = document.querySelectorAll('.testimonial-carousel > div');
@@ -314,9 +351,15 @@
 
     function submitTestimonial() {
         const testimonialText = document.querySelector('.testimonial-form textarea').value;
+        if (testimonialText.trim() === '') {
+            showToast("Testimonial cannot be empty.");
+            return;
+        }
+
         const newTestimonial = document.createElement('div');
         newTestimonial.classList.add('testimonial');
-        newTestimonial.innerHTML = `<p>"${testimonialText}"<span class="subtitle"> - New User</span></p>`;
+        newTestimonial.innerHTML = `<p>"${testimonialText}"<span class="subtitle"> - New User</span></p>
+                                    <div class="stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span><span>&#9734;</span></div>`;
         
         document.querySelector('.testimonial-carousel').appendChild(newTestimonial);
         document.querySelector('.testimonial-form textarea').value = '';
@@ -331,6 +374,8 @@
         if (name && validateEmail(email)) {
             document.getElementById('contactForm').reset();
             showToast("Thank you for contacting us, " + name + "!");
+        } else {
+            showToast("Invalid email format.");
         }
     }
 
