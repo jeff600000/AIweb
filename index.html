@@ -5,7 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore Breadsmp.com, your ultimate destination for web development resources.">
     <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <script type='application/ld+json'>
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Breadsmp",
+        "url": "http://www.breadsmp.com",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "http://www.breadsmp.com/search?q={search_term}",
+            "query-input": "required name=search_term"
+        }
+    }
+    </script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700|Poppins:400,700&display=swap" rel="stylesheet">
     <title>Welcome to Breadsmp.com</title>
     <style>
         :root {
@@ -23,10 +36,10 @@
             background-color: var(--background-light);
             color: var(--text-dark);
             margin: 0;
-            transition: background var(--transition-speed), color var(--transition-speed);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background var(--transition-speed), color var(--transition-speed);
         }
 
         body.dark-mode {
@@ -34,12 +47,8 @@
             color: var(--text-light);
         }
 
-        body.dark-mode footer {
-            background-color: var(--background-dark);
-        }
-
         header {
-            background: var(--secondary-color);
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 15px;
             position: sticky;
@@ -109,7 +118,7 @@
         }
 
         footer {
-            background: #343a40;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             padding: 20px;
             color: white;
             text-align: center;
@@ -119,92 +128,32 @@
             bottom: 0;
         }
 
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 10px;
-            padding: 20px 0;
+        .testimonial-carousel {
+            display: flex;
+            overflow: hidden;
+            transition: transform 0.5s ease-in-out;
         }
 
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            padding: 20px 0;
+        .testimonial-carousel div {
+            min-width: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
-        .gallery-grid img {
-            width: 100%;
-            border-radius: 5px;
-            transition: transform var(--transition-speed);
+        .testimonial-carousel div.active {
+            opacity: 1;
         }
 
-        .gallery-grid img:hover {
-            transform: scale(1.05);
-        }
-
-        .subtitle {
-            font-size: 1.2em;
-            margin: 0.5em 0;
-            display: block;
-        }
-
-        .loading {
-            animation: fadeIn 1s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity: 1;}
-        }
-
-        .newsletter-modal {
-            display: none;
+        .toast {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 2000;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        h2 {
-            transition: transform var(--transition-speed);
-        }
-
-        h2:hover {
-            transform: scale(1.05);
-        }
-
-        .faq-item {
-            border: 1px solid var(--secondary-color);
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
             border-radius: 5px;
-            margin: 5px 0;
-        }
-
-        .answer {
-            display: none;
-            padding: 10px;
-            background: #f9f9f9;
-        }
-
-        .faq-item.active .answer {
-            display: block;
-        }
-
-        .testimonial-form {
-            margin: 20px 0;
-        }
-
-        .testimonial-form textarea {
-            width: 100%;
-            height: 100px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            padding: 10px;
+            display: none; 
+            transition: opacity 0.5s;
         }
         
     </style>
@@ -220,16 +169,12 @@
         </div>
         <ul id="navList">
             <li onclick="smoothScroll('home')">Home</li>
+            <li onclick="smoothScroll('blog')">Blog</li>
+            <li onclick="smoothScroll('contact')">Contact Us</li>
             <li>Products
                 <ul class="dropdown">
                     <li onclick="smoothScroll('product1')">Product 1</li>
                     <li onclick="smoothScroll('product2')">Product 2</li>
-                </ul>
-            </li>
-            <li>Services
-                <ul class="dropdown">
-                    <li onclick="smoothScroll('service1')">Service 1</li>
-                    <li onclick="smoothScroll('service2')">Service 2</li>
                 </ul>
             </li>
         </ul>
@@ -260,33 +205,9 @@
         </div>
     </section>
 
-    <section id="gallery">
-        <h2>Gallery</h2>
-        <div class="gallery-grid">
-            <img src="https://via.placeholder.com/300" alt="Gallery Image 1">
-            <img src="https://via.placeholder.com/300" alt="Gallery Image 2">
-            <img src="https://via.placeholder.com/300" alt="Gallery Image 3">
-            <img src="https://via.placeholder.com/300" alt="Gallery Image 4">
-        </div>
-    </section>
-
-    <section id="faq">
-        <h2>FAQ Section</h2>
-        <div class="faq">
-            <div class="faq-item" onclick="toggleFaq(this);">
-                <h4>What is Breadsmp?</h4>
-                <div class="answer">Breadsmp is your go-to resource for web development...</div>
-            </div>
-            <div class="faq-item" onclick="toggleFaq(this);">
-                <h4>How can I contact support?</h4>
-                <div class="answer">You can contact us via our support page...</div>
-            </div>
-        </div>
-    </section>
-
     <section id="testimonials">
         <h2>User Testimonials</h2>
-        <div class="testimonial-grid" id="testimonialGrid">
+        <div class="testimonial-carousel" id="testimonial-carousel">
             <div class="testimonial active">
                 <p>"An amazing experience!"<span class="subtitle"> - User A</span></p>
             </div>
@@ -295,9 +216,6 @@
             </div>
             <div class="testimonial">
                 <p>"I learned a lot from this site!"<span class="subtitle"> - User C</span></p>
-            </div>
-            <div class="testimonial">
-                <p>"Exceeded my expectations!"<span class="subtitle"> - User D</span></p>
             </div>
         </div>
         <div class="controls">
@@ -308,6 +226,7 @@
             <textarea placeholder="Share your experience..." required></textarea>
             <button class="button" onclick="submitTestimonial()">Submit Testimonial</button>
         </div>
+        <div class="toast" id="toast">Thank you for your feedback!</div>
     </section>
 
     <section id="contact">
@@ -350,13 +269,12 @@
 
 <script>
     let currentTestimonialIndex = 0;
-    const testimonials = document.querySelectorAll('.testimonial');
+    const testimonials = document.querySelectorAll('.testimonial-carousel > div');
     const totalTestimonials = testimonials.length;
 
     function showCurrentTestimonial() {
         testimonials.forEach((testimonial, index) => {
-            testimonial.style.opacity = (index === currentTestimonialIndex) ? 1 : 0;
-            testimonial.style.transition = 'opacity 0.5s ease-in-out';
+            testimonial.classList.toggle('active', index === currentTestimonialIndex);
         });
     }
 
@@ -385,21 +303,25 @@
         navList.classList.toggle('active');
     }
 
-    function showNewsletterModal() {
-        document.getElementById('newsletterModal').style.display = 'block';
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
     }
 
-    function hideModal() {
-        document.getElementById('newsletterModal').style.display = 'none';
-    }
-
-    function subscribe(event) {
-        event.preventDefault();
-        document.getElementById('newsletterModal').style.display = 'none';
-    }
-
-    function toggleFaq(faqItem) {
-        faqItem.classList.toggle('active');
+    function submitTestimonial() {
+        const testimonialText = document.querySelector('.testimonial-form textarea').value;
+        const newTestimonial = document.createElement('div');
+        newTestimonial.classList.add('testimonial');
+        newTestimonial.innerHTML = `<p>"${testimonialText}"<span class="subtitle"> - New User</span></p>`;
+        
+        document.querySelector('.testimonial-carousel').appendChild(newTestimonial);
+        document.querySelector('.testimonial-form textarea').value = '';
+        showToast("Thank you for your testimonial!");
+        nextTestimonial();
     }
 
     function submitForm(event) {
@@ -408,9 +330,7 @@
         const email = document.getElementById('contactForm').elements['email'].value;
         if (name && validateEmail(email)) {
             document.getElementById('contactForm').reset();
-            const successMessage = document.createElement('div');
-            successMessage.innerText = "Thank you for contacting us, " + name + "!";
-            document.getElementById('contact').appendChild(successMessage);
+            showToast("Thank you for contacting us, " + name + "!");
         }
     }
 
@@ -419,24 +339,28 @@
         return re.test(String(email).toLowerCase());
     }
 
-    function submitTestimonial() {
-        const testimonialText = document.querySelector('.testimonial-form textarea').value;
-        const testimonialGrid = document.getElementById('testimonialGrid');
-        const newTestimonial = document.createElement('div');
-        newTestimonial.classList.add('testimonial');
-        newTestimonial.innerHTML = `<p>"${testimonialText}"<span class="subtitle"> - New User</span></p>`;
-        testimonialGrid.appendChild(newTestimonial);
-        document.querySelector('.testimonial-form textarea').value = '';
+    function subscribe(event) {
+        event.preventDefault();
+        document.getElementById('newsletterModal').style.display = 'none';
+        showToast("Thank you for subscribing!");
     }
 
-    showCurrentTestimonial();
-    setInterval(nextTestimonial, 5000);
+    function showNewsletterModal() {
+        document.getElementById('newsletterModal').style.display = 'block';
+    }
+
+    function hideModal() {
+        document.getElementById('newsletterModal').style.display = 'none';
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('darkMode') === 'true') {
             toggleDarkMode();
         }
     });
+
+    showCurrentTestimonial();
+    setInterval(nextTestimonial, 5000);
 </script>
 </body>
 </html>
