@@ -29,6 +29,15 @@
             min-height: 100vh;
         }
 
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-light);
+        }
+
+        body.dark-mode footer {
+            background-color: var(--background-dark);
+        }
+
         header {
             background: var(--secondary-color);
             color: white;
@@ -117,6 +126,23 @@
             padding: 20px 0;
         }
 
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 20px 0;
+        }
+
+        .gallery-grid img {
+            width: 100%;
+            border-radius: 5px;
+            transition: transform var(--transition-speed);
+        }
+
+        .gallery-grid img:hover {
+            transform: scale(1.05);
+        }
+
         .subtitle {
             font-size: 1.2em;
             margin: 0.5em 0;
@@ -167,6 +193,18 @@
 
         .faq-item.active .answer {
             display: block;
+        }
+
+        .testimonial-form {
+            margin: 20px 0;
+        }
+
+        .testimonial-form textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 10px;
         }
         
     </style>
@@ -222,6 +260,16 @@
         </div>
     </section>
 
+    <section id="gallery">
+        <h2>Gallery</h2>
+        <div class="gallery-grid">
+            <img src="https://via.placeholder.com/300" alt="Gallery Image 1">
+            <img src="https://via.placeholder.com/300" alt="Gallery Image 2">
+            <img src="https://via.placeholder.com/300" alt="Gallery Image 3">
+            <img src="https://via.placeholder.com/300" alt="Gallery Image 4">
+        </div>
+    </section>
+
     <section id="faq">
         <h2>FAQ Section</h2>
         <div class="faq">
@@ -256,6 +304,10 @@
             <button class="button" onclick="prevTestimonial()">Previous</button>
             <button class="button" onclick="nextTestimonial()">Next</button>
         </div>
+        <div class="testimonial-form">
+            <textarea placeholder="Share your experience..." required></textarea>
+            <button class="button" onclick="submitTestimonial()">Submit Testimonial</button>
+        </div>
     </section>
 
     <section id="contact">
@@ -270,9 +322,9 @@
 
     <section id="social-media">
         <h2>Follow Us</h2>
-        <a href="https://twitter.com/breadsmp" target="_blank">Twitter</a> |
-        <a href="https://facebook.com/breadsmp" target="_blank">Facebook</a> |
-        <a href="https://instagram.com/breadsmp" target="_blank">Instagram</a>
+        <span>Twitter</span> |
+        <span>Facebook</span> |
+        <span>Instagram</span>
     </section>
 </main>
 
@@ -356,13 +408,25 @@
         const email = document.getElementById('contactForm').elements['email'].value;
         if (name && validateEmail(email)) {
             document.getElementById('contactForm').reset();
-            // Further form submission logic
+            const successMessage = document.createElement('div');
+            successMessage.innerText = "Thank you for contacting us, " + name + "!";
+            document.getElementById('contact').appendChild(successMessage);
         }
     }
 
     function validateEmail(email) {
         const re = /^([\w-]+(?:\.[\w-]+)*)@((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7})$/;
         return re.test(String(email).toLowerCase());
+    }
+
+    function submitTestimonial() {
+        const testimonialText = document.querySelector('.testimonial-form textarea').value;
+        const testimonialGrid = document.getElementById('testimonialGrid');
+        const newTestimonial = document.createElement('div');
+        newTestimonial.classList.add('testimonial');
+        newTestimonial.innerHTML = `<p>"${testimonialText}"<span class="subtitle"> - New User</span></p>`;
+        testimonialGrid.appendChild(newTestimonial);
+        document.querySelector('.testimonial-form textarea').value = '';
     }
 
     showCurrentTestimonial();
