@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore Breadsmp.com, your ultimate destination for web development resources.">
     <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe">
+    <meta property="og:title" content="Welcome to Breadsmp.com" />
+    <meta property="og:description" content="Discover our products and services designed to elevate your experience." />
+    <meta property="og:image" content="https://via.placeholder.com/400x200" />
+    <meta property="og:url" content="http://www.breadsmp.com" />
     <script type='application/ld+json'>
     {
         "@context": "https://schema.org",
@@ -31,7 +35,6 @@
             --transition-speed: 0.4s;
         }
 
-        /* Reset styles */
         body, h1, h2, h3, p, ul, li {
             margin: 0;
             padding: 0;
@@ -181,90 +184,103 @@
             top: 50%;
             transform: translate(-50%, -50%);
         }
-        
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .faq-item {
+            margin: 15px 0;
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 10px;
+            background-color: var(--background-light);
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
 <header>
     <h1>Breadsmp.com</h1>
     <nav>
-        <div class="hamburger" onclick="toggleNav();">
+        <div class="hamburger" aria-label="Toggle navigation" onclick="toggleNav();">
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
         </div>
-        <ul id="navList">
-            <li onclick="smoothScroll('home')">Home</li>
-            <li onclick="smoothScroll('blog')">Blog</li>
-            <li onclick="smoothScroll('contact')">Contact Us</li>
-            <li>Products
-                <ul class="dropdown">
-                    <li onclick="smoothScroll('product1')">Product 1</li>
-                    <li onclick="smoothScroll('product2')">Product 2</li>
+        <ul id="navList" role="menubar">
+            <li role="menuitem" onclick="smoothScroll('home')">Home</li>
+            <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
+            <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
+            <li role="menuitem">Products
+                <ul class="dropdown" role="menu">
+                    <li role="menuitem" onclick="smoothScroll('product1')">Product 1</li>
+                    <li role="menuitem" onclick="smoothScroll('product2')">Product 2</li>
                 </ul>
             </li>
         </ul>
-        <button class="button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        <button class="button" aria-label="Toggle dark mode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
     </nav>
 </header>
 
 <main>
-    <section id="home">
+    <section id="home" class="fade-in">
         <h2>Welcome to Breadsmp.com!</h2>
         <p>Discover our products and services designed to elevate your experience.</p>
     </section>
 
-    <section id="blog">
+    <section id="blog" class="fade-in">
         <h2>Blog Section</h2>
         <div class="loading">Loading Blogs...</div>
         <div class="blog-section">
             <div class="blog-card">
-                <img src="https://via.placeholder.com/400x200" alt="Blog Image" loading="lazy">
+                <img src="https://via.placeholder.com/400x200" alt="Blog Post Image - Title 1" loading="lazy">
                 <h3>Blog Post Title 1</h3>
                 <p>Snippet of the blog post that details the topic...</p>
             </div>
             <div class="blog-card">
-                <img src="https://via.placeholder.com/400x200" alt="Blog Image" loading="lazy">
+                <img src="https://via.placeholder.com/400x200" alt="Blog Post Image - Title 2" loading="lazy">
                 <h3>Blog Post Title 2</h3>
                 <p>Snippet of the blog post that details the topic...</p>
             </div>
         </div>
     </section>
 
-    <section id="testimonials">
+    <section id="testimonials" class="fade-in">
         <h2>User Testimonials</h2>
         <div class="testimonial-carousel" id="testimonial-carousel">
             <div class="testimonial active">
                 <p>"An amazing experience!"<span class="subtitle"> - User A</span></p>
-                <div class="stars">
-                    <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span>
-                </div>
+                <div class="stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span></div>
             </div>
             <div class="testimonial">
                 <p>"Very informative and well presented."<span class="subtitle"> - User B</span></p>
-                <div class="stars">
-                    <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span><span>&#9734;</span>
-                </div>
+                <div class="stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span><span>&#9734;</span></div>
             </div>
             <div class="testimonial">
                 <p>"I learned a lot from this site!"<span class="subtitle"> - User C</span></p>
-                <div class="stars">
-                    <span>&#9733;</span><span>&#9733;</span><span>&#9734;</span><span>&#9734;</span><span>&#9734;</span>
-                </div>
+                <div class="stars"><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span><span>&#9734;</span><span>&#9734;</span></div>
             </div>
         </div>
         <div class="controls">
-            <button class="button" onclick="prevTestimonial()">Previous</button>
-            <button class="button" onclick="nextTestimonial()">Next</button>
+            <button class="button" aria-label="Previous testimonial" onclick="prevTestimonial()">Previous</button>
+            <button class="button" aria-label="Next testimonial" onclick="nextTestimonial()">Next</button>
         </div>
         <div class="testimonial-form">
             <textarea placeholder="Share your experience..." required></textarea>
-            <button class="button" onclick="submitTestimonial()">Submit Testimonial</button>
+            <button class="button" aria-label="Submit testimonial" onclick="submitTestimonial()">Submit Testimonial</button>
         </div>
         <div class="toast" id="toast">Thank you for your feedback!</div>
     </section>
 
-    <section id="contact">
+    <section id="contact" class="fade-in">
         <h2>Contact Us</h2>
         <form id="contactForm" onsubmit="submitForm(event);">
             <input type="text" name="name" placeholder="Your Name" required>
@@ -274,18 +290,32 @@
         </form>
     </section>
 
-    <section id="social-media">
+    <section id="social-media" class="fade-in">
         <h2>Follow Us</h2>
-        <span>Twitter</span> |
-        <span>Facebook</span> |
-        <span>Instagram</span>
+        <span>Twitter</span> | <span>Facebook</span> | <span>Instagram</span>
+    </section>
+
+    <section id="faq" class="fade-in">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <button class="button" onclick="toggleFAQ(this)">What is Breadsmp?</button>
+            <div class="faq-answer">
+                <p>Breadsmp is the ultimate platform for web development resources, tutorials, and blogs.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <button class="button" onclick="toggleFAQ(this)">How to contact support?</button>
+            <div class="faq-answer">
+                <p>You can contact support by filling out the contact form on our website.</p>
+            </div>
+        </div>
     </section>
 </main>
 
 <footer>
     <div class="newsletter">
         <h3>Subscribe to Our Newsletter</h3>
-        <button class="button" onclick="showNewsletterModal()">Subscribe</button>
+        <button class="button" aria-label="Subscribe" onclick="showNewsletterModal()">Subscribe</button>
     </div>
     <div>
         <span style="color:white;">Terms of Service</span> | 
@@ -351,6 +381,9 @@
 
     function submitTestimonial() {
         const testimonialText = document.querySelector('.testimonial-form textarea').value;
+        const name = prompt("Please enter your name:");
+        const rating = prompt("Please enter your rating (1-5):");
+        
         if (testimonialText.trim() === '') {
             showToast("Testimonial cannot be empty.");
             return;
@@ -358,8 +391,8 @@
 
         const newTestimonial = document.createElement('div');
         newTestimonial.classList.add('testimonial');
-        newTestimonial.innerHTML = `<p>"${testimonialText}"<span class="subtitle"> - New User</span></p>
-                                    <div class="stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9734;</span><span>&#9734;</span></div>`;
+        newTestimonial.innerHTML = `<p>"${testimonialText}"<span class="subtitle"> - ${name || 'New User'}</span></p>
+                                    <div class="stars">${'&#9733;'.repeat(rating)}${'&#9734;'.repeat(5 - rating)}</div>`;
         
         document.querySelector('.testimonial-carousel').appendChild(newTestimonial);
         document.querySelector('.testimonial-form textarea').value = '';
@@ -396,6 +429,11 @@
 
     function hideModal() {
         document.getElementById('newsletterModal').style.display = 'none';
+    }
+
+    function toggleFAQ(button) {
+        const answer = button.nextElementSibling;
+        answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
     }
 
     document.addEventListener("DOMContentLoaded", () => {
