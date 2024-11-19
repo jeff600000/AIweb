@@ -5,18 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore Breadsmp.com, a premier destination for web development resources.">
     <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe">
-    <meta property="og:title" content="Welcome to Breadsmp.com" />
-    <meta property="og:description" content="Discover our products and services designed to elevate your experience." />
-    <meta property="og:image" content="https://via.placeholder.com/400x200" />
-    <meta property="og:url" content="http://www.breadsmp.com" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700|Poppins:400,700&display=swap" rel="stylesheet">
     <title>Welcome to Breadsmp.com - Enhancing Your Web Experience</title>
     <style>
         :root {
-            --primary-color: #ff6f61;
-            --secondary-color: #6f61ff;
-            --background-light: #f7f9fc;
-            --background-dark: #343a40;
+            --primary-color: #673ab7;
+            --secondary-color: #ff5722;
+            --background-light: #f9f9f9;
+            --background-dark: #282c34;
             --text-light: #ffffff;
             --text-dark: #000000;
             --transition-speed: 0.4s;
@@ -71,6 +67,7 @@
         }
         nav ul li {
             position: relative;
+            margin-right: 20px;
         }
 
         nav ul .dropdown {
@@ -143,6 +140,39 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            padding: 20px;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            position: relative;
+            transition: transform var(--transition-speed);
+        }
+        .blog-card:hover {
+            transform: translateY(-5px);
+        }
+        .blog-card img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+
+        .testimonial-carousel {
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+        .testimonial {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: none;
+        }
+        .testimonial.active {
+            display: block;
+            opacity: 1; 
         }
 
         .faq-item {
@@ -153,6 +183,19 @@
             padding: 10px;
             background-color: var(--background-light);
             border-radius: 5px;
+        }
+        .faq-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            cursor: pointer;
+        }
+        .faq-button .icon {
+            transition: transform 0.3s;
+        }
+        .faq-button.active .icon {
+            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -201,7 +244,8 @@
             <button class="button" aria-label="Next testimonial" onclick="nextTestimonial()">Next</button>
         </div>
         <div class="testimonial-form">
-            <textarea placeholder="Share your experience..." required></textarea>
+            <textarea placeholder="Share your experience..." required maxlength="200" oninput="updateCharCount(this.value)"></textarea>
+            <div id="charCount">Characters remaining: 200</div>
             <button class="button" aria-label="Submit testimonial" onclick="submitTestimonial()">Submit Testimonial</button>
         </div>
     </section>
@@ -219,13 +263,19 @@
     <section id="faq" class="fade-in">
         <h2>Frequently Asked Questions</h2>
         <div class="faq-item">
-            <button class="button" onclick="toggleFAQ(this)">What is Breadsmp?</button>
+            <div class="faq-button" onclick="toggleFAQ(this)">
+                <span>What is Breadsmp?</span>
+                <span class="icon">▼</span>
+            </div>
             <div class="faq-answer">
                 <p>Breadsmp is the ultimate platform for web development resources, tutorials, and blogs.</p>
             </div>
         </div>
         <div class="faq-item">
-            <button class="button" onclick="toggleFAQ(this)">How to contact support?</button>
+            <div class="faq-button" onclick="toggleFAQ(this)">
+                <span>How to contact support?</span>
+                <span class="icon">▼</span>
+            </div>
             <div class="faq-answer">
                 <p>You can contact support by filling out the contact form on our website.</p>
             </div>
@@ -239,10 +289,9 @@
         <span style="color:white;">Privacy Policy</span> | 
         <span style="color:white;">Follow Us:</span>
         <a href="#" style="color:white;"> Facebook</a> | 
-        <a href="#" style="color:white;"> Twitter</a>
-    </div>
-    <div>
-        &copy; 2023 Breadsmp.com. All rights reserved.
+        <a href="#" style="color:white;"> Twitter</a> |
+        <a href="#" class="social-icon" style="color:white;">Instagram</a> |
+        <a href="#" class="social-icon" style="color:white;">LinkedIn</a>
     </div>
 </footer>
 
@@ -253,13 +302,12 @@
 
     async function fetchBlogs() {
         showLoader();
-        try {
-            const response = await fetch('https://api.example.com/blogposts');
-            const blogPosts = await response.json();
-            renderBlogs(blogPosts);
-        } catch (error) {
-            console.error('Error fetching blogs:', error);
-        }
+        const dummyBlogs = [
+            {title: "Blog Post 1", snippet: "This is a brief summary of blog post 1.", image: "https://via.placeholder.com/400", link: "#"},
+            {title: "Blog Post 2", snippet: "This is a brief summary of blog post 2.", image: "https://via.placeholder.com/400", link: "#"},
+            {title: "Blog Post 3", snippet: "This is a brief summary of blog post 3.", image: "https://via.placeholder.com/400", link: "#"},
+        ];
+        renderBlogs(dummyBlogs);
         hideLoader();
     }
 
@@ -270,6 +318,7 @@
                 <img src="${blog.image}" alt="${blog.title}" loading="lazy">
                 <h3>${blog.title}</h3>
                 <p>${blog.snippet}</p>
+                <a class="button" href="${blog.link}">Read More</a>
             </div>
         `).join('');
     }
@@ -303,14 +352,21 @@
 
         if (testimonialText.trim() === '') return;
 
-        const newTestimonial = document.createElement('div');
-        newTestimonial.classList.add('testimonial');
-        newTestimonial.innerHTML = `<p>"${testimonialText}"<span class="subtitle"> - ${name || 'New User'}</span></p>`;
-        testimonialCarousel.appendChild(newTestimonial);
-        document.querySelector('.testimonial-form textarea').value = '';
-
+        const newTestimonial = { text: testimonialText, author: name || 'New User'};
+        const testimonialDiv = document.createElement('div');
+        testimonialDiv.classList.add('testimonial');
+        testimonialDiv.innerHTML = `<p>"${newTestimonial.text}"<span class="subtitle"> - ${newTestimonial.author}</span></p>`;
         testimonials.push(newTestimonial);
+        testimonialCarousel.appendChild(testimonialDiv);
+        
+        document.querySelector('.testimonial-form textarea').value = '';
+        updateCharCount(200); // Reset character count
         showCurrentTestimonial();
+    }
+
+    function updateCharCount(value) {
+        const charCount = 200 - value.length;
+        document.getElementById('charCount').innerText = `Characters remaining: ${charCount}`;
     }
 
     function prevTestimonial() {
@@ -325,7 +381,10 @@
 
     function showCurrentTestimonial() {
         testimonialCarousel.querySelectorAll('.testimonial').forEach((testimonial, index) => {
-            testimonial.style.display = index === currentTestimonialIndex ? 'block' : 'none';
+            testimonial.classList.remove('active');
+            if (index === currentTestimonialIndex) {
+                testimonial.classList.add('active');
+            }
         });
     }
 
@@ -352,6 +411,7 @@
     function toggleFAQ(button) {
         const answer = button.nextElementSibling;
         answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+        button.classList.toggle('active');
     }
 
     document.addEventListener("DOMContentLoaded", () => {
