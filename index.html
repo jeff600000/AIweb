@@ -69,7 +69,6 @@
             position: relative;
             margin-right: 20px;
         }
-
         nav ul .dropdown {
             display: none;
             position: absolute;
@@ -82,7 +81,6 @@
             display: flex;
             flex-direction: column;
         }
-
         .hamburger {
             display: none;
             flex-direction: column;
@@ -197,6 +195,25 @@
         .faq-button.active .icon {
             transform: rotate(180deg);
         }
+
+        section:nth-child(even) {
+            background-color: #e3f2fd;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        button:focus {
+            outline: 2px solid var(--secondary-color);
+        }
     </style>
 </head>
 <body>
@@ -232,6 +249,12 @@
 
     <section id="blog" class="fade-in">
         <h2>Blog Section</h2>
+        <select id="blogFilter" onchange="filterBlogs(this.value)">
+            <option value="">All Categories</option>
+            <option value="Web Development">Web Development</option>
+            <option value="CSS">CSS</option>
+            <option value="JavaScript">JavaScript</option>
+        </select>
         <div class="loading" id="loadingSpinner">Loading Blogs...</div>
         <div class="blog-section" id="blogSection"></div>
     </section>
@@ -265,7 +288,7 @@
         <div class="faq-item">
             <div class="faq-button" onclick="toggleFAQ(this)">
                 <span>What is Breadsmp?</span>
-                <span class="icon">▼</span>
+                <span class="icon">â–¼</span>
             </div>
             <div class="faq-answer">
                 <p>Breadsmp is the ultimate platform for web development resources, tutorials, and blogs.</p>
@@ -274,7 +297,7 @@
         <div class="faq-item">
             <div class="faq-button" onclick="toggleFAQ(this)">
                 <span>How to contact support?</span>
-                <span class="icon">▼</span>
+                <span class="icon">â–¼</span>
             </div>
             <div class="faq-answer">
                 <p>You can contact support by filling out the contact form on our website.</p>
@@ -288,10 +311,10 @@
         <span style="color:white;">Terms of Service</span> | 
         <span style="color:white;">Privacy Policy</span> | 
         <span style="color:white;">Follow Us:</span>
-        <a href="#" style="color:white;"> Facebook</a> | 
-        <a href="#" style="color:white;"> Twitter</a> |
-        <a href="#" class="social-icon" style="color:white;">Instagram</a> |
-        <a href="#" class="social-icon" style="color:white;">LinkedIn</a>
+        <span style="color:white;"> Facebook</span> | 
+        <span style="color:white;"> Twitter</span> |
+        <span style="color:white;">Instagram</span> |
+        <span style="color:white;">LinkedIn</span>
     </div>
 </footer>
 
@@ -303,9 +326,9 @@
     async function fetchBlogs() {
         showLoader();
         const dummyBlogs = [
-            {title: "Blog Post 1", snippet: "This is a brief summary of blog post 1.", image: "https://via.placeholder.com/400", link: "#"},
-            {title: "Blog Post 2", snippet: "This is a brief summary of blog post 2.", image: "https://via.placeholder.com/400", link: "#"},
-            {title: "Blog Post 3", snippet: "This is a brief summary of blog post 3.", image: "https://via.placeholder.com/400", link: "#"},
+            {title: "Blog Post 1", snippet: "Summary of blog post 1.", category: "Web Development", image: "https://via.placeholder.com/400"},
+            {title: "Blog Post 2", snippet: "Summary of blog post 2.", category: "CSS", image: "https://via.placeholder.com/400"},
+            {title: "Blog Post 3", snippet: "Summary of blog post 3.", category: "JavaScript", image: "https://via.placeholder.com/400"},
         ];
         renderBlogs(dummyBlogs);
         hideLoader();
@@ -318,7 +341,6 @@
                 <img src="${blog.image}" alt="${blog.title}" loading="lazy">
                 <h3>${blog.title}</h3>
                 <p>${blog.snippet}</p>
-                <a class="button" href="${blog.link}">Read More</a>
             </div>
         `).join('');
     }
@@ -346,6 +368,11 @@
         navList.classList.toggle('active');
     }
 
+    function filterBlogs(category) {
+        const filteredBlogs = dummyBlogs.filter(blog => !category || blog.category === category);
+        renderBlogs(filteredBlogs);
+    }
+
     function submitTestimonial() {
         const testimonialText = document.querySelector('.testimonial-form textarea').value;
         const name = prompt("Please enter your name:");
@@ -360,7 +387,7 @@
         testimonialCarousel.appendChild(testimonialDiv);
         
         document.querySelector('.testimonial-form textarea').value = '';
-        updateCharCount(200); // Reset character count
+        updateCharCount(200); 
         showCurrentTestimonial();
     }
 
@@ -419,7 +446,7 @@
         fetchBlogs();
         setInterval(() => {
             nextTestimonial();
-        }, 5000); // Change testimonial every 5 seconds
+        }, 5000); 
     });
 </script>
 </body>
