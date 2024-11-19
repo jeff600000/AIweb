@@ -139,7 +139,6 @@
             border-radius: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             padding: 15px;
-            position: relative;
             transition: transform var(--transition-speed), box-shadow var(--transition-speed);
         }
         .blog-card:hover {
@@ -220,6 +219,19 @@
             background-color: #f44336;
             color: white;
         }
+        #blogSearchContainer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+        #blogSearch {
+            flex-grow: 1;
+            padding: 5px;
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -255,11 +267,13 @@
 
     <section id="blog" class="fade-in">
         <h2>Blog Section</h2>
-        <input type="text" id="blogSearch" placeholder="Search blogs..." oninput="searchBlogs(this.value)">
-        <div id="blogFilter">
-            <label><input type="checkbox" value="Web Development" onchange="filterBlogs()">Web Development</label>
-            <label><input type="checkbox" value="CSS" onchange="filterBlogs()">CSS</label>
-            <label><input type="checkbox" value="JavaScript" onchange="filterBlogs()">JavaScript</label>
+        <div id="blogSearchContainer">
+            <input type="text" id="blogSearch" placeholder="Search blogs..." oninput="searchBlogs(this.value)">
+            <div id="blogFilter">
+                <label><input type="checkbox" value="Web Development" onchange="filterBlogs()">Web Development</label>
+                <label><input type="checkbox" value="CSS" onchange="filterBlogs()">CSS</label>
+                <label><input type="checkbox" value="JavaScript" onchange="filterBlogs()">JavaScript</label>
+            </div>
         </div>
         <div class="loading" id="loadingSpinner">Loading Blogs...</div>
         <div class="blog-section" id="blogSection"></div>
@@ -317,15 +331,15 @@
         <span>Terms of Service</span> | 
         <span>Privacy Policy</span> | 
         <span>Follow Us:</span>
-        <span onclick="window.open('https://facebook.com')">Facebook</span> | 
-        <span onclick="window.open('https://twitter.com')">Twitter</span> | 
-        <span onclick="window.open('https://instagram.com')">Instagram</span> | 
-        <span onclick="window.open('https://linkedin.com')">LinkedIn</span>
+        <span onclick="window.open('https://facebook.com', '_blank')">Facebook</span> | 
+        <span onclick="window.open('https://twitter.com', '_blank')">Twitter</span> | 
+        <span onclick="window.open('https://instagram.com', '_blank')">Instagram</span> | 
+        <span onclick="window.open('https://linkedin.com', '_blank')">LinkedIn</span>
     </div>
 </footer>
 
 <script>
-    let currentTestimonialIndex = 0;
+    let currentTestimonialIndex = -1;
     let testimonials = [];
     const testimonialCarousel = document.getElementById('testimonial-carousel');
     const dummyBlogs = [
@@ -333,6 +347,7 @@
         {title: "Blog Post 2", snippet: "Summary of blog post 2.", category: "CSS", image: "https://via.placeholder.com/400"},
         {title: "Blog Post 3", snippet: "Summary of blog post 3.", category: "JavaScript", image: "https://via.placeholder.com/400"},
     ];
+    
     fetchBlogs();
 
     async function fetchBlogs() {
@@ -393,15 +408,16 @@
         if (testimonialText.trim() === '') return;
 
         const newTestimonial = { text: testimonialText, author: name || 'New User' };
+        testimonials.push(newTestimonial);
+        showCurrentTestimonial();
+        
         const testimonialDiv = document.createElement('div');
         testimonialDiv.classList.add('testimonial');
         testimonialDiv.innerHTML = `<p>"${newTestimonial.text}"<span class="subtitle"> - ${newTestimonial.author}</span></p>`;
-        testimonials.push(newTestimonial);
-        testimonialCarousel.appendChild(testimonialDiv);
+        testimonialCarousel.insertAdjacentElement('beforeend', testimonialDiv);
         
         document.querySelector('.testimonial-form textarea').value = '';
         updateCharCount(200); 
-        showCurrentTestimonial();
         showAlert("Testimonial added!", true);
     }
 
@@ -411,22 +427,33 @@
     }
 
     function prevTestimonial() {
-        currentTestimonialIndex = (currentTestimonialIndex - 1 + testimonials.length) % testimonials.length;
+        if (currentTestimonialIndex > 0) {
+            currentTestimonialIndex--;
+        }
         showCurrentTestimonial();
     }
 
     function nextTestimonial() {
-        currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonials.length;
+        if (currentTestimonialIndex < testimonials.length - 1) {
+            currentTestimonialIndex++;
+        } else {
+            currentTestimonialIndex = 0;
+        }
         showCurrentTestimonial();
     }
 
     function showCurrentTestimonial() {
-        testimonialCarousel.querySelectorAll('.testimonial').forEach((testimonial, index) => {
+        const testimonialDivs = testimonialCarousel.querySelectorAll('.testimonial');
+        testimonialDivs.forEach((testimonial, index) => {
             testimonial.classList.remove('active');
             if (index === currentTestimonialIndex) {
                 testimonial.classList.add('active');
             }
         });
+        if (currentTestimonialIndex === -1 && testimonials.length > 0) {
+            currentTestimonialIndex = 0;
+            showCurrentTestimonial();
+        }
     }
 
     function submitForm(event) {
