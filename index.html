@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore Breadsmp.com, a premier destination for web development resources.">
-    <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe">
+    <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe, Tutorials, Resources">
+    <meta property="og:title" content="Breadsmp.com - Your Web Development Hub">
+    <meta property="og:description" content="Discover tutorials, blog posts, and resources to enhance your web experience.">
+    <meta property="og:image" content="logo.png">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700|Poppins:400,700&display=swap" rel="stylesheet">
     <title>Welcome to Breadsmp.com - Enhancing Your Web Experience</title>
     <style>
@@ -128,6 +131,28 @@
             right: 0;
             bottom: 0;
         }
+        main {
+            padding: 20px;
+            margin-bottom: 80px;
+        }
+        .modal {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.5); 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .modal-content {
+            background: white; 
+            padding: 20px; 
+            border-radius: 5px; 
+            width: 400px; 
+            text-align: center; 
+        }
         .blog-section {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -164,28 +189,6 @@
             display: block;
             opacity: 1; 
         }
-        .faq-item {
-            margin: 15px 0;
-        }
-        .faq-answer {
-            display: none;
-            padding: 10px;
-            background-color: var(--background-light);
-            border-radius: 5px;
-        }
-        .faq-button {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            cursor: pointer;
-        }
-        .faq-button .icon {
-            transition: transform 0.3s;
-        }
-        .faq-button.active .icon {
-            transform: rotate(180deg);
-        }
         section:nth-child(even) {
             background-color: #e3f2fd;
         }
@@ -200,24 +203,6 @@
         }
         button:focus {
             outline: 2px solid var(--secondary-color);
-        }
-        .alert {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 15px;
-            border-radius: 5px;
-            width: 300px;
-            z-index: 999;
-            transition: opacity 0.5s;
-        }
-        .alert.success {
-            background-color: #4caf50;
-            color: white;
-        }
-        .alert.error {
-            background-color: #f44336;
-            color: white;
         }
         #blogSearchContainer {
             display: flex;
@@ -260,12 +245,12 @@
 </header>
 
 <main>
-    <section id="home" class="fade-in">
+    <section id="home" class="fade-in visible">
         <h2>Welcome to Breadsmp.com!</h2>
         <p>Discover our products and services designed to elevate your experience.</p>
     </section>
 
-    <section id="blog" class="fade-in">
+    <section id="blog" class="fade-in visible">
         <h2>Blog Section</h2>
         <div id="blogSearchContainer">
             <input type="text" id="blogSearch" placeholder="Search blogs..." oninput="searchBlogs(this.value)">
@@ -279,21 +264,13 @@
         <div class="blog-section" id="blogSection"></div>
     </section>
 
-    <section id="testimonials" class="fade-in">
+    <section id="testimonials" class="fade-in visible">
         <h2>User Testimonials</h2>
+        <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
         <div class="testimonial-carousel" id="testimonial-carousel"></div>
-        <div class="controls">
-            <button class="button" aria-label="Previous testimonial" onclick="prevTestimonial()">Previous</button>
-            <button class="button" aria-label="Next testimonial" onclick="nextTestimonial()">Next</button>
-        </div>
-        <div class="testimonial-form">
-            <textarea placeholder="Share your experience..." required maxlength="200" oninput="updateCharCount(this.value)"></textarea>
-            <div id="charCount">Characters remaining: 200</div>
-            <button class="button" aria-label="Submit testimonial" onclick="submitTestimonial()">Submit Testimonial</button>
-        </div>
     </section>
 
-    <section id="contact" class="fade-in">
+    <section id="contact" class="fade-in visible">
         <h2>Contact Us</h2>
         <form id="contactForm" onsubmit="submitForm(event);">
             <input type="text" name="name" placeholder="Your Name" required>
@@ -302,7 +279,7 @@
         </form>
     </section>
 
-    <section id="faq" class="fade-in">
+    <section id="faq" class="fade-in visible">
         <h2>Frequently Asked Questions</h2>
         <div class="faq-item">
             <div class="faq-button" onclick="toggleFAQ(this)">
@@ -336,6 +313,15 @@
         <span onclick="window.open('https://linkedin.com', '_blank')">LinkedIn</span>
     </div>
 </footer>
+
+<div id="testimonialModal" class="modal">
+    <div class="modal-content">
+        <h3>Submit Your Testimonial</h3>
+        <textarea placeholder="Your testimonial..." required></textarea>
+        <button class="button" onclick="submitTestimonial()">Submit</button>
+        <button class="button" onclick="closeTestimonialModal()">Close</button>
+    </div>
+</div>
 
 <script>
     let currentTestimonialIndex = -1;
@@ -401,28 +387,29 @@
     }
 
     function submitTestimonial() {
-        const testimonialText = document.querySelector('.testimonial-form textarea').value;
+        const testimonialText = document.querySelector('#testimonialModal textarea').value;
         const name = prompt("Please enter your name:");
 
         if (testimonialText.trim() === '') return;
 
-        const newTestimonial = { text: testimonialText, author: name || 'New User' };
+        const newTestimonial = { text: testimonialText, author: name || 'Anonymous' };
         testimonials.push(newTestimonial);
         showCurrentTestimonial();
-        
         const testimonialDiv = document.createElement('div');
         testimonialDiv.classList.add('testimonial');
         testimonialDiv.innerHTML = `<p>"${newTestimonial.text}"<span class="subtitle"> - ${newTestimonial.author}</span></p>`;
         testimonialCarousel.insertAdjacentElement('beforeend', testimonialDiv);
         
-        document.querySelector('.testimonial-form textarea').value = '';
-        updateCharCount(200); 
-        showAlert("Testimonial added!", true);
+        closeTestimonialModal(); 
+        document.querySelector('#testimonialModal textarea').value = '';
     }
 
-    function updateCharCount(value) {
-        const charCount = 200 - value.length;
-        document.getElementById('charCount').innerText = `Characters remaining: ${charCount}`;
+    function openTestimonialModal() {
+        document.getElementById('testimonialModal').style.display = 'flex';
+    }
+
+    function closeTestimonialModal() {
+        document.getElementById('testimonialModal').style.display = 'none';
     }
 
     function prevTestimonial() {
@@ -464,9 +451,9 @@
 
         if (name) {
             document.getElementById('contactForm').reset();
-            showAlert("Thank you for contacting us, " + name + "!", true);
+            alert("Thank you for contacting us, " + name + "!");
         } else {
-            showAlert("Please fill out your name.", false);
+            alert("Please fill out your name.");
         }
     }
 
@@ -474,14 +461,6 @@
         const answer = button.nextElementSibling;
         answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
         button.classList.toggle('active');
-    }
-
-    function showAlert(message, isSuccess) {
-        const alertBox = document.createElement("div");
-        alertBox.className = `alert ${isSuccess ? "success" : "error"}`;
-        alertBox.innerText = message;
-        document.body.appendChild(alertBox);
-        setTimeout(() => alertBox.remove(), 3000);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
