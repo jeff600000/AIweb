@@ -297,7 +297,6 @@
         <h2>Contact Us</h2>
         <form id="contactForm" onsubmit="submitForm(event);">
             <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
             <textarea name="message" placeholder="Your Message" required></textarea>
             <button class="button" type="submit">Send Message</button>
         </form>
@@ -461,20 +460,14 @@
         const formElements = document.getElementById('contactForm').elements;
 
         const name = formElements['name'].value;
-        const email = formElements['email'].value;
         const message = formElements['message'].value;
 
-        if (name && validateEmail(email)) {
+        if (name) {
             document.getElementById('contactForm').reset();
             showAlert("Thank you for contacting us, " + name + "!", true);
         } else {
-            showAlert("Please ensure your email is valid.", false);
+            showAlert("Please fill out your name.", false);
         }
-    }
-
-    function validateEmail(email) {
-        const re = /^([\w-]+(?:\.[\w-]+)*)@((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7})$/;
-        return re.test(String(email).toLowerCase());
     }
 
     function toggleFAQ(button) {
