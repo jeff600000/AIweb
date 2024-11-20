@@ -14,6 +14,7 @@
         :root {
             --primary-color: #673ab7;
             --secondary-color: #ff5722;
+            --highlight-color: #e91e63;
             --background-light: #f9f9f9;
             --background-dark: #282c34;
             --text-light: #ffffff;
@@ -48,6 +49,7 @@
             z-index: 1000;
             display: flex;
             align-items: center;
+            flex-direction: row;
         }
         header img {
             height: 50px;
@@ -167,8 +169,8 @@
             transition: transform var(--transition-speed), box-shadow var(--transition-speed);
         }
         .blog-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .blog-card img {
             max-width: 100%;
@@ -217,19 +219,25 @@
             border-radius: 5px;
             margin-right: 10px;
         }
+        .faq-answer {
+            display: none; /* Initially hide FAQs answers */
+        }
+        .faq-button.active + .faq-answer {
+            display: block; /* Show answers for active FAQs */
+        }
     </style>
 </head>
 <body>
 <header>
     <img src="logo.png" alt="Breadsmp Logo">
     <h1>Breadsmp.com</h1>
-    <nav>
+    <nav aria-label="Main Navigation">
         <div class="hamburger" aria-label="Toggle navigation" onclick="toggleNav();">
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
         </div>
-        <ul id="navList" role="menubar">
+        <ul id="navList" role="menubar" aria-expanded="false">
             <li role="menuitem" onclick="smoothScroll('home')">Home</li>
             <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
             <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
@@ -337,7 +345,10 @@
 
     async function fetchBlogs() {
         showLoader();
-        renderBlogs(dummyBlogs);
+        // Using a hypothetical API endpoint
+        const response = await fetch('https://api.example.com/blogs');
+        const blogs = await response.json();
+        renderBlogs(blogs);
         hideLoader();
     }
 
@@ -373,6 +384,8 @@
     function toggleNav() {
         const navList = document.getElementById('navList');
         navList.classList.toggle('active');
+        const expanded = navList.classList.contains('active');
+        navList.setAttribute('aria-expanded', expanded);
     }
 
     function filterBlogs() {
@@ -390,7 +403,10 @@
         const testimonialText = document.querySelector('#testimonialModal textarea').value;
         const name = prompt("Please enter your name:");
 
-        if (testimonialText.trim() === '') return;
+        if (testimonialText.trim() === '') {
+            alert("Testimonial cannot be empty!");
+            return;
+        }
 
         const newTestimonial = { text: testimonialText, author: name || 'Anonymous' };
         testimonials.push(newTestimonial);
@@ -402,6 +418,8 @@
         
         closeTestimonialModal(); 
         document.querySelector('#testimonialModal textarea').value = '';
+
+        alert("Thank you for your testimonial, " + (name || 'Anonymous') + "!");
     }
 
     function openTestimonialModal() {
@@ -412,54 +430,9 @@
         document.getElementById('testimonialModal').style.display = 'none';
     }
 
-    function prevTestimonial() {
-        if (currentTestimonialIndex > 0) {
-            currentTestimonialIndex--;
-        }
-        showCurrentTestimonial();
-    }
-
-    function nextTestimonial() {
-        if (currentTestimonialIndex < testimonials.length - 1) {
-            currentTestimonialIndex++;
-        } else {
-            currentTestimonialIndex = 0;
-        }
-        showCurrentTestimonial();
-    }
-
-    function showCurrentTestimonial() {
-        const testimonialDivs = testimonialCarousel.querySelectorAll('.testimonial');
-        testimonialDivs.forEach((testimonial, index) => {
-            testimonial.classList.remove('active');
-            if (index === currentTestimonialIndex) {
-                testimonial.classList.add('active');
-            }
-        });
-        if (currentTestimonialIndex === -1 && testimonials.length > 0) {
-            currentTestimonialIndex = 0;
-            showCurrentTestimonial();
-        }
-    }
-
-    function submitForm(event) {
-        event.preventDefault();
-        const formElements = document.getElementById('contactForm').elements;
-
-        const name = formElements['name'].value;
-        const message = formElements['message'].value;
-
-        if (name) {
-            document.getElementById('contactForm').reset();
-            alert("Thank you for contacting us, " + name + "!");
-        } else {
-            alert("Please fill out your name.");
-        }
-    }
-
     function toggleFAQ(button) {
         const answer = button.nextElementSibling;
-        answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+        answer.classList.toggle('active');
         button.classList.toggle('active');
     }
 
