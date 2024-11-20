@@ -47,9 +47,6 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            flex-direction: row;
         }
         header img {
             height: 50px;
@@ -66,11 +63,21 @@
             padding: 0;
             margin: 0;
             display: flex;
+            position: relative;
         }
         nav ul li {
             position: relative;
             margin-right: 20px;
             cursor: pointer;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            background-color: var(--secondary-color);
+            z-index: 999;
+        }
+        ul li:hover .dropdown {
+            display: block;
         }
         .hamburger {
             display: none;
@@ -86,15 +93,15 @@
         @media (max-width: 768px) {
             nav ul {
                 display: none;
-                position: absolute;
-                background-color: var(--secondary-color);
-                width: 100%;
-                top: 60px;
-                left: 0;
             }
             nav ul.active {
                 display: flex; 
                 flex-direction: column;
+                position: absolute; 
+                background-color: var(--secondary-color);
+                width: 100%;
+                left: 0;
+                top: 100%;
             }
             .hamburger {
                 display: flex;
@@ -121,22 +128,22 @@
             position: relative; 
         }
         .modal {
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,0.5); 
-            justify-content: center; 
-            align-items: center; 
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
         }
         .modal-content {
-            background: white; 
-            padding: 20px; 
-            border-radius: 5px; 
-            width: 400px; 
-            text-align: center; 
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 400px;
+            text-align: center;
         }
         .button {
             background-color: var(--primary-color);
@@ -151,15 +158,18 @@
             background-color: var(--secondary-color);
         }
         .faq-answer {
-            display: none; 
+            display: none;
             transition: max-height 0.5s ease, opacity 0.5s ease;
             overflow: hidden;
             max-height: 0;
             opacity: 0;
         }
         .faq-answer.active {
-            max-height: 100px; 
+            max-height: 100px;
             opacity: 1;
+        }
+        .loading {
+            text-align: center;
         }
     </style>
 </head>
@@ -225,8 +235,8 @@
     <section id="testimonials" class="fade-in visible">
         <h2>User Testimonials</h2>
         <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
-        <button aria-label="Previous Testimonial" onclick="prevTestimonial()">◀</button>
-        <button aria-label="Next Testimonial" onclick="nextTestimonial()">▶</button>
+        <button aria-label="Previous Testimonial" onclick="prevTestimonial()">&#8678;</button>
+        <button aria-label="Next Testimonial" onclick="nextTestimonial()">&#8680;</button>
         <div class="testimonial-carousel" id="testimonial-carousel"></div>
     </section>
 
@@ -276,9 +286,9 @@
     </div>
 </footer>
 
-<div id="testimonialModal" class="modal">
-    <div class="modal-content">
-        <h3>Submit Your Testimonial</h3>
+<div id="testimonialModal" class="modal" tabindex="0" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-content" role="dialog">
+        <h3 id="modalTitle">Submit Your Testimonial</h3>
         <textarea placeholder="Your testimonial..." required></textarea>
         <button class="button" onclick="submitTestimonial()">Submit</button>
         <button class="button" onclick="closeTestimonialModal()">Close</button>
@@ -287,8 +297,10 @@
 
 <script>
     let currentTestimonialIndex = -1;
-    let testimonials = [];
+    let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
     const testimonialCarousel = document.getElementById('testimonial-carousel');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
     const dummyBlogs = [
         {title: "Blog Post 1", snippet: "Summary of blog post 1.", category: "Web Development", image: "https://via.placeholder.com/400"},
         {title: "Blog Post 2", snippet: "Summary of blog post 2.", category: "CSS", image: "https://via.placeholder.com/400"},
@@ -317,16 +329,17 @@
     }
 
     function showLoader() {
-        document.getElementById('loadingSpinner').style.display = 'block';
+        loadingSpinner.style.display = 'block';
     }
 
     function hideLoader() {
-        document.getElementById('loadingSpinner').style.display = 'none';
+        loadingSpinner.style.display = 'none';
     }
 
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
     }
 
     function smoothScroll(sectionId) {
@@ -337,8 +350,7 @@
     function toggleNav() {
         const navList = document.getElementById('navList');
         navList.classList.toggle('active');
-        const expanded = navList.classList.contains('active');
-        navList.setAttribute('aria-expanded', expanded);
+        navList.setAttribute('aria-expanded', navList.classList.contains('active'));
     }
 
     function filterBlogs() {
@@ -366,22 +378,26 @@
 
         const newTestimonial = { text: testimonialText, author: name || 'Anonymous' };
         testimonials.push(newTestimonial);
+        localStorage.setItem('testimonials', JSON.stringify(testimonials));
         showCurrentTestimonial();
+
         const testimonialDiv = document.createElement('div');
         testimonialDiv.classList.add('testimonial');
         testimonialDiv.innerHTML = `<p>"${newTestimonial.text}"<span class="subtitle"> - ${newTestimonial.author}</span></p>`;
         testimonialCarousel.insertAdjacentElement('beforeend', testimonialDiv);
         
-        closeTestimonialModal(); 
+        closeTestimonialModal();
         document.querySelector('#testimonialModal textarea').value = '';
     }
 
     function openTestimonialModal() {
         document.getElementById('testimonialModal').style.display = 'flex';
+        document.getElementById('testimonialModal').setAttribute('aria-hidden', 'false');
     }
 
     function closeTestimonialModal() {
         document.getElementById('testimonialModal').style.display = 'none';
+        document.getElementById('testimonialModal').setAttribute('aria-hidden', 'true');
     }
 
     function toggleFAQ(button) {
@@ -392,7 +408,28 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('darkMode') === 'true') toggleDarkMode();
+        showCurrentTestimonial();
+        document.getElementById('testimonialModal').addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeTestimonialModal();
+        });
     });
+
+    function showCurrentTestimonial() {
+        if (testimonials.length === 0) return;
+        currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonials.length;
+        const testimonial = testimonials[currentTestimonialIndex];
+        testimonialCarousel.innerHTML = `<p>"${testimonial.text}"<span class="subtitle"> - ${testimonial.author}</span></p>`;
+    }
+
+    function prevTestimonial() {
+        currentTestimonialIndex = (currentTestimonialIndex - 1 + testimonials.length) % testimonials.length;
+        showCurrentTestimonial();
+    }
+
+    function nextTestimonial() {
+        currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonials.length;
+        showCurrentTestimonial();
+    }
 </script>
 </body>
 </html>
