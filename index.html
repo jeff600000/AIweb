@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #50e3c2;
+            --primary-color: #007bff;
+            --secondary-color: #28a745;
             --highlight-color: #e91e63;
             --background-light: #f9f9f9;
             --background-dark: #282c34;
@@ -25,7 +25,7 @@
         }
         body {
             font-family: 'Open Sans', sans-serif;
-            background-color: var(--background-light);
+            background: linear-gradient(to right, #f9f9f9, #e9e9e9);
             color: var(--text-dark);
             display: flex;
             flex-direction: column;
@@ -37,14 +37,13 @@
             color: var(--text-light);
         }
         header {
-            background: rgba(74, 144, 226, 0.8);
-            color: white;
+            background: #333;
+            color: var(--text-light);
             padding: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             position: sticky;
             top: 0;
             z-index: 1000;
-            transition: background 0.4s ease;
         }
         .hamburger {
             display: none;
@@ -76,6 +75,10 @@
             margin-right: 20px;
             cursor: pointer;
         }
+        nav ul li:hover .dropdown {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
         .button {
             background-color: var(--primary-color);
             border: none;
@@ -93,7 +96,7 @@
             padding: 20px;
         }
         footer {
-            background-color: #333;
+            background-color: #444;
             color: white;
             padding: 20px;
             text-align: center;
@@ -145,6 +148,11 @@
                 display: none;
             }
         }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -166,10 +174,10 @@
             <span></span>
         </div>
         <ul id="navList" role="menubar">
-            <li role="menuitem" onclick="smoothScroll('home')"><i class="icon-home"></i> Home</li>
-            <li role="menuitem" onclick="smoothScroll('blog')"><i class="icon-blog"></i> Blog</li>
-            <li role="menuitem" onclick="smoothScroll('resources')"><i class="icon-resources"></i> Resources</li>
-            <li role="menuitem" onclick="smoothScroll('contact')"><i class="icon-contact"></i> Contact Us</li>
+            <li role="menuitem" onclick="smoothScroll('home')">Home</li>
+            <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
+            <li role="menuitem" onclick="smoothScroll('resources')">Resources</li>
+            <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
             <li role="menuitem" aria-haspopup="true">Products
                 <ul class="dropdown" role="menu">
                     <li onclick="smoothScroll('product1')">Product 1</li>
@@ -211,9 +219,10 @@
         <h2>User Testimonials</h2>
         <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
         <div class="testimonial-carousel" id="testimonial-carousel"></div>
-        <button class="button" onclick="prevTestimonial()">Previous</button>
-        <button class="button" onclick="nextTestimonial()">Next</button>
-        <button class="button" onclick="toggleAutoAdvance()">Toggle Auto-Advance</button>
+        <div class="pagination">
+            <button class="button" onclick="prevTestimonial()">Previous</button>
+            <button class="button" onclick="nextTestimonial()">Next</button>
+        </div>
     </section>
 
     <section id="contact" class="fade-in visible">
@@ -374,7 +383,7 @@
         window.searchTimeout = setTimeout(() => {
             if (query.length < 3) return;
             console.log(`Searching for ${query}`);
-            // Further search logic can be implemented here
+            // Simulate async search without refresh
         }, 300);
     }
 
