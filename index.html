@@ -131,6 +131,9 @@
             .hamburger {
                 display: flex;
             }
+            aside {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -155,11 +158,13 @@
         <ul id="navList" role="menubar">
             <li role="menuitem" onclick="smoothScroll('home')">Home</li>
             <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
+            <li role="menuitem" onclick="smoothScroll('resources')">Resources</li>
             <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
             <li role="menuitem" aria-haspopup="true">Products
                 <ul class="dropdown" role="menu">
                     <li onclick="smoothScroll('product1')">Product 1</li>
                     <li onclick="smoothScroll('product2')">Product 2</li>
+                    <li onclick="smoothScroll('product3')">Product 3</li>
                 </ul>
             </li>
         </ul>
@@ -192,12 +197,13 @@
         <div class="testimonial-carousel" id="testimonial-carousel"></div>
         <button class="button" onclick="prevTestimonial()">Previous</button>
         <button class="button" onclick="nextTestimonial()">Next</button>
+        <button class="button" onclick="toggleAutoAdvance()">Toggle Auto-Advance</button>
     </section>
 
     <section id="contact" class="fade-in visible">
         <h2>Contact Us</h2>
-        <form id="contactForm" onsubmit="submitForm(event);">
-            <input type="text" name="name" placeholder="Your Name" required>
+        <form id="contactForm" onsubmit="submitForm(event);" aria-label="Contact Form">
+            <input type="text" name="name" placeholder="Your Name" required aria-required="true">
             <input type="email" name="email" placeholder="Your Email" required>
             <textarea name="message" placeholder="Your Message" required></textarea>
             <button class="button" type="submit">Send Message</button>
@@ -225,6 +231,11 @@
             </div>
         </div>
     </section>
+
+    <section id="resources" class="fade-in visible">
+        <h2>Resources</h2>
+        <p>Explore our collection of web development resources and tools.</p>
+    </section>
 </main>
 
 <footer role="contentinfo">
@@ -233,10 +244,11 @@
         <div class="social-icons">
             <a href="#" target="_blank">FB</a>
             <a href="#" target="_blank">TW</a>
+            <a href="#" target="_blank">IG</a>
             <a href="#" target="_blank">LI</a>
         </div>
         <form id="newsletterForm" onsubmit="subscribeNewsletter(event);">
-            <input type="email" placeholder="Subscribe to our newsletter" required>
+            <input type="email" placeholder="Enter your email for newsletter" required>
             <button type="submit">Subscribe</button>
         </form>
     </div>
@@ -254,6 +266,7 @@
 <script>
     let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
     let currentIndex = 0;
+    let autoAdvance = true;
 
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
@@ -310,13 +323,19 @@
 
     function startCarousel() {
         const activeTestimonials = document.querySelectorAll('.testimonial');
-        setInterval(() => {
-            activeTestimonials[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex + 1) % activeTestimonials.length;
-            activeTestimonials[currentIndex].classList.add('active');
-        }, 3000);
+        if (autoAdvance) {
+            setInterval(() => {
+                activeTestimonials[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex + 1) % activeTestimonials.length;
+                activeTestimonials[currentIndex].classList.add('active');
+            }, 3000);
+        }
     }
     
+    function toggleAutoAdvance() {
+        autoAdvance = !autoAdvance;
+    }
+
     function prevTestimonial() {
         const activeTestimonials = document.querySelectorAll('.testimonial');
         activeTestimonials[currentIndex].classList.remove('active');
