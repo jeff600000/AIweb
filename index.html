@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore Breadsmp.com, a premier destination for web development resources.">
     <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe, Tutorials, Resources">
-    <meta property="og:title" content="Breadsmp.com - Your Web Development Hub">
-    <meta property="og:description" content="Discover tutorials, blog posts, and resources to enhance your web experience.">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
     <title>Welcome to Breadsmp.com - Enhancing Your Web Experience</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -48,6 +46,18 @@
             z-index: 1000;
             transition: background 0.4s ease;
         }
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            transition: 0.3s;
+        }
         nav {
             display: flex;
             justify-content: space-between;
@@ -83,9 +93,14 @@
             padding: 20px;
         }
         footer {
-            background: #ddd;
-            padding: 10px;
+            background-color: #333;
+            color: white;
+            padding: 20px;
             text-align: center;
+        }
+        .social-icons a {
+            margin: 0 10px;
+            color: #50e3c2;
         }
         .testimonial-carousel {
             display: flex;
@@ -113,6 +128,9 @@
             nav ul.active {
                 display: flex;
             }
+            .hamburger {
+                display: flex;
+            }
         }
     </style>
 </head>
@@ -129,7 +147,12 @@
 <header>
     <h1>Breadsmp.com</h1>
     <nav>
-        <ul id="navList" role="menubar" aria-expanded="false">
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <ul id="navList" role="menubar">
             <li role="menuitem" onclick="smoothScroll('home')">Home</li>
             <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
             <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
@@ -158,8 +181,8 @@
         <h2>Blog Section</h2>
         <div id="blogSearchContainer">
             <input type="text" id="blogSearch" placeholder="Search blogs..." oninput="optimizedSearch(this.value)">
+            <div class="loading" id="loadingSpinner" style="display:none;">Loading Blogs...</div>
         </div>
-        <div class="loading" id="loadingSpinner">Loading Blogs...</div>
         <div class="blog-section" id="blogSection"></div>
     </section>
 
@@ -167,12 +190,15 @@
         <h2>User Testimonials</h2>
         <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
         <div class="testimonial-carousel" id="testimonial-carousel"></div>
+        <button class="button" onclick="prevTestimonial()">Previous</button>
+        <button class="button" onclick="nextTestimonial()">Next</button>
     </section>
 
     <section id="contact" class="fade-in visible">
         <h2>Contact Us</h2>
         <form id="contactForm" onsubmit="submitForm(event);">
             <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
             <textarea name="message" placeholder="Your Message" required></textarea>
             <button class="button" type="submit">Send Message</button>
         </form>
@@ -204,6 +230,11 @@
 <footer role="contentinfo">
     <div>
         <span>Phone: +123 456 7890</span>
+        <div class="social-icons">
+            <a href="#" target="_blank">FB</a>
+            <a href="#" target="_blank">TW</a>
+            <a href="#" target="_blank">LI</a>
+        </div>
         <form id="newsletterForm" onsubmit="subscribeNewsletter(event);">
             <input type="email" placeholder="Subscribe to our newsletter" required>
             <button type="submit">Subscribe</button>
@@ -228,6 +259,10 @@
         document.body.classList.toggle('dark-mode');
         const isDarkMode = document.body.classList.contains('dark-mode');
         localStorage.setItem('darkMode', isDarkMode);
+    }
+
+    function toggleMenu() {
+        document.getElementById('navList').classList.toggle('active');
     }
 
     function smoothScroll(sectionId) {
@@ -262,12 +297,12 @@
 
     function renderTestimonials() {
         const carousel = document.getElementById('testimonial-carousel');
-        carousel.innerHTML = ''; // Clear previous testimonials
+        carousel.innerHTML = '';
         testimonials.forEach((test, index) => {
             const testimonialDiv = document.createElement('div');
             testimonialDiv.classList.add('testimonial');
             testimonialDiv.innerText = `${test.author}: ${test.text}`;
-            if (index === 0) testimonialDiv.classList.add('active'); // Show the first testimonial
+            if (index === 0) testimonialDiv.classList.add('active');
             carousel.appendChild(testimonialDiv);
         });
         startCarousel();
@@ -280,6 +315,28 @@
             currentIndex = (currentIndex + 1) % activeTestimonials.length;
             activeTestimonials[currentIndex].classList.add('active');
         }, 3000);
+    }
+    
+    function prevTestimonial() {
+        const activeTestimonials = document.querySelectorAll('.testimonial');
+        activeTestimonials[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex - 1 + activeTestimonials.length) % activeTestimonials.length;
+        activeTestimonials[currentIndex].classList.add('active');
+    }
+
+    function nextTestimonial() {
+        const activeTestimonials = document.querySelectorAll('.testimonial');
+        activeTestimonials[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % activeTestimonials.length;
+        activeTestimonials[currentIndex].classList.add('active');
+    }
+
+    function optimizedSearch(query) {
+        clearTimeout(window.searchTimeout);
+        window.searchTimeout = setTimeout(() => {
+            // Logic to filter displayed blogs
+            console.log(`Searching for ${query}`);
+        }, 300);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
