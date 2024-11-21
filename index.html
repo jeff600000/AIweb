@@ -7,7 +7,6 @@
     <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe, Tutorials, Resources">
     <meta property="og:title" content="Breadsmp.com - Your Web Development Hub">
     <meta property="og:description" content="Discover tutorials, blog posts, and resources to enhance your web experience.">
-    <meta name="twitter:card" content="summary_large_image">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
     <title>Welcome to Breadsmp.com - Enhancing Your Web Experience</title>
     <style>
@@ -31,6 +30,7 @@
             background-color: var(--background-light);
             color: var(--text-dark);
             display: flex;
+            flex-direction: column;
             min-height: 100vh;
             transition: background var(--transition-speed), color var(--transition-speed);
         }
@@ -66,9 +66,6 @@
             margin-right: 20px;
             cursor: pointer;
         }
-        nav ul li.active {
-            border-bottom: 2px solid var(--highlight-color);
-        }
         .button {
             background-color: var(--primary-color);
             border: none;
@@ -81,25 +78,29 @@
         .button:hover {
             background-color: var(--secondary-color);
         }
-        .faq-answer {
-            display: none;
-            transition: max-height 0.5s ease, opacity 0.5s ease;
-            overflow: hidden;
-            max-height: 0;
-            opacity: 0;
+        main {
+            flex-grow: 1;
+            padding: 20px;
         }
-        .faq-answer.active {
-            max-height: 100px;
-            opacity: 1;
-        }
-        .loading {
+        footer {
+            background: #ddd;
+            padding: 10px;
             text-align: center;
         }
+        .testimonial-carousel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .testimonial {
+            display: none;
+            transition: opacity var(--transition-speed);
+        }
+        .testimonial.active {
+            display: block;
+            opacity: 1;
+        }
         @media (max-width: 500px) {
-            aside, main {
-                padding: 10px;
-                margin-left: 0;
-            }
             nav ul {
                 flex-direction: column;
                 position: absolute;
@@ -132,7 +133,7 @@
             <li role="menuitem" onclick="smoothScroll('home')">Home</li>
             <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
             <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
-            <li role="menuitem">Products
+            <li role="menuitem" aria-haspopup="true">Products
                 <ul class="dropdown" role="menu">
                     <li onclick="smoothScroll('product1')">Product 1</li>
                     <li onclick="smoothScroll('product2')">Product 2</li>
@@ -143,7 +144,7 @@
     </nav>
 </header>
 
-<main>
+<main role="main">
     <section id="home" class="fade-in visible">
         <h2>Welcome to Breadsmp.com!</h2>
         <p>Discover our products and services designed to elevate your experience.</p>
@@ -200,14 +201,18 @@
     </section>
 </main>
 
-<footer>
+<footer role="contentinfo">
     <div>
         <span>Phone: +123 456 7890</span>
+        <form id="newsletterForm" onsubmit="subscribeNewsletter(event);">
+            <input type="email" placeholder="Subscribe to our newsletter" required>
+            <button type="submit">Subscribe</button>
+        </form>
     </div>
 </footer>
 
-<div id="testimonialModal" class="modal" tabindex="0" aria-labelledby="modalTitle">
-    <div class="modal-content" role="dialog">
+<div id="testimonialModal" class="modal" tabindex="0" aria-labelledby="modalTitle" style="display:none;">
+    <div class="modal-content" role="dialog" aria-modal="true">
         <h3 id="modalTitle">Submit Your Testimonial</h3>
         <textarea placeholder="Your testimonial..." required></textarea>
         <button class="button" onclick="submitTestimonial()">Submit</button>
@@ -216,23 +221,8 @@
 </div>
 
 <script>
-    let currentTestimonialIndex = -1;
     let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
-    const testimonialCarousel = document.getElementById('testimonial-carousel');
-
-    function debounce(func, delay) {
-        let timer;
-        return function(...args) {
-            clearTimeout(timer);
-            timer = setTimeout(() => func.apply(this, args), delay);
-        };
-    }
-
-    const optimizedSearch = debounce(function(query) {
-        // Implement search logic here, for example:
-        // const filteredBlogs = dummyBlogs.filter(blog => blog.title.toLowerCase().includes(query.toLowerCase()));
-        // renderBlogs(filteredBlogs);
-    }, 300);
+    let currentIndex = 0;
 
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
@@ -253,12 +243,10 @@
 
     function openTestimonialModal() {
         document.getElementById('testimonialModal').style.display = 'flex';
-        document.getElementById('testimonialModal').setAttribute('aria-hidden', 'false');
     }
 
     function closeTestimonialModal() {
         document.getElementById('testimonialModal').style.display = 'none';
-        document.getElementById('testimonialModal').setAttribute('aria-hidden', 'true');
     }
 
     function submitTestimonial() {
@@ -267,16 +255,37 @@
         if (testimonialText.trim()) {
             testimonials.push({ text: testimonialText, author: name });
             localStorage.setItem('testimonials', JSON.stringify(testimonials));
-            // Code to refresh the testimonial display
+            renderTestimonials();
             closeTestimonialModal();
         }
     }
 
+    function renderTestimonials() {
+        const carousel = document.getElementById('testimonial-carousel');
+        carousel.innerHTML = ''; // Clear previous testimonials
+        testimonials.forEach((test, index) => {
+            const testimonialDiv = document.createElement('div');
+            testimonialDiv.classList.add('testimonial');
+            testimonialDiv.innerText = `${test.author}: ${test.text}`;
+            if (index === 0) testimonialDiv.classList.add('active'); // Show the first testimonial
+            carousel.appendChild(testimonialDiv);
+        });
+        startCarousel();
+    }
+
+    function startCarousel() {
+        const activeTestimonials = document.querySelectorAll('.testimonial');
+        setInterval(() => {
+            activeTestimonials[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % activeTestimonials.length;
+            activeTestimonials[currentIndex].classList.add('active');
+        }, 3000);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('darkMode') === 'true') toggleDarkMode();
+        renderTestimonials();
     });
-
-    // Other necessary functions to handle testimonials, blogs, etc.
 </script>
 </body>
 </html>
