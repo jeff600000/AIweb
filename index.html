@@ -108,12 +108,22 @@
             align-items: center;
         }
         .testimonial {
-            display: none;
-            transition: opacity var(--transition-speed);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--transition-speed), transform var(--transition-speed);
         }
         .testimonial.active {
-            display: block;
             opacity: 1;
+            transform: translateY(0);
+        }
+        .hero-fade-in {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity var(--transition-speed), transform var(--transition-speed);
+        }
+        .hero-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         @media (max-width: 500px) {
             nav ul {
@@ -156,10 +166,10 @@
             <span></span>
         </div>
         <ul id="navList" role="menubar">
-            <li role="menuitem" onclick="smoothScroll('home')">Home</li>
-            <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
-            <li role="menuitem" onclick="smoothScroll('resources')">Resources</li>
-            <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
+            <li role="menuitem" onclick="smoothScroll('home')"><i class="icon-home"></i> Home</li>
+            <li role="menuitem" onclick="smoothScroll('blog')"><i class="icon-blog"></i> Blog</li>
+            <li role="menuitem" onclick="smoothScroll('resources')"><i class="icon-resources"></i> Resources</li>
+            <li role="menuitem" onclick="smoothScroll('contact')"><i class="icon-contact"></i> Contact Us</li>
             <li role="menuitem" aria-haspopup="true">Products
                 <ul class="dropdown" role="menu">
                     <li onclick="smoothScroll('product1')">Product 1</li>
@@ -173,6 +183,12 @@
 </header>
 
 <main role="main">
+    <section id="hero" class="hero-fade-in visible">
+        <h2>Transform Your Web Development Skills</h2>
+        <p>Your journey to mastering web development starts here. Join our community today!</p>
+        <button class="button" onclick="smoothScroll('resources')">Get Started</button>
+    </section>
+
     <section id="home" class="fade-in visible">
         <h2>Welcome to Breadsmp.com!</h2>
         <p>Discover our products and services designed to elevate your experience.</p>
@@ -251,6 +267,9 @@
             <input type="email" placeholder="Enter your email for newsletter" required>
             <button type="submit">Subscribe</button>
         </form>
+        <div>
+            <a href="privacy.html">Privacy Policy</a>
+        </div>
     </div>
 </footer>
 
@@ -353,8 +372,9 @@
     function optimizedSearch(query) {
         clearTimeout(window.searchTimeout);
         window.searchTimeout = setTimeout(() => {
-            // Logic to filter displayed blogs
+            if (query.length < 3) return;
             console.log(`Searching for ${query}`);
+            // Further search logic can be implemented here
         }, 300);
     }
 
