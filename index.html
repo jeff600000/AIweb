@@ -111,22 +111,27 @@
         }
         .testimonial-carousel {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .testimonial {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity var(--transition-speed), transform var(--transition-speed);
-        }
-        .testimonial.active {
-            opacity: 1;
-            transform: translateY(0);
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .hero-fade-in {
             opacity: 0;
             transform: translateY(-20px);
             transition: opacity var(--transition-speed), transform var(--transition-speed);
+            background-image: url('https://via.placeholder.com/1200x400');
+            background-size: cover;
+            color: #fff;
+            padding: 60px 20px;
+            text-align: center;
         }
         .hero-fade-in.visible {
             opacity: 1;
@@ -164,14 +169,6 @@
     </style>
 </head>
 <body>
-<aside>
-    <h2>Quick Links</h2>
-    <ul>
-        <li onclick="smoothScroll('blog')">Blog</li>
-        <li onclick="smoothScroll('contact')">Contact Us</li>
-        <li onclick="smoothScroll('faq')">FAQs</li>
-    </ul>
-</aside>
 
 <header>
     <h1>Breadsmp.com</h1>
@@ -183,16 +180,10 @@
         </div>
         <ul id="navList" role="menubar">
             <li role="menuitem" onclick="smoothScroll('home')">Home</li>
+            <li role="menuitem" onclick="smoothScroll('about')">About Us</li>
             <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
             <li role="menuitem" onclick="smoothScroll('resources')">Resources</li>
             <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
-            <li role="menuitem" aria-haspopup="true">Products
-                <ul class="dropdown" role="menu">
-                    <li onclick="smoothScroll('product1')">Product 1</li>
-                    <li onclick="smoothScroll('product2')">Product 2</li>
-                    <li onclick="smoothScroll('product3')">Product 3</li>
-                </ul>
-            </li>
         </ul>
         <button class="button" aria-label="Toggle dark mode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
     </nav>
@@ -202,36 +193,33 @@
     <section id="hero" class="hero-fade-in visible">
         <h2>Transform Your Web Development Skills</h2>
         <p>Your journey to mastering web development starts here. Join our community today!</p>
-        <button class="button" onclick="smoothScroll('resources')">Get Started</button>
+        <button class="button" onclick="smoothScroll('latestBlogs')">View Latest Blogs</button>
     </section>
 
-    <section id="home" class="fade-in visible">
-        <h2>Welcome to Breadsmp.com!</h2>
-        <p>Discover our products and services designed to elevate your experience.</p>
-        <select aria-label="Select Language" onchange="changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-        </select>
-    </section>
-
-    <section id="blog" class="fade-in visible">
-        <h2>Blog Section</h2>
-        <div id="blogSearchContainer">
-            <input type="text" id="blogSearch" placeholder="Search blogs..." oninput="optimizedSearch(this.value)">
-            <div class="loading" id="loadingSpinner" style="display:none;">Loading Blogs...</div>
+    <section id="latestBlogs" class="fade-in visible">
+        <h2>Latest Blogs</h2>
+        <div class="blog-cards" id="blogCards">
+            <div class="blog-card">
+                <img src="https://via.placeholder.com/200" alt="Blog 1">
+                <h3>Blog Title 1</h3>
+                <p>Summary of blog post 1...</p>
+            </div>
+            <div class="blog-card">
+                <img src="https://via.placeholder.com/200" alt="Blog 2">
+                <h3>Blog Title 2</h3>
+                <p>Summary of blog post 2...</p>
+            </div>
         </div>
-        <div class="blog-section" id="blogSection"></div>
+        <div class="pagination">
+            <button class="button" onclick="previousPage()">Previous</button>
+            <button class="button" onclick="nextPage()">Next</button>
+        </div>
     </section>
 
     <section id="testimonials" class="fade-in visible">
         <h2>User Testimonials</h2>
-        <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
         <div class="testimonial-carousel" id="testimonial-carousel"></div>
-        <div class="pagination">
-            <button class="button" onclick="prevTestimonial()">Previous</button>
-            <button class="button" onclick="nextTestimonial()">Next</button>
-            <button class="button toggle-advance-button" onclick="toggleAutoAdvance()">Pause Autoplay</button>
-        </div>
+        <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
     </section>
 
     <section id="contact" class="fade-in visible">
@@ -243,37 +231,10 @@
             <button class="button" type="submit">Send Message</button>
         </form>
     </section>
-
-    <section id="faq" class="fade-in visible">
-        <h2>Frequently Asked Questions</h2>
-        <div class="faq-item">
-            <div class="faq-button" onclick="toggleFAQ(this)">
-                <span>What is Breadsmp?</span>
-                <span class="icon">▼</span>
-            </div>
-            <div class="faq-answer">
-                <p>Breadsmp is the ultimate platform for web development resources, tutorials, and blogs.</p>
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-button" onclick="toggleFAQ(this)">
-                <span>How to contact support?</span>
-                <span class="icon">▼</span>
-            </div>
-            <div class="faq-answer">
-                <p>You can contact support by filling out the contact form on our website.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="resources" class="fade-in visible">
-        <h2>Resources</h2>
-        <p>Explore our collection of web development resources and tools.</p>
-    </section>
 </main>
 
 <footer role="contentinfo">
-    <div>
+    <div class="footer-links">
         <span>Phone: +123 456 7890</span>
         <div class="social-icons">
             <a href="#" target="_blank">FB</a>
@@ -320,12 +281,6 @@
         section.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function toggleFAQ(button) {
-        const answer = button.nextElementSibling;
-        answer.classList.toggle('active');
-        button.classList.toggle('active');
-    }
-
     function openTestimonialModal() {
         document.getElementById('testimonialModal').style.display = 'flex';
     }
@@ -352,50 +307,14 @@
             const testimonialDiv = document.createElement('div');
             testimonialDiv.classList.add('testimonial');
             testimonialDiv.innerText = `${test.author}: ${test.text}`;
-            if (index === 0) testimonialDiv.classList.add('active');
             carousel.appendChild(testimonialDiv);
         });
-        startCarousel();
     }
 
-    function startCarousel() {
-        const activeTestimonials = document.querySelectorAll('.testimonial');
-        if (autoAdvance) {
-            setInterval(() => {
-                activeTestimonials[currentIndex].classList.remove('active');
-                currentIndex = (currentIndex + 1) % activeTestimonials.length;
-                activeTestimonials[currentIndex].classList.add('active');
-            }, 3000);
-        }
-    }
-    
-    function toggleAutoAdvance() {
-        autoAdvance = !autoAdvance;
-        const button = document.querySelector('.toggle-advance-button');
-        button.innerText = autoAdvance ? "Pause Autoplay" : "Resume Autoplay";
-    }
-
-    function prevTestimonial() {
-        const activeTestimonials = document.querySelectorAll('.testimonial');
-        activeTestimonials[currentIndex].classList.remove('active');
-        currentIndex = (currentIndex - 1 + activeTestimonials.length) % activeTestimonials.length;
-        activeTestimonials[currentIndex].classList.add('active');
-    }
-
-    function nextTestimonial() {
-        const activeTestimonials = document.querySelectorAll('.testimonial');
-        activeTestimonials[currentIndex].classList.remove('active');
-        currentIndex = (currentIndex + 1) % activeTestimonials.length;
-        activeTestimonials[currentIndex].classList.add('active');
-    }
-
-    function optimizedSearch(query) {
-        clearTimeout(window.searchTimeout);
-        window.searchTimeout = setTimeout(() => {
-            if (query.length < 3) return;
-            console.log(`Searching for ${query}`);
-            // Simulate async search without refresh
-        }, 300);
+    function subscribeNewsletter(event) {
+        event.preventDefault();
+        const email = event.target.querySelector('input[type="email"]').value;
+        alert(`Thank you for subscribing with ${email}!`);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
