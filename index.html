@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore Breadsmp.com, a premier destination for web development resources.">
     <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe, Tutorials, Resources">
-    <meta property="og:title" content="Breadsmp: Web Development Resources">
-    <meta property="og:description" content="Join our community to enhance your development skills.">
-    <meta property="og:image" content="https://via.placeholder.com/200">
-    <meta property="og:url" content="https://breadsmp.com">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>Welcome to Breadsmp.com - Enhancing Your Web Experience</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
@@ -54,6 +50,7 @@
             flex-direction: column;
             gap: 4px;
             cursor: pointer;
+            transition: transform var(--transition-speed);
         }
         .hamburger span {
             width: 25px;
@@ -77,13 +74,11 @@
             margin-right: 20px;
             position: relative;
             cursor: pointer;
-            transition: color var(--transition-speed);
+            transition: transform var(--transition-speed), color var(--transition-speed);
         }
         nav ul li:hover {
+            transform: scale(1.05);
             color: var(--highlight-color);
-        }
-        nav ul li:hover .dropdown {
-            display: block;
         }
         nav ul .dropdown {
             display: none;
@@ -107,7 +102,7 @@
         }
         main {
             flex-grow: 1;
-            padding: 90px 20px 20px; /* Adjusting for fixed header */
+            padding: 90px 20px 20px; 
         }
         section {
             margin-bottom: 50px;
@@ -121,11 +116,13 @@
         .social-icons a {
             margin: 0 10px;
             color: #50E3C2;
+            display: inline-block;
         }
         .testimonial-carousel {
             display: flex;
             overflow: hidden;
             scroll-behavior: smooth;
+            position: relative;
         }
         .testimonial {
             flex-shrink: 0;
@@ -138,6 +135,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .hero-fade-in {
+            position: relative;
             opacity: 0;
             transition: opacity var(--transition-speed);
             background-image: url('https://via.placeholder.com/1200x400');
@@ -145,6 +143,16 @@
             color: #fff;
             padding: 60px 20px;
             text-align: center;
+        }
+        .hero-fade-in::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
         }
         .hero-fade-in.visible {
             opacity: 1;
@@ -163,9 +171,6 @@
             nav ul.active {
                 display: flex;
             }
-            .hamburger {
-                display: flex;
-            }
         }
     </style>
 </head>
@@ -179,7 +184,7 @@
             <span></span>
             <span></span>
         </div>
-        <ul id="navList" role="menubar">
+        <ul id="navList" role="menubar" aria-label="Main navigation">
             <li role="menuitem" onclick="smoothScroll('hero')">Home</li>
             <li role="menuitem" onclick="smoothScroll('about')">About Us</li>
             <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
@@ -204,18 +209,7 @@
 
     <section id="latestBlogs" class="fade-in visible">
         <h2>Latest Blogs</h2>
-        <div class="blog-cards" id="blogCards">
-            <div class="blog-card">
-                <img src="https://via.placeholder.com/200" alt="Blog 1">
-                <h3>Blog Title 1</h3>
-                <p>Summary of blog post 1...</p>
-            </div>
-            <div class="blog-card">
-                <img src="https://via.placeholder.com/200" alt="Blog 2">
-                <h3>Blog Title 2</h3>
-                <p>Summary of blog post 2...</p>
-            </div>
-        </div>
+        <div class="blog-cards" id="blogCards"></div>
         <div class="pagination">
             <button class="button" onclick="previousPage()">Previous</button>
             <button class="button" onclick="nextPage()">Next</button>
@@ -226,6 +220,10 @@
         <h2>User Testimonials</h2>
         <div class="testimonial-carousel" id="testimonial-carousel"></div>
         <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
+        <div class="pagination">
+            <button class="button" onclick="previousTestimonial()">Previous</button>
+            <button class="button" onclick="nextTestimonial()">Next</button>
+        </div>
     </section>
 
     <section id="contact" class="fade-in visible">
@@ -243,17 +241,16 @@
     <div class="footer-links">
         <span>Phone: +123 456 7890</span>
         <div class="social-icons">
-            <a href="#" target="_blank">FB</a>
-            <a href="#" target="_blank">TW</a>
-            <a href="#" target="_blank">IG</a>
-            <a href="#" target="_blank">LI</a>
+            <a href="#"><img src="facebook-icon.svg" alt="Facebook"></a>
+            <a href="#"><img src="twitter-icon.svg" alt="Twitter"></a>
+            <a href="#"><img src="instagram-icon.svg" alt="Instagram"></a>
         </div>
         <form id="newsletterForm" onsubmit="subscribeNewsletter(event);">
             <input type="email" placeholder="Enter your email for newsletter" required>
             <button type="submit">Subscribe</button>
         </form>
         <div>
-            <a href="privacy.html">Privacy Policy</a>
+            <span>Privacy Policy</span>
         </div>
     </div>
 </footer>
@@ -294,6 +291,16 @@
         document.getElementById('testimonialModal').style.display = 'none';
     }
 
+    function previousPage() {
+        currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+        renderTestimonials();
+    }
+
+    function nextPage() {
+        currentIndex = (currentIndex + 1) % testimonials.length;
+        renderTestimonials();
+    }
+
     function submitTestimonial() {
         const testimonialText = document.querySelector('#testimonialModal textarea').value;
         const name = prompt("Please enter your name:") || 'Anonymous';
@@ -319,7 +326,8 @@
     function subscribeNewsletter(event) {
         event.preventDefault();
         const email = event.target.querySelector('input[type="email"]').value;
-        alert(`Thank you for subscribing with ${email}!`);
+        console.log(`Thank you for subscribing with ${email}!`);
+        event.target.reset();
     }
 
     document.addEventListener("DOMContentLoaded", () => {
