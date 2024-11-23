@@ -5,28 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explore Breadsmp.com, a premier destination for web development resources.">
     <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe, Tutorials, Resources">
+    <meta property="og:title" content="Breadsmp: Web Development Resources">
+    <meta property="og:description" content="Join our community to enhance your development skills.">
+    <meta property="og:image" content="https://via.placeholder.com/200">
+    <meta property="og:url" content="https://breadsmp.com">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>Welcome to Breadsmp.com - Enhancing Your Web Experience</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #28a745;
-            --highlight-color: #e91e63;
-            --background-light: #f9f9f9;
-            --background-dark: #282c34;
-            --text-light: #ffffff;
-            --text-dark: #333;
-            --transition-speed: 0.4s;
-        }
-        body, h1, h2, h3, p, ul, li {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --primary-color: #4A90E2;
+            --secondary-color: #50E3C2;
+            --highlight-color: #E94E83;
+            --background-light: #FCFCFC;
+            --background-dark: #2C3E50;
+            --text-light: #FFFFFF;
+            --text-dark: #444444;
+            --transition-speed: 0.3s;
         }
         body {
             font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, #fcfcfc, #e6e6e6);
+            background: linear-gradient(135deg, var(--background-light), #E6E6E6);
             color: var(--text-dark);
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -40,30 +42,29 @@
             background: #333;
             color: var(--text-light);
             padding: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .hamburger {
-            display: none;
-            cursor: pointer;
+            display: flex;
             flex-direction: column;
             gap: 4px;
+            cursor: pointer;
         }
         .hamburger span {
             width: 25px;
             height: 3px;
             background: white;
-            transition: 0.3s;
         }
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
+            flex-wrap: wrap;
         }
         nav ul {
             list-style: none;
@@ -73,13 +74,24 @@
             position: relative;
         }
         nav ul li {
-            position: relative;
             margin-right: 20px;
+            position: relative;
             cursor: pointer;
+            transition: color var(--transition-speed);
+        }
+        nav ul li:hover {
+            color: var(--highlight-color);
         }
         nav ul li:hover .dropdown {
             display: block;
-            animation: slideDown 0.3s ease;
+        }
+        nav ul .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--secondary-color);
+            border-radius: 5px;
         }
         .button {
             background-color: var(--primary-color);
@@ -91,13 +103,14 @@
             transition: background-color var(--transition-speed);
         }
         .button:hover {
-            border: 2px solid var(--highlight-color);
             background-color: var(--highlight-color);
         }
         main {
             flex-grow: 1;
-            padding: 20px;
-            margin-top: 60px; /* Adjust for fixed header */
+            padding: 90px 20px 20px; /* Adjusting for fixed header */
+        }
+        section {
+            margin-bottom: 50px;
         }
         footer {
             background-color: #444;
@@ -107,26 +120,26 @@
         }
         .social-icons a {
             margin: 0 10px;
-            color: #50e3c2;
+            color: #50E3C2;
         }
         .testimonial-carousel {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            overflow: hidden;
+            scroll-behavior: smooth;
         }
         .testimonial {
+            flex-shrink: 0;
+            width: 300px;
             background: #fff;
             border: 1px solid #ccc;
             border-radius: 8px;
             padding: 10px;
-            width: 300px;
+            margin: 0 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .hero-fade-in {
             opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity var(--transition-speed), transform var(--transition-speed);
+            transition: opacity var(--transition-speed);
             background-image: url('https://via.placeholder.com/1200x400');
             background-size: cover;
             color: #fff;
@@ -135,7 +148,6 @@
         }
         .hero-fade-in.visible {
             opacity: 1;
-            transform: translateY(0);
         }
         @media (max-width: 500px) {
             nav ul {
@@ -146,6 +158,7 @@
                 top: 100%;
                 left: 0;
                 display: none;
+                z-index: 999;
             }
             nav ul.active {
                 display: flex;
@@ -153,18 +166,6 @@
             .hamburger {
                 display: flex;
             }
-            aside {
-                display: none;
-            }
-        }
-        input, textarea {
-            width: 100%; /* Full width for inputs */
-            padding: 10px; /* Add padding */
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            padding: 20px;
         }
     </style>
 </head>
@@ -179,7 +180,7 @@
             <span></span>
         </div>
         <ul id="navList" role="menubar">
-            <li role="menuitem" onclick="smoothScroll('home')">Home</li>
+            <li role="menuitem" onclick="smoothScroll('hero')">Home</li>
             <li role="menuitem" onclick="smoothScroll('about')">About Us</li>
             <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
             <li role="menuitem" onclick="smoothScroll('resources')">Resources</li>
@@ -194,6 +195,11 @@
         <h2>Transform Your Web Development Skills</h2>
         <p>Your journey to mastering web development starts here. Join our community today!</p>
         <button class="button" onclick="smoothScroll('latestBlogs')">View Latest Blogs</button>
+    </section>
+
+    <section id="about">
+        <h2>About Us</h2>
+        <p>We are dedicated to helping you improve your web development skills through valuable resources and community support.</p>
     </section>
 
     <section id="latestBlogs" class="fade-in visible">
@@ -264,7 +270,6 @@
 <script>
     let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
     let currentIndex = 0;
-    let autoAdvance = true;
 
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
@@ -303,7 +308,7 @@
     function renderTestimonials() {
         const carousel = document.getElementById('testimonial-carousel');
         carousel.innerHTML = '';
-        testimonials.forEach((test, index) => {
+        testimonials.forEach(test => {
             const testimonialDiv = document.createElement('div');
             testimonialDiv.classList.add('testimonial');
             testimonialDiv.innerText = `${test.author}: ${test.text}`;
