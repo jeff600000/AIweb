@@ -44,6 +44,16 @@
             right: 0;
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { width: 50px; }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
         }
         .hamburger {
             display: flex;
@@ -51,17 +61,6 @@
             gap: 4px;
             cursor: pointer;
             transition: transform var(--transition-speed);
-        }
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: white;
-        }
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
         }
         nav ul {
             list-style: none;
@@ -79,14 +78,6 @@
         nav ul li:hover {
             transform: scale(1.05);
             color: var(--highlight-color);
-        }
-        nav ul .dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: var(--secondary-color);
-            border-radius: 5px;
         }
         .button {
             background-color: var(--primary-color);
@@ -106,6 +97,9 @@
         }
         section {
             margin-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         footer {
             background-color: #444;
@@ -121,7 +115,6 @@
         .testimonial-carousel {
             display: flex;
             overflow: hidden;
-            scroll-behavior: smooth;
             position: relative;
         }
         .testimonial {
@@ -133,28 +126,13 @@
             padding: 10px;
             margin: 0 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: opacity var(--transition-speed);
         }
-        .hero-fade-in {
-            position: relative;
+        .fade-in {
             opacity: 0;
             transition: opacity var(--transition-speed);
-            background-image: url('https://via.placeholder.com/1200x400');
-            background-size: cover;
-            color: #fff;
-            padding: 60px 20px;
-            text-align: center;
         }
-        .hero-fade-in::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 0;
-        }
-        .hero-fade-in.visible {
+        .fade-in.visible {
             opacity: 1;
         }
         @media (max-width: 500px) {
@@ -168,15 +146,13 @@
                 display: none;
                 z-index: 999;
             }
-            nav ul.active {
-                display: flex;
-            }
         }
     </style>
 </head>
 <body>
 
 <header>
+    <img src="logo.png" alt="Breadsmp Logo" class="logo">
     <h1>Breadsmp.com</h1>
     <nav>
         <div class="hamburger" onclick="toggleMenu()">
@@ -187,7 +163,7 @@
         <ul id="navList" role="menubar" aria-label="Main navigation">
             <li role="menuitem" onclick="smoothScroll('hero')">Home</li>
             <li role="menuitem" onclick="smoothScroll('about')">About Us</li>
-            <li role="menuitem" onclick="smoothScroll('blog')">Blog</li>
+            <li role="menuitem" onclick="smoothScroll('latestBlogs')">Blog</li>
             <li role="menuitem" onclick="smoothScroll('resources')">Resources</li>
             <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
         </ul>
@@ -199,7 +175,10 @@
     <section id="hero" class="hero-fade-in visible">
         <h2>Transform Your Web Development Skills</h2>
         <p>Your journey to mastering web development starts here. Join our community today!</p>
-        <button class="button" onclick="smoothScroll('latestBlogs')">View Latest Blogs</button>
+        <div style="display: flex; gap: 10px;">
+            <button class="button" onclick="smoothScroll('latestBlogs')">View Latest Blogs</button>
+            <button class="button" onclick="smoothScroll('about')">Learn More</button>
+        </div>
     </section>
 
     <section id="about">
@@ -209,7 +188,11 @@
 
     <section id="latestBlogs" class="fade-in visible">
         <h2>Latest Blogs</h2>
-        <div class="blog-cards" id="blogCards"></div>
+        <div class="blog-cards" id="blogCards">
+            <div class="testimonial">Blog 1: Introduction to HTML</div>
+            <div class="testimonial">Blog 2: Understanding CSS Flexbox</div>
+            <div class="testimonial">Blog 3: JavaScript Basics</div>
+        </div>
         <div class="pagination">
             <button class="button" onclick="previousPage()">Previous</button>
             <button class="button" onclick="nextPage()">Next</button>
@@ -230,7 +213,7 @@
         <h2>Contact Us</h2>
         <form id="contactForm" onsubmit="submitForm(event);" aria-label="Contact Form">
             <input type="text" name="name" placeholder="Your Name" required aria-required="true">
-            <input type="email" name="email" placeholder="Your Email" required>
+            <input type="email" name="email" placeholder="Your Email" required aria-required="true">
             <textarea name="message" placeholder="Your Message" required></textarea>
             <button class="button" type="submit">Send Message</button>
         </form>
@@ -241,9 +224,9 @@
     <div class="footer-links">
         <span>Phone: +123 456 7890</span>
         <div class="social-icons">
-            <a href="#"><img src="facebook-icon.svg" alt="Facebook"></a>
-            <a href="#"><img src="twitter-icon.svg" alt="Twitter"></a>
-            <a href="#"><img src="instagram-icon.svg" alt="Instagram"></a>
+            <a href="#" title="Follow us on Facebook"><img src="facebook-icon.svg" alt="Facebook"></a>
+            <a href="#" title="Follow us on Twitter"><img src="twitter-icon.svg" alt="Twitter"></a>
+            <a href="#" title="Follow us on Instagram"><img src="instagram-icon.svg" alt="Instagram"></a>
         </div>
         <form id="newsletterForm" onsubmit="subscribeNewsletter(event);">
             <input type="email" placeholder="Enter your email for newsletter" required>
