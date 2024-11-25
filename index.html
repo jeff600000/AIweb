@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore Breadsmp.com, a premier destination for web development resources.">
-    <meta name="keywords" content="Web Development, Blogs, Testimonials, Contact Us, Subscribe, Tutorials, Resources">
+    <meta name="description" content="Explore Breadsmp.com, the hub for web development resources.">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <title>Welcome to Breadsmp.com - Enhancing Your Web Experience</title>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600|Montserrat:700&display=swap" rel="stylesheet">
+    <title>Welcome to Breadsmp.com</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #4A90E2;
@@ -22,7 +21,7 @@
         }
         body {
             font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, var(--background-light), #E6E6E6);
+            background: var(--background-light);
             color: var(--text-dark);
             margin: 0;
             padding: 0;
@@ -53,7 +52,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
         }
         nav ul {
             list-style: none;
@@ -64,6 +62,20 @@
         nav ul li {
             margin-right: 20px;
             position: relative;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--primary-color);
+            min-width: 160px;
+            z-index: 1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
         }
         .button {
             background-color: var(--secondary-color);
@@ -79,6 +91,37 @@
         .button:hover {
             background-color: var(--highlight-color);
             transform: scale(1.05);
+        }
+        .switch {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        .switch input {
+            display: none;
+        }
+        .slider {
+            height: 24px;
+            width: 50px;
+            background-color: #ccc;
+            border-radius: 34px;
+            position: relative;
+            transition: background-color var(--transition-speed);
+        }
+        .slider:before {
+            content: "";
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background-color: white;
+            transition: transform var(--transition-speed);
+        }
+        input:checked + .slider {
+            background-color: var(--secondary-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
         main {
             flex-grow: 1;
@@ -105,264 +148,115 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .blog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
         footer {
             background-color: #444;
             color: white;
             padding: 20px;
             text-align: center;
         }
-        .social-icons a {
-            margin: 0 10px;
-            color: #50E3C2;
-            display: inline-block;
-            transition: color var(--transition-speed);
-        }
-        .social-icons a:hover {
-            color: var(--highlight-color);
-        }
-        .search-bar {
-            margin-left: 20px;
-            border: none;
-            border-radius: 20px;
-            padding: 5px 10px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            position: relative;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-        }
-        #subscriptionMessage {
+        .form-response {
+            margin-top: 10px;
             color: green;
-            display: none;
         }
     </style>
 </head>
 <body>
-
 <header>
     <img src="logo.png" alt="Breadsmp Logo" class="logo" style="width: 50px;">
-    <nav>
-        <ul id="navList" role="menubar" aria-label="Main navigation">
-            <li role="menuitem" onclick="smoothScroll('hero')">Home</li>
-            <li role="menuitem" onclick="smoothScroll('about')">About Us</li>
-            <li role="menuitem" onclick="smoothScroll('latestBlogs')">Blog</li>
-            <li role="menuitem" onclick="smoothScroll('resources')">Resources</li>
-            <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
+    <nav aria-label="Main navigation">
+        <ul>
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#latestBlogs">Blog</a></li>
+            <li><a href="#resources">Resources</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)">Services</a>
+                <div class="dropdown-content">
+                    <a href="#webDev">Web Development</a>
+                    <a href="#design">Design</a>
+                </div>
+            </li>
         </ul>
-        <input type="text" id="searchBar" class="search-bar" placeholder="Search..." aria-label="Search blogs" oninput="searchBlogs(event)">
-        <button class="button" aria-label="Toggle dark mode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        <input type="text" id="searchBar" placeholder="Search..." oninput="searchBlogs(event)">
+        <label class="switch">
+            <input type="checkbox" onchange="toggleTheme()">
+            <span class="slider round"></span>
+        </label>
     </nav>
 </header>
 
-<main role="main">
+<main>
     <section id="hero" class="hero">
-        <h2>Transform Your Web Development Skills</h2>
-        <p>Your journey to mastering web development starts here. Join our community today!</p>
-        <div style="display: flex; gap: 10px;">
-            <button class="button" onclick="smoothScroll('latestBlogs')">View Latest Blogs</button>
-            <button class="button" onclick="smoothScroll('about')">Learn More</button>
-        </div>
-    </section>
-
-    <section id="about">
-        <h2>About Us</h2>
-        <p>We are dedicated to helping you improve your web development skills through valuable resources and community support.</p>
+        <h1>Transform Your Web Development Skills</h1>
+        <p>Join our community to start enhancing your skills!</p>
     </section>
 
     <section id="latestBlogs">
         <h2>Latest Blogs</h2>
-        <div class="blog-grid">
-            <div class="testimonial">
-                <strong>Blog 1: Introduction to HTML</strong>
-                <p>Learn the basics of HTML, including structure and semantics.</p>
-                <button class="button" onclick="displayBlog('HTML')">Read More</button>
-            </div>
-            <div class="testimonial">
-                <strong>Blog 2: Understanding CSS Flexbox</strong>
-                <p>A deep dive into CSS Flexbox for responsive design.</p>
-                <button class="button" onclick="displayBlog('CSS')">Read More</button>
-            </div>
-            <div class="testimonial">
-                <strong>Blog 3: JavaScript Basics</strong>
-                <p>Get started with the fundamentals of JavaScript.</p>
-                <button class="button" onclick="displayBlog('JavaScript')">Read More</button>
-            </div>
-        </div>
-        <div class="pagination">
-            <button class="button" onclick="previousPage()">Previous</button>
-            <button class="button" onclick="nextPage()">Next</button>
-        </div>
-    </section>
-
-    <section id="testimonials">
-        <h2>User Testimonials</h2>
-        <div class="testimonial-carousel" id="testimonial-carousel"></div>
-        <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
-        <div class="pagination">
-            <button class="button" onclick="previousTestimonial()">Previous</button>
-            <button class="button" onclick="nextTestimonial()">Next</button>
-        </div>
+        <div id="blog-list"></div>
     </section>
 
     <section id="contact">
         <h2>Contact Us</h2>
-        <form id="contactForm" onsubmit="submitForm(event);" aria-label="Contact Form">
-            <input type="text" name="name" placeholder="Your Name" required aria-required="true">
-            <input type="email" name="email" placeholder="Your Email" required aria-required="true">
-            <textarea name="message" placeholder="Your Message" required></textarea>
-            <button class="button" type="submit">Send Message</button>
+        <form id="contactForm">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+            <button type="submit" class="button">Send Message</button>
         </form>
+        <div id="form-response" class="form-response"></div>
     </section>
 </main>
 
-<footer role="contentinfo">
-    <div class="footer-links">
-        <span>Phone: +123 456 7890</span>
-        <div class="social-icons">
-            <a href="#" title="Follow us on Facebook"><img src="facebook-icon.svg" alt="Facebook"></a>
-            <a href="#" title="Follow us on Twitter"><img src="twitter-icon.svg" alt="Twitter"></a>
-            <a href="#" title="Follow us on Instagram"><img src="instagram-icon.svg" alt="Instagram"></a>
-        </div>
-        <form id="newsletterForm" onsubmit="subscribeNewsletter(event);">
-            <input type="email" placeholder="Enter your email for newsletter" required>
-            <button type="submit" class="button">Subscribe</button>
-        </form>
-        <div id="subscriptionMessage"></div>
-        <div>
-            <span>Privacy Policy</span>
-        </div>
-    </div>
+<footer>
+    <p>Phone: +123 456 7890</p>
+    <a href="/privacy" style="color:white; text-decoration:none;">Privacy Policy</a>
+    <a href="/terms" style="color:white; text-decoration:none;">Terms of Service</a>
 </footer>
 
-<div id="testimonialModal" class="modal" tabindex="0" aria-labelledby="modalTitle" style="display:none;">
-    <div class="modal-content" role="dialog" aria-modal="true">
-        <h3 id="modalTitle">Submit Your Testimonial</h3>
-        <textarea placeholder="Your testimonial..." required></textarea>
-        <button class="button" onclick="submitTestimonial()">Submit</button>
-        <button class="button" onclick="closeTestimonialModal()">Close</button>
-    </div>
-</div>
-
-<div id="blogDetailModal" class="modal" tabindex="0" aria-labelledby="modalTitle" style="display:none;">
-    <div class="modal-content" role="dialog" aria-modal="true" id="blogDetailModal">
-        <h3 id="modalBlogTitle"></h3>
-        <p id="modalBlogContent"></p>
-        <button class="button" onclick="closeBlogModal()">Close</button>
-    </div>
-</div>
-
 <script>
-    let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
-    let currentIndex = 0;
-
-    function toggleDarkMode() {
+    function toggleTheme() {
         document.body.classList.toggle('dark-mode');
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkMode);
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     }
 
-    function smoothScroll(sectionId) {
-        document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('darkMode') === 'true') toggleTheme();
+        loadBlogs();
+    });
 
-    function openTestimonialModal() {
-        document.getElementById('testimonialModal').style.display = 'flex';
-    }
-
-    function closeTestimonialModal() {
-        document.getElementById('testimonialModal').style.display = 'none';
-    }
-
-    function previousPage() {
-        currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
-        renderTestimonials();
-    }
-
-    function nextPage() {
-        currentIndex = (currentIndex + 1) % testimonials.length;
-        renderTestimonials();
-    }
-
-    function submitTestimonial() {
-        const testimonialText = document.querySelector('#testimonialModal textarea').value;
-        const name = prompt("Please enter your name:") || 'Anonymous';
-        if (testimonialText.trim()) {
-            testimonials.push({ text: testimonialText, author: name });
-            localStorage.setItem('testimonials', JSON.stringify(testimonials));
-            renderTestimonials();
-            closeTestimonialModal();
-        }
-    }
-
-    function renderTestimonials() {
-        const carousel = document.getElementById('testimonial-carousel');
-        carousel.innerHTML = '';
-        testimonials.forEach((test, index) => {
-            const testimonialDiv = document.createElement('div');
-            testimonialDiv.classList.add('testimonial');
-            testimonialDiv.innerText = `${test.author}: ${test.text}`;
-            carousel.appendChild(testimonialDiv);
+    function loadBlogs() {
+        const blogs = [
+            { title: "Introduction to HTML", content: "Learn the basics of HTML, including structure and semantics." },
+            { title: "Understanding CSS Flexbox", content: "A deep dive into CSS Flexbox for responsive design." },
+            { title: "JavaScript Basics", content: "Get started with the fundamentals of JavaScript." }
+        ];
+        const blogList = document.getElementById('blog-list');
+        blogs.forEach(blog => {
+            const blogItem = document.createElement('div');
+            blogItem.innerHTML = `<strong>${blog.title}</strong><p>${blog.content}</p>`;
+            blogList.appendChild(blogItem);
         });
     }
 
-    function subscribeNewsletter(event) {
+    document.getElementById('contactForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        const email = event.target.querySelector('input[type="email"]').value;
-        localStorage.setItem('subscribedEmail', email);
-        document.getElementById('subscriptionMessage').innerText = 'Thank you for subscribing!';
-        event.target.reset();
-        document.getElementById('subscriptionMessage').style.display = 'block';
-        setTimeout(() => { 
-            document.getElementById('subscriptionMessage').style.display = 'none'; 
-        }, 3000);
-    }
-
-    function displayBlog(blogType) {
-        const blogDetails = {
-            HTML: "Full HTML tutorial...",
-            CSS: "Complete CSS Flexbox Guide...",
-            JavaScript: "JavaScript in-depth guide..."
-        };
-        document.getElementById('modalBlogTitle').innerText = blogType;
-        document.getElementById('modalBlogContent').innerText = blogDetails[blogType];
-        document.getElementById('blogDetailModal').style.display = 'flex';
-    }
-
-    function closeBlogModal() {
-        document.getElementById('blogDetailModal').style.display = 'none';
-    }
+        document.getElementById('form-response').innerText = "Your message has been sent successfully!";
+        this.reset();
+    });
 
     function searchBlogs(event) {
         const searchTerm = event.target.value.toLowerCase();
-        const blogItems = document.querySelectorAll('.testimonial');
+        const blogItems = document.querySelectorAll('#blog-list > div');
         blogItems.forEach(item => {
             const text = item.innerText.toLowerCase();
             item.style.display = text.includes(searchTerm) ? 'block' : 'none';
         });
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem('darkMode') === 'true') toggleDarkMode();
-        renderTestimonials();
-    });
 </script>
 </body>
 </html>
