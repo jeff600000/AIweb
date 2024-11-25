@@ -48,6 +48,35 @@
             align-items: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
+        .hamburger {
+            display: none; 
+            background: transparent;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+        }
+        .nav-links {
+            display: flex;
+            flex-direction: row;
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; 
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                background-color: var(--primary-color);
+                width: 100%;
+            }
+            .nav-links.show {
+                display: flex; 
+            }
+            .hamburger {
+                display: block; 
+            }
+        }
         nav {
             display: flex;
             justify-content: space-between;
@@ -57,25 +86,11 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            display: flex;
-        }
-        nav ul li {
-            margin-right: 20px;
-            position: relative;
         }
         nav a {
             color: white;
             text-decoration: none;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: var(--primary-color);
-            min-width: 160px;
-            z-index: 1;
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
+            margin-right: 20px;
         }
         .button {
             background-color: var(--secondary-color);
@@ -86,47 +101,14 @@
             cursor: pointer;
             font-weight: bold;
             transition: background-color var(--transition-speed), transform var(--transition-speed);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .button:hover {
             background-color: var(--highlight-color);
             transform: scale(1.05);
         }
-        .switch {
-            display: flex;
-            align-items: center;
-            margin-left: 20px;
-        }
-        .switch input {
-            display: none;
-        }
-        .slider {
-            height: 24px;
-            width: 50px;
-            background-color: #ccc;
-            border-radius: 34px;
-            position: relative;
-            transition: background-color var(--transition-speed);
-        }
-        .slider:before {
-            content: "";
-            position: absolute;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background-color: white;
-            transition: transform var(--transition-speed);
-        }
-        input:checked + .slider {
-            background-color: var(--secondary-color);
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
         main {
             flex-grow: 1;
             padding: 90px 20px 20px; 
-            transition: padding var(--transition-speed);
         }
         .hero {
             background-image: url('https://via.placeholder.com/1200x400');
@@ -164,7 +146,8 @@
 <header>
     <img src="logo.png" alt="Breadsmp Logo" class="logo" style="width: 50px;">
     <nav aria-label="Main navigation">
-        <ul>
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
+        <ul class="nav-links">
             <li><a href="#hero">Home</a></li>
             <li><a href="#about">About Us</a></li>
             <li><a href="#latestBlogs">Blog</a></li>
@@ -192,6 +175,11 @@
         <p>Join our community to start enhancing your skills!</p>
     </section>
 
+    <section id="about">
+        <h2>About Us</h2>
+        <p>BreadSMP is a community-driven platform aimed at helping individuals enhance their skills in web development. We offer tutorials, blogs, and resources for beginners and advanced developers alike.</p>
+    </section>
+
     <section id="latestBlogs">
         <h2>Latest Blogs</h2>
         <div id="blog-list"></div>
@@ -203,7 +191,7 @@
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required>
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
             <label for="message">Message</label>
             <textarea id="message" name="message" required></textarea>
             <button type="submit" class="button">Send Message</button>
@@ -214,6 +202,11 @@
 
 <footer>
     <p>Phone: +123 456 7890</p>
+    <p>Follow us on:
+        <a href="#" style="color:white; text-decoration:none;">Facebook</a>,
+        <a href="#" style="color:white; text-decoration:none;">Twitter</a>,
+        <a href="#" style="color:white; text-decoration:none;">Instagram</a>
+    </p>
     <a href="/privacy" style="color:white; text-decoration:none;">Privacy Policy</a>
     <a href="/terms" style="color:white; text-decoration:none;">Terms of Service</a>
 </footer>
@@ -231,14 +224,15 @@
 
     function loadBlogs() {
         const blogs = [
-            { title: "Introduction to HTML", content: "Learn the basics of HTML, including structure and semantics." },
-            { title: "Understanding CSS Flexbox", content: "A deep dive into CSS Flexbox for responsive design." },
-            { title: "JavaScript Basics", content: "Get started with the fundamentals of JavaScript." }
+            { title: "Introduction to HTML", content: "Learn the basics of HTML, including structure and semantics.", date: "2023-10-01", author: "Jane Doe" },
+            { title: "Understanding CSS Flexbox", content: "A deep dive into CSS Flexbox for responsive design.", date: "2023-10-10", author: "John Smith" },
+            { title: "JavaScript Basics", content: "Get started with the fundamentals of JavaScript.", date: "2023-10-15", author: "Alice Johnson" }
         ];
         const blogList = document.getElementById('blog-list');
+        
         blogs.forEach(blog => {
             const blogItem = document.createElement('div');
-            blogItem.innerHTML = `<strong>${blog.title}</strong><p>${blog.content}</p>`;
+            blogItem.innerHTML = `<strong>${blog.title}</strong><p>${blog.content}</p><small>Posted on ${blog.date} by ${blog.author}</small>`;
             blogList.appendChild(blogItem);
         });
     }
@@ -256,6 +250,10 @@
             const text = item.innerText.toLowerCase();
             item.style.display = text.includes(searchTerm) ? 'block' : 'none';
         });
+    }
+
+    function toggleMenu() {
+        document.querySelector('.nav-links').classList.toggle('show');
     }
 </script>
 </body>
