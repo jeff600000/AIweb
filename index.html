@@ -65,18 +65,6 @@
             margin-right: 20px;
             position: relative;
         }
-        nav .dropdown {
-            display: none;
-            position: absolute;
-            background-color: var(--secondary-color);
-            padding: 10px;
-            border-radius: 5px;
-            top: 25px;
-            z-index: 1000;
-        }
-        nav ul li:hover .dropdown {
-            display: block;
-        }
         .button {
             background-color: var(--secondary-color);
             border: none;
@@ -85,11 +73,12 @@
             padding: 10px 20px;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color var(--transition-speed);
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .button:hover {
             background-color: var(--highlight-color);
+            transform: scale(1.05);
         }
         main {
             flex-grow: 1;
@@ -136,6 +125,34 @@
         .social-icons a:hover {
             color: var(--highlight-color);
         }
+        .search-bar {
+            margin-left: 20px;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        #subscriptionMessage {
+            color: green;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -150,6 +167,7 @@
             <li role="menuitem" onclick="smoothScroll('resources')">Resources</li>
             <li role="menuitem" onclick="smoothScroll('contact')">Contact Us</li>
         </ul>
+        <input type="text" id="searchBar" class="search-bar" placeholder="Search..." aria-label="Search blogs" oninput="searchBlogs(event)">
         <button class="button" aria-label="Toggle dark mode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
     </nav>
 </header>
@@ -227,7 +245,7 @@
             <input type="email" placeholder="Enter your email for newsletter" required>
             <button type="submit" class="button">Subscribe</button>
         </form>
-        <div id="subscriptionMessage" style="color:green; display:none;"></div>
+        <div id="subscriptionMessage"></div>
         <div>
             <span>Privacy Policy</span>
         </div>
@@ -240,6 +258,14 @@
         <textarea placeholder="Your testimonial..." required></textarea>
         <button class="button" onclick="submitTestimonial()">Submit</button>
         <button class="button" onclick="closeTestimonialModal()">Close</button>
+    </div>
+</div>
+
+<div id="blogDetailModal" class="modal" tabindex="0" aria-labelledby="modalTitle" style="display:none;">
+    <div class="modal-content" role="dialog" aria-modal="true" id="blogDetailModal">
+        <h3 id="modalBlogTitle"></h3>
+        <p id="modalBlogContent"></p>
+        <button class="button" onclick="closeBlogModal()">Close</button>
     </div>
 </div>
 
@@ -291,7 +317,7 @@
         carousel.innerHTML = '';
         testimonials.forEach((test, index) => {
             const testimonialDiv = document.createElement('div');
-            testimonialDiv.classList.add('testimonial', 'fade-in');
+            testimonialDiv.classList.add('testimonial');
             testimonialDiv.innerText = `${test.author}: ${test.text}`;
             carousel.appendChild(testimonialDiv);
         });
@@ -303,15 +329,34 @@
         localStorage.setItem('subscribedEmail', email);
         document.getElementById('subscriptionMessage').innerText = 'Thank you for subscribing!';
         event.target.reset();
+        document.getElementById('subscriptionMessage').style.display = 'block';
+        setTimeout(() => { 
+            document.getElementById('subscriptionMessage').style.display = 'none'; 
+        }, 3000);
     }
 
     function displayBlog(blogType) {
         const blogDetails = {
-            HTML: "HTML is the standard markup language for creating web pages. It describes the structure of a web page.",
-            CSS: "CSS stands for Cascading Style Sheets. It controls the layout of multiple web pages all at once.",
-            JavaScript: "JavaScript is the programming language of the Web. It makes web pages interactive and dynamic."
+            HTML: "Full HTML tutorial...",
+            CSS: "Complete CSS Flexbox Guide...",
+            JavaScript: "JavaScript in-depth guide..."
         };
-        alert(blogDetails[blogType]);
+        document.getElementById('modalBlogTitle').innerText = blogType;
+        document.getElementById('modalBlogContent').innerText = blogDetails[blogType];
+        document.getElementById('blogDetailModal').style.display = 'flex';
+    }
+
+    function closeBlogModal() {
+        document.getElementById('blogDetailModal').style.display = 'none';
+    }
+
+    function searchBlogs(event) {
+        const searchTerm = event.target.value.toLowerCase();
+        const blogItems = document.querySelectorAll('.testimonial');
+        blogItems.forEach(item => {
+            const text = item.innerText.toLowerCase();
+            item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+        });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
