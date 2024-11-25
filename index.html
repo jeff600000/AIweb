@@ -49,30 +49,33 @@
             align-items: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-        .logo { width: 50px; }
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
+            position: relative;
         }
         nav ul {
             list-style: none;
             padding: 0;
             margin: 0;
             display: flex;
-            position: relative;
         }
         nav ul li {
             margin-right: 20px;
             position: relative;
-            cursor: pointer;
-            transition: transform var(--transition-speed), color var(--transition-speed);
-            font-weight: 600;
         }
-        nav ul li:hover {
-            transform: scale(1.1);
-            color: var(--highlight-color);
+        nav .dropdown {
+            display: none;
+            position: absolute;
+            background-color: var(--secondary-color);
+            padding: 10px;
+            border-radius: 5px;
+            top: 25px;
+            z-index: 1000;
+        }
+        nav ul li:hover .dropdown {
+            display: block;
         }
         .button {
             background-color: var(--secondary-color);
@@ -93,6 +96,16 @@
             padding: 90px 20px 20px; 
             transition: padding var(--transition-speed);
         }
+        .hero {
+            background-image: url('https://via.placeholder.com/1200x400');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 50px;
+        }
         section {
             margin-bottom: 50px;
             display: flex;
@@ -102,6 +115,11 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
         footer {
             background-color: #444;
@@ -118,58 +136,13 @@
         .social-icons a:hover {
             color: var(--highlight-color);
         }
-        .testimonial-carousel {
-            display: flex;
-            overflow: hidden;
-            position: relative;
-            transition: transform 0.5s;
-        }
-        .testimonial {
-            flex-shrink: 0;
-            width: 300px;
-            background: #f9f9f9;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
-            margin: 0 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: opacity var(--transition-speed), transform var(--transition-speed);
-        }
-        .fade-in {
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity var(--transition-speed), transform var(--transition-speed);
-        }
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .blog-excerpt {
-            margin-top: 10px;
-            text-align: center;
-        }
-        @media (max-width: 500px) {
-            nav ul {
-                flex-direction: column;
-                background-color: var(--secondary-color);
-                width: 100%;
-                top: 100%;
-                display: none;
-            }
-        }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" alt="Breadsmp Logo" class="logo">
-    <h1 style="font-family: 'Montserrat', sans-serif;">Breadsmp.com</h1>
+    <img src="logo.png" alt="Breadsmp Logo" class="logo" style="width: 50px;">
     <nav>
-        <div class="hamburger" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
         <ul id="navList" role="menubar" aria-label="Main navigation">
             <li role="menuitem" onclick="smoothScroll('hero')">Home</li>
             <li role="menuitem" onclick="smoothScroll('about')">About Us</li>
@@ -182,7 +155,7 @@
 </header>
 
 <main role="main">
-    <section id="hero" class="hero-fade-in visible">
+    <section id="hero" class="hero">
         <h2>Transform Your Web Development Skills</h2>
         <p>Your journey to mastering web development starts here. Join our community today!</p>
         <div style="display: flex; gap: 10px;">
@@ -196,29 +169,23 @@
         <p>We are dedicated to helping you improve your web development skills through valuable resources and community support.</p>
     </section>
 
-    <section id="latestBlogs" class="fade-in visible">
+    <section id="latestBlogs">
         <h2>Latest Blogs</h2>
-        <div class="blog-cards" id="blogCards">
+        <div class="blog-grid">
             <div class="testimonial">
                 <strong>Blog 1: Introduction to HTML</strong>
-                <div class="blog-excerpt">
-                    <p>Learn the basics of HTML, including structure and semantics.</p>
-                    <button class="button" onclick="displayBlog('HTML')">Read More</button>
-                </div>
+                <p>Learn the basics of HTML, including structure and semantics.</p>
+                <button class="button" onclick="displayBlog('HTML')">Read More</button>
             </div>
             <div class="testimonial">
                 <strong>Blog 2: Understanding CSS Flexbox</strong>
-                <div class="blog-excerpt">
-                    <p>A deep dive into CSS Flexbox for responsive design.</p>
-                    <button class="button" onclick="displayBlog('CSS')">Read More</button>
-                </div>
+                <p>A deep dive into CSS Flexbox for responsive design.</p>
+                <button class="button" onclick="displayBlog('CSS')">Read More</button>
             </div>
             <div class="testimonial">
                 <strong>Blog 3: JavaScript Basics</strong>
-                <div class="blog-excerpt">
-                    <p>Get started with the fundamentals of JavaScript.</p>
-                    <button class="button" onclick="displayBlog('JavaScript')">Read More</button>
-                </div>
+                <p>Get started with the fundamentals of JavaScript.</p>
+                <button class="button" onclick="displayBlog('JavaScript')">Read More</button>
             </div>
         </div>
         <div class="pagination">
@@ -227,7 +194,7 @@
         </div>
     </section>
 
-    <section id="testimonials" class="fade-in visible">
+    <section id="testimonials">
         <h2>User Testimonials</h2>
         <div class="testimonial-carousel" id="testimonial-carousel"></div>
         <button class="button" onclick="openTestimonialModal()">Submit Testimonial</button>
@@ -237,7 +204,7 @@
         </div>
     </section>
 
-    <section id="contact" class="fade-in visible">
+    <section id="contact">
         <h2>Contact Us</h2>
         <form id="contactForm" onsubmit="submitForm(event);" aria-label="Contact Form">
             <input type="text" name="name" placeholder="Your Name" required aria-required="true">
@@ -260,6 +227,7 @@
             <input type="email" placeholder="Enter your email for newsletter" required>
             <button type="submit" class="button">Subscribe</button>
         </form>
+        <div id="subscriptionMessage" style="color:green; display:none;"></div>
         <div>
             <span>Privacy Policy</span>
         </div>
@@ -285,13 +253,8 @@
         localStorage.setItem('darkMode', isDarkMode);
     }
 
-    function toggleMenu() {
-        document.getElementById('navList').classList.toggle('active');
-    }
-
     function smoothScroll(sectionId) {
-        const section = document.getElementById(sectionId);
-        section.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
     }
 
     function openTestimonialModal() {
@@ -338,6 +301,7 @@
         event.preventDefault();
         const email = event.target.querySelector('input[type="email"]').value;
         localStorage.setItem('subscribedEmail', email);
+        document.getElementById('subscriptionMessage').innerText = 'Thank you for subscribing!';
         event.target.reset();
     }
 
