@@ -28,6 +28,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
         }
         body.dark-mode {
             background-color: var(--background-dark);
@@ -182,12 +183,24 @@
             border: 1px solid #ccc;
             margin-right: 10px;
         }
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+            }
+            .hamburger {
+                display: block;
+            }
+            .nav-links.show {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body>
 <header>
     <img src="logo.png" alt="Breadsmp Logo" class="logo" style="width: 50px;">
-    <nav aria-label="Main navigation">
+    <nav role="navigation" aria-label="Main navigation">
         <button class="hamburger" onclick="toggleMenu()" aria-expanded="false">☰</button>
         <ul class="nav-links" id="nav-links">
             <li><a href="#hero">Home</a></li>
@@ -224,12 +237,12 @@
             <span class="dot active" onclick="setSlide(0)"></span>
             <span class="dot" onclick="setSlide(1)"></span>
             <span class="dot" onclick="setSlide(2)"></span>
-            <span class="dot" onclick="setSlide(3)"></span> <!-- New Dot for Additional Slide -->
+            <span class="dot" onclick="setSlide(3)"></span>
         </div>
         <img src="hero1.jpg" alt="Hero Image 1" class="active">
         <img src="hero2.jpg" alt="Hero Image 2">
         <img src="hero3.jpg" alt="Hero Image 3">
-        <img src="hero4.jpg" alt="Hero Image 4"> <!-- New Slide Added -->
+        <img src="hero4.jpg" alt="Hero Image 4">
     </section>
 
     <section id="about" class="visible">
@@ -262,9 +275,9 @@
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required>
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+            <input type="email" id="email" name="email" required>
             <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" required>
+            <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
             <label for="subject">Subject</label>
             <input type="text" id="subject" name="subject" required>
             <label for="message">Message</label>
@@ -279,11 +292,10 @@
             <input type="email" placeholder="Your Email" required>
             <button type="submit" class="button">Subscribe</button>
         </form>
-        <div>
-            Follow us on: 
-            <span style="color:white;">Facebook</span>,
-            <span style="color:white;">Twitter</span>,
-            <span style="color:white;">Instagram</span>
+        <div class="social-media">
+            <button class="button" onclick="window.open('https://facebook.com')">Facebook</button>
+            <button class="button" onclick="window.open('https://twitter.com')">Twitter</button>
+            <button class="button" onclick="window.open('https://instagram.com')">Instagram</button>
         </div>
     </footer>
 </main>
@@ -335,7 +347,23 @@
     }
 
     function loadMoreBlogs() {
+        showLoading('blog-list');
         loadBlogs();
+        hideLoading('blog-list');
+    }
+
+    function showLoading(targetId) {
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.innerText = 'Loading...';
+        document.getElementById(targetId).appendChild(loadingIndicator);
+    }
+
+    function hideLoading(targetId) {
+        const target = document.getElementById(targetId);
+        const loader = target.lastChild;
+        if (loader && loader.innerText === 'Loading...') {
+            target.removeChild(loader);
+        }
     }
 
     function loadTutorials() {
