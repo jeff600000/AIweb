@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore Breadsmp.com, the hub for web development resources.">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>Welcome to Breadsmp.com</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat&display=swap" rel="stylesheet">
@@ -28,7 +27,6 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            transition: background-color var(--transition-speed), color var(--transition-speed);
         }
         body.dark-mode {
             background-color: var(--background-dark);
@@ -92,6 +90,9 @@
             text-decoration: none;
             margin-right: 20px;
         }
+        nav a:hover {
+            text-decoration: underline;
+        }
         .button {
             background-color: var(--secondary-color);
             border: none;
@@ -110,15 +111,27 @@
             flex-grow: 1;
             padding: 90px 20px 20px;
         }
-        .hero {
-            background-image: url('https://via.placeholder.com/1200x400/4D5B7E/FFFFFF?text=Hero+Image');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 100px 20px;
+        .hero-slider {
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-slider img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+        }
+        .hero-slider img.active {
+            opacity: 1;
+        }
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            border-radius: 10px;
-            margin-bottom: 50px;
+            color: white;
         }
         section {
             margin-bottom: 50px;
@@ -137,22 +150,36 @@
             opacity: 1;
             transform: translateY(0);
         }
+        .testimonial-carousel {
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+        }
+        .testimonial {
+            min-width: 100%;
+            transition: transform var(--transition-speed);
+            padding: 15px;
+            border-radius: 8px;
+            background: var(--background-light);
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
         footer {
             background-color: #444;
             color: white;
             padding: 20px;
             text-align: center;
         }
-        .form-response {
-            margin-top: 10px;
-            color: green;
+        footer form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .testimonial {
-            background: var(--background-light);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-            margin: 10px;
+        footer input[type="email"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -186,9 +213,15 @@
 </header>
 
 <main>
-    <section id="hero" class="hero">
-        <h1>Transform Your Web Development Skills</h1>
-        <p>Join our community to start enhancing your skills!</p>
+    <section class="hero-slider">
+        <img src="hero1.jpg" alt="Hero Image 1" class="active">
+        <img src="hero2.jpg" alt="Hero Image 2">
+        <img src="hero3.jpg" alt="Hero Image 3">
+        <div class="hero-content">
+            <h1>Transform Your Web Development Skills</h1>
+            <p>Join our community to start enhancing your skills!</p>
+            <button class="button">Get Started</button>
+        </div>
     </section>
 
     <section id="about" class="visible">
@@ -208,11 +241,13 @@
 
     <section id="testimonials" class="visible">
         <h2>User Testimonials</h2>
-        <div class="testimonial">
-            <p>"This platform helped me learn web development quickly!" - Sam Williams</p>
-        </div>
-        <div class="testimonial">
-            <p>"I love the resources available here, they're invaluable!" - Emily Johnson</p>
+        <div class="testimonial-carousel">
+            <div class="testimonial">
+                <p>"This platform helped me learn web development quickly!" - Sam Williams</p>
+            </div>
+            <div class="testimonial">
+                <p>"I love the resources available here, they're invaluable!" - Emily Johnson</p>
+            </div>
         </div>
     </section>
 
@@ -229,18 +264,19 @@
         </form>
         <div id="form-response" class="form-response"></div>
     </section>
-</main>
 
-<footer>
-    <p>Phone: +123 456 7890</p>
-    <p>Follow us on:
-        <a href="#" style="color:white; text-decoration:none;" target="_blank">Facebook</a>,
-        <a href="#" style="color:white; text-decoration:none;" target="_blank">Twitter</a>,
-        <a href="#" style="color:white; text-decoration:none;" target="_blank">Instagram</a>
-    </p>
-    <a href="/privacy" style="color:white; text-decoration:none;">Privacy Policy</a>
-    <a href="/terms" style="color:white; text-decoration:none;">Terms of Service</a>
-</footer>
+    <footer>
+        <form id="subscriptionForm">
+            <input type="email" placeholder="Your Email" required>
+            <button type="submit" class="button">Subscribe</button>
+        </form>
+        <p>Follow us on: 
+            <a href="#" style="color:white; text-decoration:none" target="_blank">Facebook</a>,
+            <a href="#" style="color:white; text-decoration:none" target="_blank">Twitter</a>,
+            <a href="#" style="color:white; text-decoration:none" target="_blank">Instagram</a>
+        </p>
+    </footer>
+</main>
 
 <script>
     function toggleTheme() {
@@ -253,6 +289,7 @@
         loadBlogs();
         loadTutorials();
         revealSections();
+        startHeroSlider();
     });
 
     function loadBlogs() {
@@ -265,7 +302,7 @@
         
         blogs.forEach(blog => {
             const blogItem = document.createElement('div');
-            blogItem.innerHTML = `<strong>${blog.title}</strong><p>${blog.content}</p><small>Posted on ${blog.date} by ${blog.author}</small>`;
+            blogItem.innerHTML = `<strong>${blog.title}</strong><p>${blog.content}</p><small>Posted on ${blog.date} by ${blog.author}</small><button class="button" onclick="alert('Read More on ${blog.title}!')">Read More</button>`;
             blogList.appendChild(blogItem);
         });
     }
@@ -279,7 +316,7 @@
         
         tutorials.forEach(tutorial => {
             const tutorialItem = document.createElement('div');
-            tutorialItem.innerHTML = `<strong>${tutorial.title}</strong><p>${tutorial.content}</p><small>Posted on ${tutorial.date}</small>`;
+            tutorialItem.innerHTML = `<strong>${tutorial.title}</strong><p>${tutorial.content}</p><small>Posted on ${tutorial.date}</small><button class="button" onclick="alert('Read More on ${tutorial.title}!')">Read More</button>`;
             tutorialList.appendChild(tutorialItem);
         });
     }
@@ -287,6 +324,13 @@
     document.getElementById('contactForm').addEventListener('submit', function(event) {
         event.preventDefault();
         document.getElementById('form-response').innerText = "Your message has been sent successfully!";
+        this.reset();
+    });
+
+    document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = e.target.elements[0].value;
+        alert(`Subscribed with ${email}!`);
         this.reset();
     });
 
@@ -312,12 +356,18 @@
         }); 
     }
 
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
-        });
-    });
+    function startHeroSlider() {
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slider img');
+
+        function showSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (index + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        setInterval(() => showSlide(currentSlide + 1), 5000);
+    }
 </script>
 </body>
 </html>
