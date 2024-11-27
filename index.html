@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BreadSMP - Enhance your web development skills with resources, tutorials, and community support.">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>Welcome to Breadsmp.com</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat&display=swap" rel="stylesheet">
@@ -114,6 +115,7 @@
         .hero-slider {
             position: relative;
             overflow: hidden;
+            text-align: center;
         }
         .hero-slider img {
             width: 100%;
@@ -125,13 +127,20 @@
         .hero-slider img.active {
             opacity: 1;
         }
-        .hero-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
+        .slider-dots {
+            margin-top: 10px;
+        }
+        .dot {
+            height: 10px;
+            width: 10px;
+            margin: 0 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .dot.active {
+            background-color: var(--secondary-color);
         }
         section {
             margin-bottom: 50px;
@@ -187,8 +196,8 @@
 <header>
     <img src="logo.png" alt="Breadsmp Logo" class="logo" style="width: 50px;">
     <nav aria-label="Main navigation">
-        <button class="hamburger" onclick="toggleMenu()">☰</button>
-        <ul class="nav-links">
+        <button class="hamburger" onclick="toggleMenu()" aria-expanded="false" aria-controls="nav-links">☰</button>
+        <ul class="nav-links" id="nav-links">
             <li><a href="#hero">Home</a></li>
             <li><a href="#about">About Us</a></li>
             <li><a href="#latestBlogs">Blog</a></li>
@@ -197,8 +206,8 @@
             <li><a href="#resources">Resources</a></li>
             <li><a href="#contact">Contact Us</a></li>
             <li class="dropdown">
-                <a href="javascript:void(0)">Services</a>
-                <div class="dropdown-content">
+                <a href="javascript:void(0)" class="dropdown-toggle">Services ▼</a>
+                <div class="dropdown-content" aria-label="Services">
                     <a href="#webDev">Web Development</a>
                     <a href="#design">Design</a>
                 </div>
@@ -214,14 +223,19 @@
 
 <main>
     <section class="hero-slider">
-        <img src="hero1.jpg" alt="Hero Image 1" class="active">
-        <img src="hero2.jpg" alt="Hero Image 2">
-        <img src="hero3.jpg" alt="Hero Image 3">
         <div class="hero-content">
             <h1>Transform Your Web Development Skills</h1>
             <p>Join our community to start enhancing your skills!</p>
             <button class="button">Get Started</button>
         </div>
+        <div class="slider-dots">
+            <span class="dot active" onclick="setSlide(0)"></span>
+            <span class="dot" onclick="setSlide(1)"></span>
+            <span class="dot" onclick="setSlide(2)"></span>
+        </div>
+        <img src="hero1.jpg" alt="Hero Image 1" class="active">
+        <img src="hero2.jpg" alt="Hero Image 2">
+        <img src="hero3.jpg" alt="Hero Image 3">
     </section>
 
     <section id="about" class="visible">
@@ -242,12 +256,7 @@
     <section id="testimonials" class="visible">
         <h2>User Testimonials</h2>
         <div class="testimonial-carousel">
-            <div class="testimonial">
-                <p>"This platform helped me learn web development quickly!" - Sam Williams</p>
-            </div>
-            <div class="testimonial">
-                <p>"I love the resources available here, they're invaluable!" - Emily Johnson</p>
-            </div>
+            <div class="testimonial" id="testimonial-list"></div>
         </div>
     </section>
 
@@ -271,14 +280,16 @@
             <button type="submit" class="button">Subscribe</button>
         </form>
         <p>Follow us on: 
-            <a href="#" style="color:white; text-decoration:none" target="_blank">Facebook</a>,
-            <a href="#" style="color:white; text-decoration:none" target="_blank">Twitter</a>,
-            <a href="#" style="color:white; text-decoration:none" target="_blank">Instagram</a>
+            <span style="color:white;">Facebook</span>,
+            <span style="color:white;">Twitter</span>,
+            <span style="color:white;">Instagram</span>
         </p>
     </footer>
 </main>
 
 <script>
+    let currentSlide = 0;
+
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
@@ -290,6 +301,7 @@
         loadTutorials();
         revealSections();
         startHeroSlider();
+        loadTestimonials();
     });
 
     function loadBlogs() {
@@ -302,7 +314,7 @@
         
         blogs.forEach(blog => {
             const blogItem = document.createElement('div');
-            blogItem.innerHTML = `<strong>${blog.title}</strong><p>${blog.content}</p><small>Posted on ${blog.date} by ${blog.author}</small><button class="button" onclick="alert('Read More on ${blog.title}!')">Read More</button>`;
+            blogItem.innerHTML = `<strong>${blog.title}</strong><p>${blog.content}</p><small>Posted on ${blog.date} by ${blog.author}</small>`;
             blogList.appendChild(blogItem);
         });
     }
@@ -316,8 +328,22 @@
         
         tutorials.forEach(tutorial => {
             const tutorialItem = document.createElement('div');
-            tutorialItem.innerHTML = `<strong>${tutorial.title}</strong><p>${tutorial.content}</p><small>Posted on ${tutorial.date}</small><button class="button" onclick="alert('Read More on ${tutorial.title}!')">Read More</button>`;
+            tutorialItem.innerHTML = `<strong>${tutorial.title}</strong><p>${tutorial.content}</p><small>Posted on ${tutorial.date}</small>`;
             tutorialList.appendChild(tutorialItem);
+        });
+    }
+
+    function loadTestimonials() {
+        const testimonials = [
+            { content: "\"This platform helped me learn web development quickly!\" - Sam Williams" },
+            { content: "\"I love the resources available here, they're invaluable!\" - Emily Johnson" }
+        ];
+        
+        const testimonialList = document.getElementById('testimonial-list');
+        testimonials.forEach(testimonial => {
+            const testimonialItem = document.createElement('div');
+            testimonialItem.innerHTML = testimonial.content;
+            testimonialList.appendChild(testimonialItem);
         });
     }
 
@@ -330,7 +356,7 @@
     document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const email = e.target.elements[0].value;
-        alert(`Subscribed with ${email}!`);
+        document.getElementById('form-response').innerText = `Subscribed with ${email}!`;
         this.reset();
     });
 
@@ -345,6 +371,8 @@
 
     function toggleMenu() {
         document.querySelector('.nav-links').classList.toggle('show');
+        const button = document.querySelector('.hamburger');
+        button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
     }
 
     function revealSections() {
@@ -357,9 +385,7 @@
     }
 
     function startHeroSlider() {
-        let currentSlide = 0;
         const slides = document.querySelectorAll('.hero-slider img');
-
         function showSlide(index) {
             slides[currentSlide].classList.remove('active');
             currentSlide = (index + slides.length) % slides.length;
@@ -367,6 +393,19 @@
         }
 
         setInterval(() => showSlide(currentSlide + 1), 5000);
+    }
+
+    function setSlide(index) {
+        currentSlide = index;
+        const slides = document.querySelectorAll('.hero-slider img');
+        slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            if (i === currentSlide) {
+                slide.classList.add('active');
+                document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
+                document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+            }
+        });
     }
 </script>
 </body>
