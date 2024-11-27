@@ -9,14 +9,14 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #5D92F4;
-            --secondary-color: #4EDB85;
-            --highlight-color: #F65B75;
-            --background-light: #F2F2F2;
-            --background-dark: #1A1A1A;
+            --primary-color: #4A90E2;
+            --secondary-color: #7ED321;
+            --highlight-color: #D64541;
+            --background-light: #F5F5F5;
+            --background-dark: #333;
             --text-light: #ffffff;
-            --text-dark: #202020;
-            --text-gray: #777777;
+            --text-dark: #333;
+            --text-gray: #777;
             --transition-speed: 0.3s;
         }
         body {
@@ -48,7 +48,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .hamburger {
-            display: none; 
+            display: none;
             background: transparent;
             border: none;
             font-size: 30px;
@@ -59,28 +59,6 @@
             display: flex;
             flex-direction: row;
         }
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none; 
-                flex-direction: column;
-                position: absolute;
-                top: 60px;
-                left: 0;
-                background-color: var(--primary-color);
-                width: 100%;
-            }
-            .nav-links.show {
-                display: flex; 
-            }
-            .hamburger {
-                display: block; 
-            }
-        }
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
         nav ul {
             list-style: none;
             padding: 0;
@@ -90,9 +68,23 @@
             color: white;
             text-decoration: none;
             margin-right: 20px;
+            position: relative;
+            transition: color var(--transition-speed);
         }
         nav a:hover {
-            text-decoration: underline;
+            color: var(--highlight-color);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--primary-color);
+            min-width: 160px;
+            z-index: 1;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
         }
         .button {
             background-color: var(--secondary-color);
@@ -196,7 +188,7 @@
 <header>
     <img src="logo.png" alt="Breadsmp Logo" class="logo" style="width: 50px;">
     <nav aria-label="Main navigation">
-        <button class="hamburger" onclick="toggleMenu()" aria-expanded="false" aria-controls="nav-links">☰</button>
+        <button class="hamburger" onclick="toggleMenu()" aria-expanded="false">☰</button>
         <ul class="nav-links" id="nav-links">
             <li><a href="#hero">Home</a></li>
             <li><a href="#about">About Us</a></li>
@@ -226,16 +218,18 @@
         <div class="hero-content">
             <h1>Transform Your Web Development Skills</h1>
             <p>Join our community to start enhancing your skills!</p>
-            <button class="button">Get Started</button>
+            <button class="button" onclick="location.href='register.html'">Get Started</button>
         </div>
         <div class="slider-dots">
             <span class="dot active" onclick="setSlide(0)"></span>
             <span class="dot" onclick="setSlide(1)"></span>
             <span class="dot" onclick="setSlide(2)"></span>
+            <span class="dot" onclick="setSlide(3)"></span> <!-- New Dot for Additional Slide -->
         </div>
         <img src="hero1.jpg" alt="Hero Image 1" class="active">
         <img src="hero2.jpg" alt="Hero Image 2">
         <img src="hero3.jpg" alt="Hero Image 3">
+        <img src="hero4.jpg" alt="Hero Image 4"> <!-- New Slide Added -->
     </section>
 
     <section id="about" class="visible">
@@ -246,11 +240,13 @@
     <section id="latestBlogs" class="visible">
         <h2>Latest Blogs</h2>
         <div id="blog-list"></div>
+        <button class="button" onclick="loadMoreBlogs()">Load More</button>
     </section>
 
     <section id="popularTutorials" class="visible">
         <h2>Popular Tutorials</h2>
         <div id="tutorial-list"></div>
+        <button class="button" onclick="loadMoreTutorials()">Load More</button>
     </section>
 
     <section id="testimonials" class="visible">
@@ -267,6 +263,10 @@
             <input type="text" id="name" name="name" required>
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required>
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" required>
             <label for="message">Message</label>
             <textarea id="message" name="message" required></textarea>
             <button type="submit" class="button">Send Message</button>
@@ -279,16 +279,35 @@
             <input type="email" placeholder="Your Email" required>
             <button type="submit" class="button">Subscribe</button>
         </form>
-        <p>Follow us on: 
+        <div>
+            Follow us on: 
             <span style="color:white;">Facebook</span>,
             <span style="color:white;">Twitter</span>,
             <span style="color:white;">Instagram</span>
-        </p>
+        </div>
     </footer>
 </main>
 
 <script>
     let currentSlide = 0;
+    const blogs = [
+        { title: "Introduction to HTML", content: "Learn the basics of HTML, including structure and semantics.", date: "2023-10-01", author: "Jane Doe" },
+        { title: "Understanding CSS Flexbox", content: "A deep dive into CSS Flexbox for responsive design.", date: "2023-10-10", author: "John Smith" },
+        { title: "JavaScript Basics", content: "Get started with the fundamentals of JavaScript.", date: "2023-10-15", author: "Alice Johnson" }
+    ];
+    const tutorials = [
+        { title: "Building Your First Website", content: "A step-by-step guide for beginners.", date: "2023-09-25" },
+        { title: "Mastering JavaScript Functions", content: "Deep dive into functions and scoping.", date: "2023-10-11" }
+    ];
+
+    const testimonials = [
+        { content: "\"This platform helped me learn web development quickly!\" - Sam Williams" },
+        { content: "\"I love the resources available here, they're invaluable!\" - Emily Johnson" },
+        { content: "\"I found my passion for coding here!\" - Chris Brown" }
+    ];
+
+    let blogIndex = 0;
+    let tutorialIndex = 0;
 
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
@@ -305,40 +324,36 @@
     });
 
     function loadBlogs() {
-        const blogs = [
-            { title: "Introduction to HTML", content: "Learn the basics of HTML, including structure and semantics.", date: "2023-10-01", author: "Jane Doe" },
-            { title: "Understanding CSS Flexbox", content: "A deep dive into CSS Flexbox for responsive design.", date: "2023-10-10", author: "John Smith" },
-            { title: "JavaScript Basics", content: "Get started with the fundamentals of JavaScript.", date: "2023-10-15", author: "Alice Johnson" }
-        ];
         const blogList = document.getElementById('blog-list');
-        
-        blogs.forEach(blog => {
+        const currentBatch = blogs.slice(blogIndex, blogIndex + 3);
+        currentBatch.forEach(blog => {
             const blogItem = document.createElement('div');
             blogItem.innerHTML = `<strong>${blog.title}</strong><p>${blog.content}</p><small>Posted on ${blog.date} by ${blog.author}</small>`;
             blogList.appendChild(blogItem);
         });
+        blogIndex += currentBatch.length;
+    }
+
+    function loadMoreBlogs() {
+        loadBlogs();
     }
 
     function loadTutorials() {
-        const tutorials = [
-            { title: "Building Your First Website", content: "A step-by-step guide for beginners.", date: "2023-09-25" },
-            { title: "Mastering JavaScript Functions", content: "Deep dive into functions and scoping.", date: "2023-10-11" }
-        ];
         const tutorialList = document.getElementById('tutorial-list');
-        
-        tutorials.forEach(tutorial => {
+        const currentBatch = tutorials.slice(tutorialIndex, tutorialIndex + 3);
+        currentBatch.forEach(tutorial => {
             const tutorialItem = document.createElement('div');
             tutorialItem.innerHTML = `<strong>${tutorial.title}</strong><p>${tutorial.content}</p><small>Posted on ${tutorial.date}</small>`;
             tutorialList.appendChild(tutorialItem);
         });
+        tutorialIndex += currentBatch.length;
+    }
+
+    function loadMoreTutorials() {
+        loadTutorials();
     }
 
     function loadTestimonials() {
-        const testimonials = [
-            { content: "\"This platform helped me learn web development quickly!\" - Sam Williams" },
-            { content: "\"I love the resources available here, they're invaluable!\" - Emily Johnson" }
-        ];
-        
         const testimonialList = document.getElementById('testimonial-list');
         testimonials.forEach(testimonial => {
             const testimonialItem = document.createElement('div');
@@ -391,7 +406,6 @@
             currentSlide = (index + slides.length) % slides.length;
             slides[currentSlide].classList.add('active');
         }
-
         setInterval(() => showSlide(currentSlide + 1), 5000);
     }
 
